@@ -6,36 +6,58 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
 {
     /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * Display the registration view.
      */
-    public function store(Request $request): Response
+    public function create()
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        return view('auth.register');
+    }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->string('password')),
-        ]);
+    /**
+     * Handle an incoming registration request.
+     */
+    public function store(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            ]);
 
-        event(new Registered($user));
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-        Auth::login($user);
+            event(new Registered($user));
 
-        return response()->noContent();
+            Auth::login($user);
+
+            return redirect()->route('profile')->with('success', 'Регистрация успешна! Добро пожаловать!');
+            
+        } catch (ValidationException $e) {
+            return back()->withErrors([
+                'name' => $e->errors()['name'] ?? [],
+                'email' => $e->errors()['email'] ?? [],
+                'password' => $e->errors()['password'] ?? [],
+            ])->withInput($request->except('password'));
+        } catch (\Exception $e) {
+            \Log::error('Ошибка при регистрации: ' . $e->getMessage());
+            return back()
+                ->withInput($request->except('password'))
+                ->withErrors([
+                    'error' => 'Произошла техническая ошибка при регистрации. Пожалуйста, попробуйте позже или обратитесь в поддержку.'
+                ]);
+        }
     }
 }

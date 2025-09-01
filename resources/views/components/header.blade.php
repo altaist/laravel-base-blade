@@ -6,12 +6,24 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="#">Личный кабинет</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Корзина</a>
-        </li>
+        @guest
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('login') }}">Вход</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('register') }}">Регистрация</a>
+          </li>
+        @else
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('profile') }}">Личный кабинет</a>
+          </li>
+          <li class="nav-item">
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit" class="nav-link btn btn-link">Выход</button>
+            </form>
+          </li>
+        @endguest
       </ul>
     </div>
   </div>
