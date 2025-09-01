@@ -67,6 +67,10 @@
                     <div class="text-center mt-3">
                         <a href="{{ route('login') }}">Уже есть аккаунт? Войти</a>
                     </div>
+                    <div class="text-center mt-4">
+                        <div class="text-muted mb-2">Или зарегистрируйтесь через</div>
+                        <x-telegram-login />
+                    </div>
                 </div>
             </div>
         </div>

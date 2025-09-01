@@ -31,6 +31,10 @@
                     <div class="text-center mt-2">
                         <a href="{{ route('password.request') }}">Забыли пароль?</a>
                     </div>
+                    <div class="text-center mt-4">
+                        <div class="text-muted mb-2">Или войдите через</div>
+                        <x-telegram-login />
+                    </div>
                 </div>
             </div>
         </div>

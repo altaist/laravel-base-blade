@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\TelegramAuthController;
 
 Route::get('/', function () { 
     return view('home'); 
@@ -19,6 +20,10 @@ Route::middleware('guest')->group(function () {
         return view('auth.forgot-password'); 
     })->name('password.request');
 });
+
+// Telegram Auth Routes
+Route::get('/auth/telegram/callback', [TelegramAuthController::class, 'callback'])
+    ->name('telegram.callback');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', function () { 
