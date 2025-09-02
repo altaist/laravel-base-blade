@@ -7,7 +7,11 @@ use Illuminate\Support\Facades\Http;
 
 class TelegramWebhookCommand extends Command
 {
-    protected $signature = 'telegram:webhook {--remove : Удалить текущий вебхук}';
+    protected $signature = 'telegram:webhook 
+        {url? : URL для вебхука (например, https://your-domain.com)}
+        {--remove : Удалить текущий вебхук}
+        {--info : Показать текущие настройки вебхука}';
+
     protected $description = 'Установка или удаление вебхука для Telegram';
 
     public function handle(): int
@@ -21,6 +25,10 @@ class TelegramWebhookCommand extends Command
 
         $baseUrl = "https://api.telegram.org/bot{$token}";
 
+        if ($this->option('info')) {
+            return $this->getWebhookInfo($baseUrl);
+        }
+
         if ($this->option('remove')) {
             return $this->removeWebhook($baseUrl);
         }
@@ -30,14 +38,17 @@ class TelegramWebhookCommand extends Command
 
     private function setWebhook(string $baseUrl): int
     {
-        $appUrl = config('app.url');
+        $url = $this->argument('url') ?? config('app.url');
         
-        if (empty($appUrl)) {
-            $this->error('Ошибка: Не указан URL приложения в конфигурации');
+        if (empty($url)) {
+            $this->error('Ошибка: Укажите URL для вебхука в аргументе команды или в APP_URL');
+            $this->info('Пример: php artisan telegram:webhook https://your-domain.com');
             return Command::FAILURE;
         }
 
-        $webhookUrl = "{$appUrl}/api/telegram/webhook";
+        // Убираем слеш в конце URL если есть
+        $url = rtrim($url, '/');
+        $webhookUrl = "{$url}/api/telegram/webhook";
 
         $this->info("Установка вебхука на URL: {$webhookUrl}");
 
@@ -78,6 +89,40 @@ class TelegramWebhookCommand extends Command
             }
 
             $this->error('Ошибка: Не удалось удалить вебхук');
+            $this->error("Ответ API: " . json_encode($result, JSON_UNESCAPED_UNICODE));
+            return Command::FAILURE;
+        } catch (\Exception $e) {
+            $this->error('Ошибка: ' . $e->getMessage());
+            return Command::FAILURE;
+        }
+    }
+
+    private function getWebhookInfo(string $baseUrl): int
+    {
+        $this->info('Получение информации о текущем вебхуке...');
+
+        try {
+            $response = Http::get("{$baseUrl}/getWebhookInfo");
+            $result = $response->json();
+
+            if ($response->successful() && ($result['ok'] ?? false)) {
+                $info = $result['result'] ?? [];
+                
+                $this->info('Текущие настройки вебхука:');
+                $this->table(
+                    ['Параметр', 'Значение'],
+                    [
+                        ['URL', $info['url'] ?? 'Не установлен'],
+                        ['Последняя ошибка', $info['last_error_message'] ?? 'Нет'],
+                        ['Последняя синхронизация', $info['last_synchronization_error_date'] ?? 'Нет'],
+                        ['Максимальные подключения', $info['max_connections'] ?? '40'],
+                        ['Разрешенные обновления', json_encode($info['allowed_updates'] ?? [])],
+                    ]
+                );
+                return Command::SUCCESS;
+            }
+
+            $this->error('Ошибка: Не удалось получить информацию о вебхуке');
             $this->error("Ответ API: " . json_encode($result, JSON_UNESCAPED_UNICODE));
             return Command::FAILURE;
         } catch (\Exception $e) {
