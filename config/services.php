@@ -19,7 +19,9 @@ return [
     ],
 
     'telegram' => [
-        'bot' => env('TELEGRAM_BOT_NAME'),
-        'token' => env('TELEGRAM_BOT_TOKEN'),
+        'bot' => [
+            'name' => env('TELEGRAM_BOT_NAME'),
+            'token' => env('TELEGRAM_BOT_TOKEN'),
+        ]
     ],
 ];
