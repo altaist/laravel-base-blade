@@ -26,9 +26,8 @@ Route::get('/auth/telegram/callback', [TelegramAuthController::class, 'callback'
     ->name('telegram.callback');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', function () { 
-        return view('profile'); 
-    })->name('profile');
+    Route::view('/profile', 'profile')->name('profile');
+    Route::view('/dashboard', 'profile')->name('dashboard');
     
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
