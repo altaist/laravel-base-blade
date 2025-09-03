@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\TelegramService;
+use App\Services\Telegram\TelegramService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 

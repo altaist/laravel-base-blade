@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Telegram;
 
 use App\DTOs\TelegramKeyboardDto;
 use App\DTOs\TelegramMessageDto;
