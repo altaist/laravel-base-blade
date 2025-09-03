@@ -3,16 +3,23 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
 {
+    public function __construct(
+        private UserService $userService
+    ) {}
+
     /**
      * Display the registration view.
      */
@@ -24,19 +31,13 @@ class RegisteredUserController extends Controller
     /**
      * Handle an incoming registration request.
      */
-    public function store(Request $request)
+    public function store(RegisterUserRequest $request)
     {
         try {
-            $request->validate([
-                'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            ]);
-
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
+            $user = $this->userService->createUserWithPerson([
+                'name' => $request->validated('name'),
+                'email' => $request->validated('email'),
+                'password' => Hash::make($request->validated('password')),
             ]);
 
             event(new Registered($user));
@@ -45,14 +46,8 @@ class RegisteredUserController extends Controller
 
             return redirect()->route('profile')->with('success', 'Регистрация успешна! Добро пожаловать!');
             
-        } catch (ValidationException $e) {
-            return back()->withErrors([
-                'name' => $e->errors()['name'] ?? [],
-                'email' => $e->errors()['email'] ?? [],
-                'password' => $e->errors()['password'] ?? [],
-            ])->withInput($request->except('password'));
         } catch (\Exception $e) {
-            \Log::error('Ошибка при регистрации: ' . $e->getMessage());
+            Log::error('Ошибка при регистрации: ' . $e->getMessage());
             return back()
                 ->withInput($request->except('password'))
                 ->withErrors([

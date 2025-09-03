@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\TelegramAuthRequest;
 use App\Models\User;
+use App\Services\UserService;
 use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,26 +14,27 @@ use Illuminate\Support\Str;
 
 class TelegramAuthController extends Controller
 {
-    public function callback(Request $request)
+    public function __construct(
+        private UserService $userService
+    ) {}
+
+    public function callback(TelegramAuthRequest $request)
     {
-        if (!$this->checkTelegramAuthorization($request->all())) {
+        if (!$this->checkTelegramAuthorization($request->validated())) {
             return redirect()->route('login')->with('error', 'Неверная авторизация Telegram');
         }
 
-        $user = User::where('telegram_id', $request->id)->first();
+        $user = User::where('telegram_id', $request->validated('id'))->first();
 
         if (!$user) {
-            $user = User::create([
-                'name' => trim($request->first_name . ' ' . $request->last_name),
-                'email' => $request->id . '@telegram.user',
-                'password' => Hash::make(Str::random(32)),
-                'telegram_id' => $request->id,
-                'telegram_username' => $request->username,
-                'role' => UserRole::USER,
+            $user = $this->userService->createUserWithPerson([
+                'name' => $request->validated('first_name'),
+                'telegram_id' => $request->validated('id'),
+                'telegram_username' => $request->validated('username'),
             ]);
         } else {
             $user->update([
-                'telegram_username' => $request->username,
+                'telegram_username' => $request->validated('username'),
             ]);
         }
 

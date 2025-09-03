@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
@@ -38,7 +39,7 @@ class AuthenticatedSessionController extends Controller
                     'email' => 'Неверный email или пароль.',
                 ]);
         } catch (\Exception $e) {
-            \Log::error('Ошибка при входе: ' . $e->getMessage());
+            Log::error('Ошибка при входе: ' . $e->getMessage());
             return back()
                 ->withInput($request->except('password'))
                 ->withErrors([
@@ -62,7 +63,7 @@ class AuthenticatedSessionController extends Controller
             return redirect('/')->with('success', 'Вы успешно вышли из системы.');
             
         } catch (\Exception $e) {
-            \Log::error('Ошибка при выходе: ' . $e->getMessage());
+            Log::error('Ошибка при выходе: ' . $e->getMessage());
             return back()->withErrors([
                 'error' => 'Произошла ошибка при выходе из системы. Пожалуйста, попробуйте еще раз.'
             ]);
