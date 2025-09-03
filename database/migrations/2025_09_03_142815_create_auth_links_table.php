@@ -26,11 +26,15 @@ return new class extends Migration
             $table->string('telegram_id')->nullable();
             $table->string('telegram_username')->nullable();
             
+            // Поле для партнерской программы
+            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
+            
             $table->timestamps();
             $table->softDeletes();
             
             $table->index(['user_id', 'expires_at']);
             $table->index(['token', 'expires_at']);
+            $table->index(['author_id', 'created_at']);
         });
     }
 

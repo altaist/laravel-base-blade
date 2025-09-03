@@ -23,6 +23,7 @@ class AuthLink extends Model
         'role',
         'telegram_id',
         'telegram_username',
+        'author_id',
     ];
 
     protected $casts = [
@@ -35,6 +36,14 @@ class AuthLink extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Связь с автором ссылки
+     */
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'author_id');
     }
 
     /**
@@ -51,6 +60,14 @@ class AuthLink extends Model
     public function scopeExpired($query)
     {
         return $query->where('expires_at', '<=', now());
+    }
+
+    /**
+     * Скоуп для ссылок определенного автора
+     */
+    public function scopeByAuthor($query, $authorId)
+    {
+        return $query->where('author_id', $authorId);
     }
 
     /**
