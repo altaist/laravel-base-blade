@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class StartCommand extends BaseTelegramCommand
 {
-    public function __construct(
-        private AuthLinkService $authLinkService
-    ) {}
+
 
     public function getName(): string
     {
@@ -49,6 +47,8 @@ class StartCommand extends BaseTelegramCommand
      */
     private function handleAccountBinding(TelegramMessageDto $message): void
     {
+        $authLinkService = app(AuthLinkService::class);
+        
         // Получаем start_param из arguments команды
         $startParam = $message->arguments[0] ?? null;
         if (empty($startParam)) {
@@ -57,7 +57,7 @@ class StartCommand extends BaseTelegramCommand
         }
 
         // Делегируем привязку в сервис
-        $result = $this->authLinkService->bindTelegramAccount($startParam, $message->userId);
+        $result = $authLinkService->bindTelegramAccount($startParam, $message->userId);
 
         if ($result['success']) {
             $text = "✅ Аккаунт успешно привязан!\n\n" .
@@ -74,13 +74,15 @@ class StartCommand extends BaseTelegramCommand
      */
     private function addAuthLinkIfNeeded(TelegramMessageDto $message, string &$text): void
     {
+        $authLinkService = app(AuthLinkService::class);
+        
         try {
             // Ищем пользователя по telegram_id
             $user = User::where('telegram_id', $message->userId)->first();
 
             if (!$user) {
                 // Создаем ссылку для регистрации
-                $authLink = $this->authLinkService->generateRegistrationLink([
+                $authLink = $authLinkService->generateRegistrationLink([
                     'telegram_id' => $message->userId,
                 ], [
                     'expires_in_minutes' => 60,

@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class AboutCommand extends BaseTelegramCommand
 {
-    public function __construct(
-        private AuthLinkService $authLinkService
-    ) {}
+
 
     public function getName(): string
     {
@@ -35,7 +33,7 @@ class AboutCommand extends BaseTelegramCommand
             "/auth - Создать ссылку для авторизации\n";
 
         // Добавляем ссылку для авторизации если пользователь не найден
-        $this->addAuthLinkIfNeeded($message, $text);
+        // $this->addAuthLinkIfNeeded($message, $text);
 
         $this->reply($message, $text, TelegramService::FORMAT_HTML);
     }
@@ -45,13 +43,15 @@ class AboutCommand extends BaseTelegramCommand
      */
     private function addAuthLinkIfNeeded(TelegramMessageDto $message, string &$text): void
     {
+        $authLinkService = app(AuthLinkService::class);
+        
         try {
             // Ищем пользователя по telegram_id
             $user = User::where('telegram_id', $message->userId)->first();
 
             if (!$user) {
                 // Создаем ссылку для регистрации
-                $authLink = $this->authLinkService->generateRegistrationLink([
+                $authLink = $authLinkService->generateRegistrationLink([
                     'telegram_id' => $message->userId,
                 ], [
                     'expires_in_minutes' => 60,
