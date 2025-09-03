@@ -77,15 +77,25 @@ class TelegramBotService
     public function process(TelegramMessageDto $message): void
     {
         try {
-            // Если это не команда, игнорируем
-            if (!$message->command) {
-                return;
-            }
-
+            // Ищем команду для обработки
             $command = $this->findCommand($message);
 
             if (!$command) {
-                $this->handleUnknownCommand($message);
+                // Если команда не найдена, проверяем команду по умолчанию
+                $defaultCommand = $this->commands['default'] ?? null;
+                if ($defaultCommand && $defaultCommand->canProcess($message)) {
+                    $defaultCommand->process($message);
+                    Log::info('Telegram default command processed', [
+                        'user_id' => $message->userId,
+                        'message_type' => $message->messageType->value,
+                    ]);
+                    return;
+                }
+
+                // Если это команда, но неизвестная
+                if ($message->command) {
+                    $this->handleUnknownCommand($message);
+                }
                 return;
             }
 
@@ -120,7 +130,13 @@ class TelegramBotService
      */
     private function findCommand(TelegramMessageDto $message): ?TelegramBotCommandInterface
     {
-        return $this->commands[$message->command] ?? null;
+        // Если это команда, ищем по имени команды
+        if ($message->command) {
+            return $this->commands[$message->command] ?? null;
+        }
+        
+        // Если это не команда, возвращаем null (будет обработано командой по умолчанию)
+        return null;
     }
 
     /**
