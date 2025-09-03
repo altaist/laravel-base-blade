@@ -26,6 +26,12 @@ class TelegramSetupCommand extends Command
 
         // Убираем слеш в конце URL если есть
         $url = rtrim($url, '/');
+        
+        // Принудительно используем HTTPS для вебхуков (Telegram API требует)
+        if (str_starts_with($url, 'http://')) {
+            $url = str_replace('http://', 'https://', $url);
+            $this->warn("⚠️  URL изменен на HTTPS: {$url}");
+        }
 
         if ($this->option('info')) {
             return $this->showWebhookInfo($url);
