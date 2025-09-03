@@ -51,8 +51,10 @@ return [
         | Эти команды обычно требуют прав администратора.
         |
         */
-        'commands' => [
-            'users' => \App\Services\Telegram\Commands\AdminUsersCommand::class,
-        ],
+                    'commands' => [
+                'start' => \App\Services\Telegram\Commands\AdminUsersCommand::class,
+                'users' => \App\Services\Telegram\Commands\AdminUsersCommand::class,
+                'about' => \App\Services\Telegram\Commands\AdminAboutCommand::class,
+            ],
     ],
 ];
