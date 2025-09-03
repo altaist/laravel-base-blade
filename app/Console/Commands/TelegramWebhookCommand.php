@@ -9,6 +9,7 @@ class TelegramWebhookCommand extends Command
 {
     protected $signature = 'telegram:webhook 
         {url? : URL для вебхука (например, https://your-domain.com)}
+        {--bot=bot : Тип бота (bot или admin_bot)}
         {--remove : Удалить текущий вебхук}
         {--info : Показать текущие настройки вебхука}';
 
@@ -16,10 +17,11 @@ class TelegramWebhookCommand extends Command
 
     public function handle(): int
     {
-        $token = config('telegram.bot.token');
+        $botType = $this->option('bot');
+        $token = config("telegram.{$botType}.token");
         
         if (empty($token)) {
-            $this->error('Ошибка: Не указан токен бота в конфигурации');
+            $this->error("Ошибка: Не указан токен для бота типа '{$botType}' в конфигурации");
             return Command::FAILURE;
         }
 
@@ -48,7 +50,7 @@ class TelegramWebhookCommand extends Command
 
         // Убираем слеш в конце URL если есть
         $url = rtrim($url, '/');
-        $webhookUrl = "{$url}/api/telegram/webhook";
+        $webhookUrl = "{$url}/api/telegram/{$this->option('bot')}/webhook";
 
         $this->info("Установка вебхука на URL: {$webhookUrl}");
 

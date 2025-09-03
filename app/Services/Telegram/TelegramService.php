@@ -212,7 +212,7 @@ class TelegramService
         return $this->sendMessageToUser($botName, $text, $parseMode);
     }
 
-    public function handleIncomingMessage(array $rawMessage): void
+    public function handleIncomingMessage(array $rawMessage, string $botId): void
     {
         try {
             $messageType = $this->determineMessageType($rawMessage);
@@ -232,6 +232,7 @@ class TelegramService
                 text: $text,
                 userId: $userId,
                 additionalData: json_encode($rawMessage),
+                botId: $botId,
             );
 
             TelegramMessageReceived::dispatch($message);
@@ -242,10 +243,12 @@ class TelegramService
                 'text' => $text,
                 'command' => $message->command,
                 'arguments' => $message->arguments,
+                'bot_id' => $botId,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to handle incoming Telegram message', [
                 'raw_message' => $rawMessage,
+                'bot_id' => $botId,
                 'error' => $e->getMessage(),
             ]);
 

@@ -15,6 +15,7 @@ class TelegramMessageDto implements Arrayable
         public readonly string $text,
         public readonly string|int|null $userId = null,
         public readonly ?string $additionalData = null,
+        public readonly string $botId = 'bot',
     ) {
         // Парсинг команды и аргументов для командных сообщений
         if ($messageType === TelegramMessageType::COMMAND) {
@@ -34,6 +35,7 @@ class TelegramMessageDto implements Arrayable
             text: $data['text'],
             userId: $data['userId'] ?? null,
             additionalData: $data['additionalData'] ?? null,
+            botId: $data['botId'] ?? 'bot',
         );
     }
 
@@ -46,6 +48,7 @@ class TelegramMessageDto implements Arrayable
             'additionalData' => $this->additionalData,
             'command' => $this->command,
             'arguments' => $this->arguments,
+            'botId' => $this->botId,
         ];
     }
 }

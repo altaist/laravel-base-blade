@@ -28,21 +28,22 @@ class TelegramWebhookController extends Controller
     /**
      * Обработка входящих сообщений от Telegram через вебхук
      */
-    public function handleWebhook(Request $request): JsonResponse
+    public function handleWebhook(Request $request, string $botId): JsonResponse
     {
         try {
             $update = $request->all();
             
             if (empty($update)) {
-                Log::warning('Empty Telegram webhook request received');
+                Log::warning('Empty Telegram webhook request received', ['bot_id' => $botId]);
                 return response()->json(['status' => 'error', 'message' => 'Empty request']);
             }
 
-            $this->telegramService->handleIncomingMessage($update);
+            $this->telegramService->handleIncomingMessage($update, $botId);
             
             return response()->json(['status' => 'ok']);
         } catch (\Exception $e) {
             Log::error('Failed to handle Telegram webhook', [
+                'bot_id' => $botId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -55,10 +56,10 @@ class TelegramWebhookController extends Controller
      * Ручная обработка обновлений от Telegram
      * Полезно, когда вебхук не настроен или для тестирования
      */
-    public function processUpdatesManually(): JsonResponse
+    public function processUpdatesManually(string $botId = 'bot'): JsonResponse
     {
         try {
-            $token = config('telegram.bot.token');
+            $token = config("telegram.{$botId}.token");
             $response = \Illuminate\Support\Facades\Http::get(
                 "https://api.telegram.org/bot{$token}/getUpdates"
             );
@@ -71,7 +72,7 @@ class TelegramWebhookController extends Controller
             $processed = 0;
 
             foreach ($updates as $update) {
-                $this->telegramService->handleIncomingMessage($update);
+                $this->telegramService->handleIncomingMessage($update, $botId);
                 $processed++;
             }
 

@@ -9,7 +9,8 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 Route::prefix('telegram')->group(function () {
-    Route::post('webhook', [TelegramWebhookController::class, 'handleWebhook']);
+    Route::post('{botId}/webhook', [TelegramWebhookController::class, 'handleWebhook'])
+        ->where('botId', 'bot|admin_bot'); // Ограничиваем возможные значения botId
     Route::post('process-updates', [TelegramWebhookController::class, 'processUpdatesManually'])
         ->middleware('auth:sanctum'); // Защищаем ручной метод авторизацией
 });

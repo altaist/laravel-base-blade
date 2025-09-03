@@ -9,77 +9,62 @@ use Illuminate\Support\Facades\Log;
 class TelegramTestCommand extends Command
 {
     protected $signature = 'telegram:test 
-        {--admin-only : Тестировать только админского бота}
-        {--chat-id= : ID чата для отправки тестового сообщения через основного бота}';
+        {--bot=bot : Тип бота для тестирования (bot или admin_bot)}
+        {--chat-id= : ID чата для отправки тестового сообщения}';
     protected $description = 'Тестирование подключения к Telegram API';
 
     public function handle(TelegramService $telegram): int
     {
         $this->info('Проверка конфигурации...');
         
-        $mainBotToken = config('telegram.bot.token');
-        $mainBotName = config('telegram.bot.name');
-        $adminBotToken = config('telegram.admin_bot.token');
-        $adminBotName = config('telegram.admin_bot.name');
-        $adminChatId = config('telegram.admin_bot.chat_id');
-        $testChatId = $this->option('chat-id');
+        $botType = $this->option('bot');
+        $token = config("telegram.{$botType}.token");
+        $name = config("telegram.{$botType}.name");
+        $defaultChatId = $botType === 'admin_bot' ? config('telegram.admin_bot.chat_id') : null;
+        $chatId = $this->option('chat-id') ?: $defaultChatId;
 
         $this->table(
             ['Параметр', 'Значение', 'Статус'],
             [
                 [
-                    'Основной бот (имя)', 
-                    $mainBotName ?: 'Не указан', 
-                    $mainBotName ? '✓' : '×'
+                    'Тип бота',
+                    $botType,
+                    '✓'
                 ],
                 [
-                    'Основной бот (токен)', 
-                    $mainBotToken ? (substr($mainBotToken, 0, 10) . '...' . substr($mainBotToken, -5)) : 'Не указан',
-                    $mainBotToken ? '✓' : '×'
+                    'Имя бота', 
+                    $name ?: 'Не указан', 
+                    $name ? '✓' : '×'
                 ],
                 [
-                    'Тестовый chat_id', 
-                    $testChatId ?: 'Не указан',
-                    $testChatId ? '✓' : '×'
+                    'Токен бота', 
+                    $token ? (substr($token, 0, 10) . '...' . substr($token, -5)) : 'Не указан',
+                    $token ? '✓' : '×'
                 ],
                 [
-                    'Админский бот (имя)', 
-                    $adminBotName ?: 'Не указан',
-                    $adminBotName ? '✓' : '×'
-                ],
-                [
-                    'Админский бот (токен)', 
-                    $adminBotToken ? (substr($adminBotToken, 0, 10) . '...' . substr($adminBotToken, -5)) : 'Не указан',
-                    $adminBotToken ? '✓' : '×'
-                ],
-                [
-                    'ID админского чата', 
-                    $adminChatId ?: 'Не указан',
-                    $adminChatId ? '✓' : '×'
+                    'ID чата', 
+                    $chatId ?: 'Не указан',
+                    $chatId ? '✓' : '×'
                 ],
             ]
         );
 
-        if (!$this->option('admin-only')) {
-            if (empty($mainBotToken) || empty($mainBotName)) {
-                $this->error('❌ Ошибка конфигурации основного бота:');
-                $this->error('- Проверьте TELEGRAM_BOT_TOKEN и TELEGRAM_BOT_NAME в .env');
-                return Command::FAILURE;
-            }
+        if (empty($token) || empty($name)) {
+            $this->error("❌ Ошибка конфигурации бота типа '{$botType}':");
+            $this->error("- Проверьте настройки в .env и config/telegram.php");
+            return Command::FAILURE;
+        }
 
-            if (empty($testChatId)) {
-                $this->error('❌ Не указан chat_id для тестирования основного бота:');
+        if (empty($chatId)) {
+            $this->error('❌ Не указан chat_id для тестирования:');
+            if ($botType === 'admin_bot') {
+                $this->error('- Проверьте TELEGRAM_ADMIN_CHAT_ID в .env');
+            } else {
                 $this->error('- Добавьте параметр --chat-id=YOUR_CHAT_ID');
                 $this->info('Получить chat_id можно:');
                 $this->info('1. Написать боту @userinfobot');
                 $this->info('2. Переслать сообщение боту @RawDataBot');
-                return Command::FAILURE;
             }
-        }
-
-        if (empty($adminBotToken) || empty($adminBotName) || empty($adminChatId)) {
-            $this->error('❌ Ошибка конфигурации админского бота:');
-            $this->error('- Проверьте TELEGRAM_ADMIN_BOT_TOKEN, TELEGRAM_ADMIN_BOT_NAME и TELEGRAM_ADMIN_CHAT_ID в .env');
             return Command::FAILURE;
         }
 
@@ -92,53 +77,33 @@ class TelegramTestCommand extends Command
             '%s'
         );
 
-        // Тестируем админского бота
-        $this->info("\nОтправка тестового сообщения через админского бота...");
+        $this->info("\nОтправка тестового сообщения...");
         try {
-            $adminResult = $telegram->sendAdminMessage(
-                sprintf($message, 'Админский бот'),
-                TelegramService::FORMAT_HTML
-            );
-
-            if ($adminResult) {
-                $this->info('✅ Тест админского бота успешно завершен:');
-                $this->info('- Соединение с Telegram API установлено');
-                $this->info('- Сообщение успешно отправлено в админский чат');
-            } else {
-                $testsPassed = false;
-                $this->error('❌ Ошибка при отправке сообщения через админского бота');
-            }
-        } catch (\Exception $e) {
-            $testsPassed = false;
-            $this->error('❌ Критическая ошибка при тестировании админского бота:');
-            $this->error('- ' . $e->getMessage());
-            $this->logException($e);
-        }
-
-        // Тестируем основного бота, если не указан флаг --admin-only
-        if (!$this->option('admin-only')) {
-            $this->info("\nОтправка тестового сообщения через основного бота...");
-            try {
-                $mainResult = $telegram->sendMessageToUser(
-                    $testChatId,
+            $result = $botType === 'admin_bot'
+                ? $telegram->sendAdminMessage(
+                    sprintf($message, 'Админский бот'),
+                    TelegramService::FORMAT_HTML,
+                    $chatId
+                )
+                : $telegram->sendMessageToUser(
+                    $chatId,
                     sprintf($message, 'Основной бот'),
                     TelegramService::FORMAT_HTML
                 );
 
-                if ($mainResult) {
-                    $this->info('✅ Тест основного бота успешно завершен:');
-                    $this->info('- Соединение с Telegram API установлено');
-                    $this->info(sprintf('- Сообщение успешно отправлено в чат %s', $testChatId));
-                } else {
-                    $testsPassed = false;
-                    $this->error('❌ Ошибка при отправке сообщения через основного бота');
-                }
-            } catch (\Exception $e) {
+            if ($result) {
+                $this->info("✅ Тест бота типа '{$botType}' успешно завершен:");
+                $this->info('- Соединение с Telegram API установлено');
+                $this->info(sprintf('- Сообщение успешно отправлено в чат %s', $chatId));
+            } else {
                 $testsPassed = false;
-                $this->error('❌ Критическая ошибка при тестировании основного бота:');
-                $this->error('- ' . $e->getMessage());
-                $this->logException($e);
+                $this->error("❌ Ошибка при отправке сообщения через бота типа '{$botType}'");
             }
+        } catch (\Exception $e) {
+            $testsPassed = false;
+            $this->error("❌ Критическая ошибка при тестировании бота типа '{$botType}':");
+            $this->error('- ' . $e->getMessage());
+            $this->logException($e);
         }
 
         if (!$testsPassed) {
