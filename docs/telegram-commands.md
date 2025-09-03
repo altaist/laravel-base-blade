@@ -3,17 +3,14 @@
 ## Настройка вебхуков
 
 ```bash
-# Установка вебхука для основного бота
-php artisan telegram:webhook https://example.com --bot=bot
+# Установка вебхуков для всех ботов
+php artisan telegram:setup https://example.com
 
-# Установка вебхука для админского бота
-php artisan telegram:webhook https://example.com --bot=admin_bot
+# Просмотр информации о всех вебхуках
+php artisan telegram:setup --info
 
-# Просмотр информации о вебхуке
-php artisan telegram:webhook --info --bot=bot
-
-# Удаление вебхука
-php artisan telegram:webhook --remove --bot=bot
+# Удаление всех вебхуков
+php artisan telegram:setup --remove
 ```
 
 ## Тестирование ботов
@@ -29,11 +26,33 @@ php artisan telegram:test --bot=admin_bot
 php artisan telegram:test --bot=admin_bot --chat-id=987654321
 ```
 
+## Сервис для получения сообщений
+
+```bash
+# Запуск сервиса для основного бота (интервал 5 секунд)
+php artisan telegram:run
+
+# Запуск сервиса для админского бота
+php artisan telegram:run --bot=admin_bot
+
+# Настройка интервала (например, 10 секунд)
+php artisan telegram:run --interval=10
+
+# Комбинированные параметры
+php artisan telegram:run --bot=admin_bot --interval=3
+```
+
+**Примечание:** Сервис работает в бесконечном цикле. Для остановки нажмите Ctrl+C.
+
 ### Получение chat_id
 
 Для получения chat_id можно использовать:
 1. Написать боту [@userinfobot](https://t.me/userinfobot)
 2. Переслать сообщение боту [@RawDataBot](https://t.me/RawDataBot)
+
+## Команды по умолчанию
+
+Бот автоматически отвечает на обычные текстовые сообщения (не команды) с помощью команды по умолчанию, которая отправляет дружелюбное сообщение и предлагает использовать `/about` для получения списка доступных команд.
 
 ## Структура URL для вебхуков
 
