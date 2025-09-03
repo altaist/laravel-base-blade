@@ -3,19 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Person;
+use App\Services\AuthLinkService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        private AuthLinkService $authLinkService
+    ) {}
+
     public function show(): View
     {
         $person = Auth::user()->person ?? new Person();
+        $user = Auth::user();
+        
+        // Генерируем ссылку для Telegram если пользователь не привязан
+        $telegramLink = null;
+        if (!$user->telegram_id) {
+            try {
+                $telegramLink = $this->authLinkService->createTelegramLink($user, [
+                    'expires_in_minutes' => 60,
+                    'ip_address' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                    'author_id' => $user->id,
+                ]);
+            } catch (\Exception $e) {
+                // Ошибка логируется, но не прерывает работу
+                Log::channel('telegram')->error("Ошибка создания Telegram ссылки в профиле", [
+                    'error' => $e->getMessage(),
+                    'user_id' => $user->id,
+                ]);
+            }
+        }
         
         return view('profile', [
-            'person' => $person
+            'person' => $person,
+            'telegramLink' => $telegramLink
         ]);
     }
 

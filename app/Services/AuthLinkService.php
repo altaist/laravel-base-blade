@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AuthLinkService
 {
@@ -30,6 +31,7 @@ class AuthLinkService
         $this->deleteActiveLinks($user);
 
         return $user->authLinks()->create([
+            'token' => Str::random(24), // Обычные токены - 24 символа
             'expires_at' => $this->calculateExpiryTime($options['expires_in_minutes']),
             'ip_address' => $options['ip_address'],
             'user_agent' => $options['user_agent'],
@@ -51,6 +53,7 @@ class AuthLinkService
 
         return AuthLink::create([
             'user_id' => null, // Нет привязки к пользователю
+            'token' => Str::random(24), // Токены для регистрации - 24 символа
             'expires_at' => $this->calculateExpiryTime($options['expires_in_minutes']),
             'ip_address' => $options['ip_address'],
             'user_agent' => $options['user_agent'],
@@ -127,6 +130,47 @@ class AuthLinkService
             'active' => $user->authLinks()->active()->count(),
             'total' => $user->authLinks()->withTrashed()->count(),
         ];
+    }
+
+    /**
+     * Генерировать ссылку для привязки Telegram аккаунта
+     *
+     * @param User $user
+     * @param array $options
+     * @return AuthLink
+     */
+    public function generateTelegramBindingLink(User $user, array $options = []): AuthLink
+    {
+        $defaultOptions = $this->getDefaultOptions(60);
+        $options = array_merge($defaultOptions, $options);
+        
+        return AuthLink::create([
+            'user_id' => $user->id,
+            'token' => 'tg_' . Str::random(16), // Префикс + 16 символов
+            'expires_at' => $this->calculateExpiryTime($options['expires_in_minutes']),
+            'ip_address' => $options['ip_address'],
+            'user_agent' => $options['user_agent'],
+            'author_id' => $options['author_id'],
+        ]);
+    }
+
+    /**
+     * Создать текстовую ссылку для Telegram
+     *
+     * @param User $user
+     * @param array $options
+     * @return string
+     */
+    public function createTelegramLink(User $user, array $options = []): string
+    {
+        $authLink = $this->generateTelegramBindingLink($user, $options);
+        $botName = config('telegram.bot.name');
+        
+        if (!$botName) {
+            throw new \Exception('TELEGRAM_BOT_NAME не настроен в .env файле');
+        }
+        
+        return "https://t.me/{$botName}?start={$authLink->token}";
     }
 
     // ===== HELPER МЕТОДЫ =====
