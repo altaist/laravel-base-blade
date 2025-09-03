@@ -34,7 +34,7 @@ class TelegramWebhookController extends Controller
             $update = $request->all();
             
             if (empty($update)) {
-                Log::warning('Empty Telegram webhook request received', ['bot_id' => $botId]);
+                Log::channel('telegram')->warning('Empty Telegram webhook request received', ['bot_id' => $botId]);
                 return response()->json(['status' => 'error', 'message' => 'Empty request']);
             }
 
@@ -42,7 +42,7 @@ class TelegramWebhookController extends Controller
             
             return response()->json(['status' => 'ok']);
         } catch (\Exception $e) {
-            Log::error('Failed to handle Telegram webhook', [
+            Log::channel('telegram')->error('Failed to handle Telegram webhook', [
                 'bot_id' => $botId,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
@@ -82,7 +82,7 @@ class TelegramWebhookController extends Controller
                 'message' => "Successfully processed {$processed} updates"
             ]);
         } catch (\Exception $e) {
-            Log::error('Failed to process Telegram updates manually', [
+            Log::channel('telegram')->error('Failed to process Telegram updates manually', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);

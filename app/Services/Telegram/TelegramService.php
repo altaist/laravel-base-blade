@@ -58,7 +58,7 @@ class TelegramService
 
             $response = $this->http->post('/sendMessage', $params);
 
-            Log::info('Telegram message sent', [
+            Log::channel('telegram')->info('Telegram message sent', [
                 'user_id' => $userId,
                 'text' => $text,
                 'parse_mode' => $parseMode,
@@ -66,7 +66,7 @@ class TelegramService
 
             return true;
         } catch (RequestException $e) {
-            Log::error('Failed to send Telegram message', [
+            Log::channel('telegram')->error('Failed to send Telegram message', [
                 'user_id' => $userId,
                 'text' => $text,
                 'parse_mode' => $parseMode,
@@ -97,7 +97,7 @@ class TelegramService
 
             $response = $this->adminHttp->post('/sendMessage', $params);
 
-            Log::info('Admin Telegram message sent', [
+            Log::channel('telegram')->info('Admin Telegram message sent', [
                 'chat_id' => $params['chat_id'],
                 'text' => $text,
                 'parse_mode' => $parseMode,
@@ -105,7 +105,7 @@ class TelegramService
 
             return true;
         } catch (RequestException $e) {
-            Log::error('Failed to send admin Telegram message', [
+            Log::channel('telegram')->error('Failed to send admin Telegram message', [
                 'chat_id' => $chatId ?? $this->adminChatId,
                 'text' => $text,
                 'parse_mode' => $parseMode,
@@ -138,7 +138,7 @@ class TelegramService
 
             $response = $this->http->post('/sendMessage', $params);
 
-            Log::info('Telegram message with keyboard sent', [
+            Log::channel('telegram')->info('Telegram message with keyboard sent', [
                 'user_id' => $userId,
                 'text' => $text,
                 'keyboard' => $keyboard->toArray(),
@@ -147,7 +147,7 @@ class TelegramService
 
             return true;
         } catch (RequestException $e) {
-            Log::error('Failed to send Telegram message with keyboard', [
+            Log::channel('telegram')->error('Failed to send Telegram message with keyboard', [
                 'user_id' => $userId,
                 'text' => $text,
                 'keyboard' => $keyboard->toArray(),
@@ -185,7 +185,7 @@ class TelegramService
 
             $response = $this->http->post('/sendMessage', $params);
 
-            Log::info('Telegram message with reply keyboard sent', [
+            Log::channel('telegram')->info('Telegram message with reply keyboard sent', [
                 'user_id' => $userId,
                 'text' => $text,
                 'keyboard' => $keyboard->toArray(),
@@ -194,7 +194,7 @@ class TelegramService
 
             return true;
         } catch (RequestException $e) {
-            Log::error('Failed to send Telegram message with reply keyboard', [
+            Log::channel('telegram')->error('Failed to send Telegram message with reply keyboard', [
                 'user_id' => $userId,
                 'text' => $text,
                 'keyboard' => $keyboard->toArray(),
@@ -237,7 +237,7 @@ class TelegramService
 
             TelegramMessageReceived::dispatch($message);
 
-            Log::info('Telegram message received', [
+            Log::channel('telegram')->info('Telegram message received', [
                 'type' => $messageType->value,
                 'user_id' => $userId,
                 'text' => $text,
@@ -246,7 +246,7 @@ class TelegramService
                 'bot_id' => $botId,
             ]);
         } catch (\Exception $e) {
-            Log::error('Failed to handle incoming Telegram message', [
+            Log::channel('telegram')->error('Failed to handle incoming Telegram message', [
                 'raw_message' => $rawMessage,
                 'bot_id' => $botId,
                 'error' => $e->getMessage(),

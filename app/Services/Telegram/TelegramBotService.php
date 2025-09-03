@@ -34,7 +34,7 @@ class TelegramBotService
 
         foreach ($commands as $name => $commandClass) {
             if (!class_exists($commandClass)) {
-                Log::warning("Telegram command class not found: {$commandClass}");
+                Log::channel('telegram')->warning("Telegram command class not found: {$commandClass}");
                 continue;
             }
 
@@ -43,7 +43,7 @@ class TelegramBotService
                 $command = app()->make($commandClass, ['telegram' => $this->telegram]);
                 
                 if ($command->getName() !== $name) {
-                    Log::warning(
+                    Log::channel('telegram')->warning(
                         "Telegram command name mismatch. " .
                         "Config: {$name}, Command: {$command->getName()}, " .
                         "Class: {$commandClass}"
@@ -52,15 +52,15 @@ class TelegramBotService
 
                 $this->registerCommand($command);
             } catch (\Throwable $e) {
-                Log::error("Failed to create telegram command: {$commandClass}", [
+                Log::channel('telegram')->error("Failed to create telegram command: {$commandClass}", [
                     'error' => $e->getMessage(),
                 ]);
             }
         }
 
-        if (empty($this->commands)) {
-            Log::warning("No telegram commands registered for bot type: {$this->botType}");
-        }
+                        if (empty($this->commands)) {
+                    Log::channel('telegram')->warning("No telegram commands registered for bot type: {$this->botType}");
+                }
     }
 
     /**
@@ -85,7 +85,7 @@ class TelegramBotService
                 $defaultCommand = $this->commands['default'] ?? null;
                 if ($defaultCommand && $defaultCommand->canProcess($message)) {
                     $defaultCommand->process($message);
-                    Log::info('Telegram default command processed', [
+                    Log::channel('telegram')->info('Telegram default command processed', [
                         'user_id' => $message->userId,
                         'message_type' => $message->messageType->value,
                     ]);
@@ -105,12 +105,12 @@ class TelegramBotService
 
             $command->process($message);
 
-            Log::info('Telegram command processed', [
+            Log::channel('telegram')->info('Telegram command processed', [
                 'command' => $message->command,
                 'user_id' => $message->userId,
             ]);
         } catch (\Exception $e) {
-            Log::error('Failed to process Telegram command', [
+            Log::channel('telegram')->error('Failed to process Telegram command', [
                 'command' => $message->command,
                 'user_id' => $message->userId,
                 'error' => $e->getMessage(),
