@@ -3,8 +3,7 @@
 namespace App\Services\Telegram;
 
 use App\DTOs\TelegramMessageDto;
-use App\Services\Telegram\Commands\AboutCommand;
-use App\Services\Telegram\Commands\StartCommand;
+
 use App\Contracts\TelegramBotCommandInterface;
 use Illuminate\Support\Facades\Log;
 
@@ -15,19 +14,52 @@ class TelegramBotService
      */
     private array $commands = [];
 
+    /**
+     * @param TelegramService $telegram Сервис для работы с API Telegram
+     * @param string $botType Тип бота из конфига (например, 'bot' или 'admin_bot')
+     */
     public function __construct(
         private readonly TelegramService $telegram,
-        ?array $commands = null
+        private readonly string $botType
     ) {
-        // Регистрируем базовые команды
-        $this->registerCommand(new StartCommand($telegram));
-        $this->registerCommand(new AboutCommand($telegram));
+        $this->registerCommands();
+    }
 
-        // Регистрируем дополнительные команды
-        if ($commands) {
-            foreach ($commands as $command) {
-                $this->registerCommand($command);
+    /**
+     * Зарегистрировать команды из конфига для текущего бота
+     */
+    private function registerCommands(): void
+    {
+        $commands = config("telegram.{$this->botType}.commands", []);
+
+        foreach ($commands as $name => $commandClass) {
+            if (!class_exists($commandClass)) {
+                Log::warning("Telegram command class not found: {$commandClass}");
+                continue;
             }
+
+            try {
+                /** @var TelegramBotCommandInterface $command */
+                $command = app()->make($commandClass, ['telegram' => $this->telegram]);
+                
+                if ($command->getName() !== $name) {
+                    Log::warning(
+                        "Telegram command name mismatch. " .
+                        "Config: {$name}, Command: {$command->getName()}, " .
+                        "Class: {$commandClass}"
+                    );
+                }
+
+                $this->registerCommand($command);
+            } catch (\Throwable $e) {
+                Log::error("Failed to create telegram command: {$commandClass}", [
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        if (empty($this->commands)) {
+            Log::warning("No telegram commands registered for bot type: {$this->botType}");
         }
     }
 

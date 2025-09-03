@@ -18,15 +18,5 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'telegram' => [
-        'bot' => [
-            'name' => env('TELEGRAM_BOT_NAME'),
-            'token' => env('TELEGRAM_BOT_TOKEN'),
-        ],
-        'admin_bot' => [
-            'name' => env('TELEGRAM_ADMIN_BOT_NAME'),
-            'token' => env('TELEGRAM_ADMIN_BOT_TOKEN'),
-            'chat_id' => env('TELEGRAM_ADMIN_CHAT_ID'), // ID чата для админских уведомлений
-        ]
-    ],
+
 ];

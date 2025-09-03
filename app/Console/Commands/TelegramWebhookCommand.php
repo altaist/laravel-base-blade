@@ -16,7 +16,7 @@ class TelegramWebhookCommand extends Command
 
     public function handle(): int
     {
-        $token = config('services.telegram.bot.token');
+        $token = config('telegram.bot.token');
         
         if (empty($token)) {
             $this->error('Ошибка: Не указан токен бота в конфигурации');

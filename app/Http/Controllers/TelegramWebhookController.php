@@ -58,7 +58,7 @@ class TelegramWebhookController extends Controller
     public function processUpdatesManually(): JsonResponse
     {
         try {
-            $token = config('services.telegram.bot.token');
+            $token = config('telegram.bot.token');
             $response = \Illuminate\Support\Facades\Http::get(
                 "https://api.telegram.org/bot{$token}/getUpdates"
             );

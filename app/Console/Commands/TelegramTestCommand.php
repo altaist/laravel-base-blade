@@ -17,11 +17,11 @@ class TelegramTestCommand extends Command
     {
         $this->info('Проверка конфигурации...');
         
-        $mainBotToken = config('services.telegram.bot.token');
-        $mainBotName = config('services.telegram.bot.name');
-        $adminBotToken = config('services.telegram.admin_bot.token');
-        $adminBotName = config('services.telegram.admin_bot.name');
-        $adminChatId = config('services.telegram.admin_bot.chat_id');
+        $mainBotToken = config('telegram.bot.token');
+        $mainBotName = config('telegram.bot.name');
+        $adminBotToken = config('telegram.admin_bot.token');
+        $adminBotName = config('telegram.admin_bot.name');
+        $adminChatId = config('telegram.admin_bot.chat_id');
         $testChatId = $this->option('chat-id');
 
         $this->table(

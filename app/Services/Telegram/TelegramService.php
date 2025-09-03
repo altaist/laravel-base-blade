@@ -27,15 +27,15 @@ class TelegramService
     public function __construct()
     {
         // Основной бот
-        $token = config('services.telegram.bot.token');
+        $token = config('telegram.bot.token');
         $this->baseUrl = "https://api.telegram.org/bot{$token}";
         $this->http = Http::baseUrl($this->baseUrl)->throw();
 
         // Админский бот
-        $adminToken = config('services.telegram.admin_bot.token');
+        $adminToken = config('telegram.admin_bot.token');
         $this->adminBaseUrl = "https://api.telegram.org/bot{$adminToken}";
         $this->adminHttp = Http::baseUrl($this->adminBaseUrl)->throw();
-        $this->adminChatId = config('services.telegram.admin_bot.chat_id');
+        $this->adminChatId = config('telegram.admin_bot.chat_id');
     }
 
     /**
@@ -208,7 +208,7 @@ class TelegramService
 
     public function sendMessageToBot(string $text, ?string $parseMode = self::FORMAT_NONE): bool
     {
-        $botName = config('services.telegram.bot.name');
+        $botName = config('telegram.bot.name');
         return $this->sendMessageToUser($botName, $text, $parseMode);
     }
 
