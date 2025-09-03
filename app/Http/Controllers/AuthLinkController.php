@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\GenerateAuthLinkRequest;
+use App\Http\Requests\Auth\GenerateRegistrationLinkRequest;
 use App\Services\AuthLinkService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 use App\Models\AuthLink;
 use App\Models\User;
 
@@ -21,98 +22,47 @@ class AuthLinkController extends Controller
     /**
      * Генерировать ссылку авторизации
      */
-    public function generate(Request $request)
+    public function generate(GenerateAuthLinkRequest $request)
     {
-        try {
-            $request->validate([
-                'expires_in_minutes' => 'nullable|integer|min:1|max:1440',
-            ]);
-
-            $user = Auth::user();
-            
-            if (!$user) {
-                return response()->json(['error' => 'Необходима авторизация'], 401);
-            }
-
-            $options = [];
-            if ($request->has('expires_in_minutes')) {
-                $options['expires_in_minutes'] = $request->expires_in_minutes;
-            }
-
-            $authLink = $this->authLinkService->generateAuthLink($user, $options);
-
-            $loginUrl = route('auth-link.authenticate', $authLink->token);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Ссылка авторизации создана',
-                'data' => [
-                    'token' => $authLink->token,
-                    'expires_at' => $authLink->expires_at,
-                    'login_url' => $loginUrl,
-                ]
-            ]);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'error' => 'Ошибка валидации',
-                'details' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            Log::error('Ошибка при генерации ссылки авторизации: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Произошла техническая ошибка'
-            ], 500);
+        $user = $this->getAuthenticatedUser();
+        if (!$user) {
+            return $this->unauthorizedResponse();
         }
+
+        $options = $this->prepareOptions($request, ['expires_in_minutes', 'author_id']);
+        $options['ip_address'] = $request->ip();
+        $options['user_agent'] = $request->userAgent();
+        $options['author_id'] = $options['author_id'] ?? $user->id;
+
+        $authLink = $this->authLinkService->generateAuthLink($user, $options);
+
+        return $this->successResponse([
+            'token' => $authLink->token,
+            'expires_at' => $authLink->expires_at,
+            'login_url' => route('auth-link.authenticate', $authLink->token),
+            'author_id' => $authLink->author_id,
+        ], 'Ссылка авторизации создана');
     }
 
     /**
      * Генерировать ссылку для автоматической регистрации
      */
-    public function generateRegistrationLink(Request $request)
+    public function generateRegistrationLink(GenerateRegistrationLinkRequest $request)
     {
-        try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'nullable|string|email|max:255|unique:users',
-                'role' => 'nullable|string|in:admin,user',
-                'telegram_id' => 'nullable|string|unique:users',
-                'telegram_username' => 'nullable|string|max:255',
-                'expires_in_minutes' => 'nullable|integer|min:1|max:1440',
-            ]);
+        $userData = $request->only(['name', 'email', 'role', 'telegram_id', 'telegram_username']);
+        $options = $this->prepareOptions($request, ['expires_in_minutes', 'author_id']);
+        $options['ip_address'] = $request->ip();
+        $options['user_agent'] = $request->userAgent();
+        $options['author_id'] = $options['author_id'] ?? Auth::id();
+        
+        $authLink = $this->authLinkService->generateRegistrationLink($userData, $options);
 
-            $userData = $request->only(['name', 'email', 'role', 'telegram_id', 'telegram_username']);
-            
-            $options = [];
-            if ($request->has('expires_in_minutes')) {
-                $options['expires_in_minutes'] = $request->expires_in_minutes;
-            }
-
-            $authLink = $this->authLinkService->generateRegistrationLink($userData, $options);
-
-            $registrationUrl = route('auth-link.authenticate', $authLink->token);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Ссылка для регистрации создана',
-                'data' => [
-                    'token' => $authLink->token,
-                    'expires_at' => $authLink->expires_at,
-                    'registration_url' => $registrationUrl,
-                ]
-            ]);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'error' => 'Ошибка валидации',
-                'details' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            Log::error('Ошибка при генерации ссылки регистрации: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Произошла техническая ошибка'
-            ], 500);
-        }
+        return $this->successResponse([
+            'token' => $authLink->token,
+            'expires_at' => $authLink->expires_at,
+            'registration_url' => route('auth-link.authenticate', $authLink->token),
+            'author_id' => $authLink->author_id,
+        ], 'Ссылка для регистрации создана');
     }
 
     /**
@@ -127,24 +77,12 @@ class AuthLinkController extends Controller
                 return redirect()->route('login')->with('error', 'Ссылка авторизации недействительна или истекла');
             }
 
-            $user = null;
-
-            if ($authLink->isForRegistration()) {
-                // Автоматическая регистрация
-                $user = $this->createUserFromAuthLink($authLink);
-            } else {
-                // Обычная авторизация
-                $user = $authLink->user;
-            }
-
+            $user = $this->getOrCreateUser($authLink);
             if (!$user) {
                 return redirect()->route('login')->with('error', 'Ошибка при создании пользователя');
             }
 
-            // Авторизуем пользователя
             Auth::login($user);
-
-            // Удаляем ссылку
             $this->authLinkService->deleteAfterUse($token);
 
             $message = $authLink->isForRegistration() 
@@ -164,29 +102,16 @@ class AuthLinkController extends Controller
      */
     public function revoke(Request $request)
     {
-        try {
-            $user = Auth::user();
-            
-            if (!$user) {
-                return response()->json(['error' => 'Необходима авторизация'], 401);
-            }
-
-            $count = $this->authLinkService->deleteActiveLinks($user);
-
-            return response()->json([
-                'success' => true,
-                'message' => "Удалено {$count} активных ссылок",
-                'data' => [
-                    'deleted_count' => $count
-                ]
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Ошибка при удалении ссылок авторизации: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Произошла техническая ошибка'
-            ], 500);
+        $user = $this->getAuthenticatedUser();
+        if (!$user) {
+            return $this->unauthorizedResponse();
         }
+
+        $count = $this->authLinkService->deleteActiveLinks($user);
+
+        return $this->successResponse([
+            'deleted_count' => $count
+        ], "Удалено {$count} активных ссылок");
     }
 
     /**
@@ -194,26 +119,48 @@ class AuthLinkController extends Controller
      */
     public function stats(Request $request)
     {
-        try {
-            $user = Auth::user();
-            
-            if (!$user) {
-                return response()->json(['error' => 'Необходима авторизация'], 401);
-            }
-
-            $stats = $this->authLinkService->getLinksStats($user);
-
-            return response()->json([
-                'success' => true,
-                'data' => $stats
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Ошибка при получении статистики ссылок: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Произошла техническая ошибка'
-            ], 500);
+        $user = $this->getAuthenticatedUser();
+        if (!$user) {
+            return $this->unauthorizedResponse();
         }
+
+        $stats = $this->authLinkService->getLinksStats($user);
+        return $this->successResponse($stats);
+    }
+
+    // ===== HELPER МЕТОДЫ =====
+
+    /**
+     * Получить авторизованного пользователя
+     */
+    private function getAuthenticatedUser(): ?User
+    {
+        return Auth::user();
+    }
+
+    /**
+     * Подготовить опции для сервиса
+     */
+    private function prepareOptions(Request $request, array $allowedFields): array
+    {
+        $options = [];
+        foreach ($allowedFields as $field) {
+            if ($request->has($field)) {
+                $options[$field] = $request->input($field);
+            }
+        }
+        return $options;
+    }
+
+    /**
+     * Получить или создать пользователя
+     */
+    private function getOrCreateUser(AuthLink $authLink): ?User
+    {
+        if ($authLink->isForRegistration()) {
+            return $this->createUserFromAuthLink($authLink);
+        }
+        return $authLink->user;
     }
 
     /**
@@ -230,19 +177,32 @@ class AuthLinkController extends Controller
                 'telegram_username' => $authLink->telegram_username,
             ];
 
-            // Убираем пустые значения
-            $userData = array_filter($userData, function($value) {
-                return $value !== null && $value !== '';
-            });
-
-            // Используем UserService для создания пользователя с автогенерацией недостающих данных
-            $user = $this->userService->createUserWithAutoGeneratedData($userData);
-
-            return $user;
+            $userData = array_filter($userData, fn($value) => $value !== null && $value !== '');
+            return $this->userService->createUserWithAutoGeneratedData($userData);
 
         } catch (\Exception $e) {
             Log::error('Ошибка при создании пользователя из ссылки: ' . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * Успешный ответ
+     */
+    private function successResponse($data, string $message = 'Успешно'): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data' => $data
+        ]);
+    }
+
+    /**
+     * Ответ об ошибке авторизации
+     */
+    private function unauthorizedResponse(): \Illuminate\Http\JsonResponse
+    {
+        return response()->json(['error' => 'Необходима авторизация'], 401);
     }
 }

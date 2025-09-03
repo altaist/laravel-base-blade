@@ -23,21 +23,17 @@ class AuthLinkService
      */
     public function generateAuthLink(User $user, array $options = []): AuthLink
     {
-        $defaultOptions = [
-            'expires_in_minutes' => 15,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-        ];
-
+        $defaultOptions = $this->getDefaultOptions(15);
         $options = array_merge($defaultOptions, $options);
 
         // Удаляем все предыдущие активные ссылки пользователя
         $this->deleteActiveLinks($user);
 
         return $user->authLinks()->create([
-            'expires_at' => Carbon::now()->addMinutes($options['expires_in_minutes']),
+            'expires_at' => $this->calculateExpiryTime($options['expires_in_minutes']),
             'ip_address' => $options['ip_address'],
             'user_agent' => $options['user_agent'],
+            'author_id' => $options['author_id'],
         ]);
     }
 
@@ -50,24 +46,16 @@ class AuthLinkService
      */
     public function generateRegistrationLink(array $userData, array $options = []): AuthLink
     {
-        $defaultOptions = [
-            'expires_in_minutes' => 60, // Регистрационные ссылки живут дольше
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-        ];
-
+        $defaultOptions = $this->getDefaultOptions(60); // Регистрационные ссылки живут дольше
         $options = array_merge($defaultOptions, $options);
 
         return AuthLink::create([
             'user_id' => null, // Нет привязки к пользователю
-            'expires_at' => Carbon::now()->addMinutes($options['expires_in_minutes']),
+            'expires_at' => $this->calculateExpiryTime($options['expires_in_minutes']),
             'ip_address' => $options['ip_address'],
             'user_agent' => $options['user_agent'],
-            'name' => $userData['name'] ?? null,
-            'email' => $userData['email'] ?? null,
-            'role' => $userData['role'] ?? 'user',
-            'telegram_id' => $userData['telegram_id'] ?? null,
-            'telegram_username' => $userData['telegram_username'] ?? null,
+            'author_id' => $options['author_id'],
+            ...$this->prepareUserData($userData),
         ]);
     }
 
@@ -80,12 +68,7 @@ class AuthLinkService
     public function validateAuthLink(string $token): ?AuthLink
     {
         $authLink = AuthLink::where('token', $token)->first();
-
-        if (!$authLink || !$authLink->isActive()) {
-            return null;
-        }
-
-        return $authLink;
+        return $authLink && $authLink->isActive() ? $authLink : null;
     }
 
     /**
@@ -97,12 +80,7 @@ class AuthLinkService
     public function deleteAfterUse(string $token): bool
     {
         $authLink = AuthLink::where('token', $token)->first();
-
-        if (!$authLink) {
-            return false;
-        }
-
-        return $authLink->delete();
+        return $authLink ? $authLink->delete() : false;
     }
 
     /**
@@ -113,9 +91,7 @@ class AuthLinkService
      */
     public function deleteActiveLinks(User $user): int
     {
-        return $user->authLinks()
-            ->active()
-            ->delete();
+        return $user->authLinks()->active()->delete();
     }
 
     /**
@@ -151,5 +127,42 @@ class AuthLinkService
             'active' => $user->authLinks()->active()->count(),
             'total' => $user->authLinks()->withTrashed()->count(),
         ];
+    }
+
+    // ===== HELPER МЕТОДЫ =====
+
+    /**
+     * Получить опции по умолчанию
+     */
+    private function getDefaultOptions(int $expiresInMinutes): array
+    {
+        return [
+            'expires_in_minutes' => $expiresInMinutes,
+            'ip_address' => null,
+            'user_agent' => null,
+            'author_id' => null,
+        ];
+    }
+
+    /**
+     * Подготовить данные пользователя для создания ссылки
+     */
+    private function prepareUserData(array $userData): array
+    {
+        return [
+            'name' => $userData['name'] ?? null,
+            'email' => $userData['email'] ?? null,
+            'role' => $userData['role'] ?? 'user',
+            'telegram_id' => $userData['telegram_id'] ?? null,
+            'telegram_username' => $userData['telegram_username'] ?? null,
+        ];
+    }
+
+    /**
+     * Рассчитать время истечения ссылки
+     */
+    private function calculateExpiryTime(int $minutes): Carbon
+    {
+        return Carbon::now()->addMinutes($minutes);
     }
 }
