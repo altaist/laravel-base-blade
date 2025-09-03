@@ -25,6 +25,7 @@ return [
         'commands' => [
             'start' => \App\Services\Telegram\Commands\StartCommand::class,
             'auth' => \App\Services\Telegram\Commands\AuthLinkCommand::class,
+            'profile' => \App\Services\Telegram\Commands\ProfileCommand::class,
             'about' => \App\Services\Telegram\Commands\AboutCommand::class,
             'default' => \App\Services\Telegram\Commands\DefaultCommand::class,
         ],
