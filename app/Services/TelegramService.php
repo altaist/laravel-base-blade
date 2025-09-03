@@ -15,6 +15,9 @@ class TelegramService
 {
     private PendingRequest $http;
     private string $baseUrl;
+    private PendingRequest $adminHttp;
+    private string $adminBaseUrl;
+    private ?string $adminChatId;
 
     // Поддерживаемые форматы текста
     public const FORMAT_HTML = 'HTML';
@@ -23,13 +26,20 @@ class TelegramService
 
     public function __construct()
     {
+        // Основной бот
         $token = config('services.telegram.bot.token');
         $this->baseUrl = "https://api.telegram.org/bot{$token}";
         $this->http = Http::baseUrl($this->baseUrl)->throw();
+
+        // Админский бот
+        $adminToken = config('services.telegram.admin_bot.token');
+        $this->adminBaseUrl = "https://api.telegram.org/bot{$adminToken}";
+        $this->adminHttp = Http::baseUrl($this->adminBaseUrl)->throw();
+        $this->adminChatId = config('services.telegram.admin_bot.chat_id');
     }
 
     /**
-     * Отправить простое текстовое сообщение пользователю
+     * Отправить простое текстовое сообщение пользователю через основного бота
      */
     public function sendMessageToUser(
         string|int $userId,
@@ -68,7 +78,46 @@ class TelegramService
     }
 
     /**
-     * Отправить сообщение с inline клавиатурой
+     * Отправить сообщение через админского бота
+     */
+    public function sendAdminMessage(
+        string $text,
+        ?string $parseMode = self::FORMAT_NONE,
+        ?string $chatId = null
+    ): bool {
+        try {
+            $params = [
+                'chat_id' => $chatId ?? $this->adminChatId,
+                'text' => $this->prepareText($text, $parseMode),
+            ];
+
+            if ($parseMode) {
+                $params['parse_mode'] = $parseMode;
+            }
+
+            $response = $this->adminHttp->post('/sendMessage', $params);
+
+            Log::info('Admin Telegram message sent', [
+                'chat_id' => $params['chat_id'],
+                'text' => $text,
+                'parse_mode' => $parseMode,
+            ]);
+
+            return true;
+        } catch (RequestException $e) {
+            Log::error('Failed to send admin Telegram message', [
+                'chat_id' => $chatId ?? $this->adminChatId,
+                'text' => $text,
+                'parse_mode' => $parseMode,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Отправить сообщение с inline клавиатурой через основного бота
      */
     public function sendMessageWithInlineKeyboard(
         string|int $userId,
@@ -111,7 +160,7 @@ class TelegramService
     }
 
     /**
-     * Отправить сообщение с обычной клавиатурой
+     * Отправить сообщение с обычной клавиатурой через основного бота
      */
     public function sendMessageWithKeyboard(
         string|int $userId,
@@ -199,6 +248,14 @@ class TelegramService
                 'raw_message' => $rawMessage,
                 'error' => $e->getMessage(),
             ]);
+
+            // Отправляем уведомление об ошибке админу
+            $this->sendAdminMessage(
+                "❌ Ошибка обработки входящего сообщения:\n" .
+                "Ошибка: {$e->getMessage()}\n" .
+                "Сообщение: " . json_encode($rawMessage, JSON_UNESCAPED_UNICODE),
+                self::FORMAT_HTML
+            );
         }
     }
 

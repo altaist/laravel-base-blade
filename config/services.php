@@ -22,6 +22,11 @@ return [
         'bot' => [
             'name' => env('TELEGRAM_BOT_NAME'),
             'token' => env('TELEGRAM_BOT_TOKEN'),
+        ],
+        'admin_bot' => [
+            'name' => env('TELEGRAM_ADMIN_BOT_NAME'),
+            'token' => env('TELEGRAM_ADMIN_BOT_TOKEN'),
+            'chat_id' => env('TELEGRAM_ADMIN_CHAT_ID'), // ID чата для админских уведомлений
         ]
     ],
 ];
