@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -60,5 +61,13 @@ class User extends Authenticatable
     public function person(): HasOne
     {
         return $this->hasOne(Person::class);
+    }
+
+    /**
+     * Связь с ссылками авторизации
+     */
+    public function authLinks(): HasMany
+    {
+        return $this->hasMany(AuthLink::class);
     }
 }
