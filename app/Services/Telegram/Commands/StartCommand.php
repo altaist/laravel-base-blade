@@ -49,55 +49,24 @@ class StartCommand extends BaseTelegramCommand
      */
     private function handleAccountBinding(TelegramMessageDto $message): void
     {
-        try {
-            // Получаем start_param из arguments команды
-            $startParam = $message->arguments[0] ?? null;
-            if (empty($startParam)) {
-                $this->reply($message, "❌ Неверный параметр для привязки.", TelegramService::FORMAT_HTML);
-                return;
-            }
+        // Получаем start_param из arguments команды
+        $startParam = $message->arguments[0] ?? null;
+        if (empty($startParam)) {
+            $this->reply($message, "❌ Неверный параметр для привязки.", TelegramService::FORMAT_HTML);
+            return;
+        }
 
-            // Ищем активную ссылку по токену
-            $authLink = AuthLink::where('token', $startParam)
-                ->where('user_id', '!=', null) // Только для существующих пользователей
-                ->active()
-                ->first();
+        // Делегируем привязку в сервис
+        $result = $this->authLinkService->bindTelegramAccount($startParam, $message->userId);
 
-            if (!$authLink) {
-                $this->reply($message, "❌ Ссылка недействительна или истекла.", TelegramService::FORMAT_HTML);
-                return;
-            }
-
-            // Получаем пользователя
-            $user = $authLink->user;
-            if (!$user) {
-                $this->reply($message, "❌ Пользователь не найден.", TelegramService::FORMAT_HTML);
-                return;
-            }
-
-            // Привязываем Telegram аккаунт к пользователю
-            $user->update([
-                'telegram_id' => $message->userId,
-                'telegram_username' => null, // Username будет добавлен позже если нужно
-            ]);
-
-            // Удаляем использованную ссылку
-            $authLink->delete();
-
+        if ($result['success']) {
             $text = "✅ Аккаунт успешно привязан!\n\n" .
                 "Теперь вы можете получать уведомления и управлять аккаунтом через бота.";
-
-            $this->reply($message, $text, TelegramService::FORMAT_HTML);
-
-        } catch (\Exception $e) {
-            Log::channel('telegram')->error("Ошибка привязки Telegram аккаунта", [
-                'error' => $e->getMessage(),
-                'start_param' => $startParam,
-                'telegram_id' => $message->userId,
-            ]);
-
-            $this->reply($message, "❌ Произошла ошибка при привязке аккаунта. Попробуйте позже.", TelegramService::FORMAT_HTML);
+        } else {
+            $text = "❌ " . $result['message'];
         }
+
+        $this->reply($message, $text, TelegramService::FORMAT_HTML);
     }
 
     /**

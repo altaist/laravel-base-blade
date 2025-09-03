@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AuthLinkService
@@ -171,6 +172,87 @@ class AuthLinkService
         }
         
         return "https://t.me/{$botName}?start={$authLink->token}";
+    }
+
+    /**
+     * Привязать Telegram аккаунт к пользователю
+     *
+     * @param string $startParam Токен из start_param
+     * @param int $telegramId ID пользователя в Telegram
+     * @return array Результат операции
+     */
+    public function bindTelegramAccount(string $startParam, int $telegramId): array
+    {
+        try {
+            // Ищем активную ссылку по токену
+            $authLink = AuthLink::where('token', $startParam)
+                ->where('user_id', '!=', null) // Только для существующих пользователей
+                ->active()
+                ->first();
+
+            if (!$authLink) {
+                return [
+                    'success' => false,
+                    'message' => 'Ссылка недействительна или истекла'
+                ];
+            }
+
+            // Получаем пользователя
+            $user = $authLink->user;
+            if (!$user) {
+                return [
+                    'success' => false,
+                    'message' => 'Пользователь не найден'
+                ];
+            }
+
+            // Проверяем, не привязан ли уже этот telegram_id к другому пользователю
+            $existingUser = User::where('telegram_id', $telegramId)->first();
+            if ($existingUser && $existingUser->id !== $user->id) {
+                // Логируем попытку дублирования с email существующего пользователя
+                Log::channel('telegram')->warning("Попытка дублирования telegram_id", [
+                    'attempted_user_id' => $user->id,
+                    'attempted_user_email' => $user->email,
+                    'existing_user_id' => $existingUser->id,
+                    'existing_user_email' => $existingUser->email,
+                    'telegram_id' => $telegramId,
+                    'start_param' => $startParam,
+                    'message' => 'Этот Telegram аккаунт уже привязан к другому пользователю'
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => 'Этот Telegram аккаунт уже привязан к другому пользователю'
+                ];
+            }
+
+            // Привязываем Telegram аккаунт к пользователю
+            $user->update([
+                'telegram_id' => $telegramId,
+                'telegram_username' => null,
+            ]);
+
+            // Удаляем использованную ссылку
+            $authLink->delete();
+
+            return [
+                'success' => true,
+                'message' => 'Аккаунт успешно привязан',
+                'user' => $user
+            ];
+
+        } catch (\Exception $e) {
+            Log::channel('telegram')->error("Ошибка привязки Telegram аккаунта", [
+                'error' => $e->getMessage(),
+                'start_param' => $startParam,
+                'telegram_id' => $telegramId,
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Произошла ошибка при привязке аккаунта'
+            ];
+        }
     }
 
     // ===== HELPER МЕТОДЫ =====
