@@ -10,19 +10,6 @@
                     <p>Привет, {{ auth()->user()->name }}!</p>
                     <p>Email: {{ auth()->user()->email }}</p>
                     
-                    @if (session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            {{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
 
                     @if(!auth()->user()->telegram_id && $telegramLink)
                         <div class="mt-3">
@@ -35,11 +22,11 @@
                         </div>
                     @endif
                     
-                    <!-- Тестовая ссылка для авторизации -->
+                    <!-- Пригласить друга -->
                     <div class="mt-4 pt-3 border-top">
-                        <h5 class="text-muted mb-3">Тестирование</h5>
+                        <h5 class="text-muted mb-3">Пригласить друга</h5>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6" style="display: none;">
                                 <div class="card border-info">
                                     <div class="card-body">
                                         <h6 class="card-title text-info">Ссылка для авторизации</h6>
