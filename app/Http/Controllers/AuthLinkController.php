@@ -100,7 +100,7 @@ class AuthLinkController extends Controller
             }
 
             Auth::login($user);
-            $this->authLinkService->deleteAfterUse($token);
+            // $this->authLinkService->deleteAfterUse($token);
 
             $message = $authLink->isForRegistration() 
                 ? 'Регистрация и вход выполнены успешно! Добро пожаловать!' 
