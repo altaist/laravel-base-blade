@@ -51,9 +51,11 @@ class UserService
                     $user->update($userData);
                 }
 
-                // Создаем связанную персону
+                // Создаем связанную персону только если её нет
                 $personData = $personData ?? [];
-                $user->person()->create($personData);
+                if (!$user->person()->exists()) {
+                    $user->person()->create($personData);
+                }
 
                 Log::info('Пользователь создан с автогенерированными данными', [
                     'user_id' => $user->id,

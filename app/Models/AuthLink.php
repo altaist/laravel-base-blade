@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class AuthLink extends Model
 {
@@ -51,7 +52,7 @@ class AuthLink extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('expires_at', '>', now());
+        return $query->where('expires_at', '>', now('UTC'));
     }
 
     /**
@@ -59,7 +60,7 @@ class AuthLink extends Model
      */
     public function scopeExpired($query)
     {
-        return $query->where('expires_at', '<=', now());
+        return $query->where('expires_at', '<=', now('UTC'));
     }
 
     /**
@@ -75,7 +76,27 @@ class AuthLink extends Model
      */
     public function isActive(): bool
     {
-        return $this->expires_at->isFuture();
+        if (!$this->expires_at) {
+            Log::channel('telegram')->warning('AuthLink isActive: expires_at is null', [
+                'link_id' => $this->id,
+                'token' => $this->token
+            ]);
+            return false;
+        }
+        
+        $now = now('UTC');
+        $isActive = $this->expires_at->gt($now);
+        
+        Log::channel('telegram')->info('AuthLink isActive check', [
+            'link_id' => $this->id,
+            'token' => $this->token,
+            'expires_at' => $this->expires_at->toISOString(),
+            'now_utc' => $now->toISOString(),
+            'is_active' => $isActive,
+            'diff_minutes' => $this->expires_at->diffInMinutes($now, false)
+        ]);
+        
+        return $isActive;
     }
 
     /**
@@ -83,7 +104,27 @@ class AuthLink extends Model
      */
     public function isExpired(): bool
     {
-        return $this->expires_at->isPast();
+        if (!$this->expires_at) {
+            Log::channel('telegram')->warning('AuthLink isExpired: expires_at is null', [
+                'link_id' => $this->id,
+                'token' => $this->token
+            ]);
+            return true;
+        }
+        
+        $now = now('UTC');
+        $isExpired = $this->expires_at->lte($now);
+        
+        Log::channel('telegram')->info('AuthLink isExpired check', [
+            'link_id' => $this->id,
+            'token' => $this->token,
+            'expires_at' => $this->expires_at->toISOString(),
+            'now_utc' => $now->toISOString(),
+            'is_expired' => $isExpired,
+            'diff_minutes' => $this->expires_at->diffInMinutes($now, false)
+        ]);
+        
+        return $isExpired;
     }
 
     /**
@@ -91,20 +132,7 @@ class AuthLink extends Model
      */
     public function isForRegistration(): bool
     {
-        return $this->user_id === null && !empty($this->name);
+        return $this->user_id === null;
     }
 
-    /**
-     * Boot метод для автоматической генерации токена
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($authLink) {
-            if (empty($authLink->token)) {
-                $authLink->token = Str::random(64);
-            }
-        });
-    }
 }

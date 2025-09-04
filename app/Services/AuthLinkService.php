@@ -289,6 +289,6 @@ class AuthLinkService
      */
     private function calculateExpiryTime(int $minutes): Carbon
     {
-        return Carbon::now()->addMinutes($minutes);
+        return Carbon::now('UTC')->addMinutes($minutes);
     }
 }
