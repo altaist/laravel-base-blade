@@ -15,8 +15,8 @@ class ProcessTelegramMessage
 
     public function handle(TelegramMessageReceived $event): void
     {
-        // Создаем сервис для обработки команд бота
-        $botService = new TelegramBotService($this->telegram, $event->message->botId);
+        // Получаем синглтон сервиса для обработки команд бота
+        $botService = app("telegram.{$event->message->botId}");
         $botService->process($event->message);
     }
 }

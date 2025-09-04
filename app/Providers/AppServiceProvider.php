@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Telegram\TelegramBotService;
+use App\Services\Telegram\TelegramService;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +14,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Регистрируем TelegramBotService как синглтон для основного бота
+        $this->app->singleton('telegram.bot', function ($app) {
+            $telegramService = $app->make(TelegramService::class);
+            return new TelegramBotService($telegramService, 'bot');
+        });
+
+        // Регистрируем TelegramBotService как синглтон для админского бота
+        $this->app->singleton('telegram.admin_bot', function ($app) {
+            $telegramService = $app->make(TelegramService::class);
+            return new TelegramBotService($telegramService, 'admin_bot');
+        });
     }
 
     /**

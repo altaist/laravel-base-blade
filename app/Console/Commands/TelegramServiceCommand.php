@@ -115,10 +115,9 @@ class TelegramServiceCommand extends Command
         $processed = 0;
         $botType = $this->getBotTypeFromUrl($baseUrl);
         $telegram = app(TelegramService::class);
-        $botService = app(TelegramBotService::class, [
-            'telegram' => $telegram,
-            'botType' => $botType
-        ]);
+        
+        // Получаем синглтон сервиса для обработки команд бота
+        $botService = app("telegram.{$botType}");
 
         foreach ($updates as $update) {
             try {

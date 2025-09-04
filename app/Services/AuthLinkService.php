@@ -95,6 +95,7 @@ class AuthLinkService
      */
     public function deleteActiveLinks(User $user): int
     {
+        logs()->info('Удаление активных ссылок пользователя', ['user_id' => $user->id]);
         return $user->authLinks()->active()->delete();
     }
 
