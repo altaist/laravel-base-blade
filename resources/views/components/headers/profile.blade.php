@@ -1,6 +1,13 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/">Kvadro</a>
+    @if(isset($showBackButton) && $showBackButton)
+      <a class="navbar-brand d-flex align-items-center" href="{{ $backUrl ?? route('profile') }}">
+        <i class="fas fa-arrow-left me-2"></i>
+        {{ $backText ?? 'Назад' }}
+      </a>
+    @else
+      <a class="navbar-brand" href="/">Kvadro</a>
+    @endif
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
