@@ -5,12 +5,16 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PersonEditController;
 use App\Http\Controllers\AuthLinkController;
+use App\Http\Controllers\FeedbackController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\TelegramAuthController;
 
 Route::get('/', function () { 
     return view('home'); 
 })->name('home');
+
+// Feedback form
+Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
