@@ -3,21 +3,67 @@
 ])
 
 @section('content')
+<style>
+/* Адаптивные размеры кнопок */
+.btn-sm.btn-md {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+@media (min-width: 768px) {
+    .btn-sm.btn-md {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+/* Адаптивные заголовки */
+.h3.h1-md {
+    font-size: 1.75rem;
+}
+@media (min-width: 768px) {
+    .h3.h1-md {
+        font-size: 2.5rem;
+    }
+}
+
+.h6.h5-md {
+    font-size: 1rem;
+}
+@media (min-width: 768px) {
+    .h6.h5-md {
+        font-size: 1.25rem;
+    }
+}
+
+/* Мобильная таблица */
+@media (max-width: 767px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    .table th, .table td {
+        padding: 0.5rem 0.25rem;
+    }
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+}
+</style>
+
 <div class="container-fluid mt-4">
     <!-- Заголовок -->
-    <div class="row mb-4">
+    <div class="row mb-3 mb-md-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="display-6 fw-bold text-dark mb-2">
-                        <i class="fas fa-users me-3 text-primary"></i>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                <div class="mb-3 mb-md-0">
+                    <h1 class="h3 h1-md fw-bold text-dark mb-2">
+                        <i class="fas fa-users me-2 me-md-3 text-primary d-none d-md-inline"></i>
                         Управление пользователями
                     </h1>
-                    <p class="text-muted mb-0">Просмотр и редактирование пользователей системы</p>
+                    <p class="text-muted mb-0 small d-none d-md-block">Просмотр и редактирование пользователей системы</p>
                 </div>
                 <div>
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Назад к панели
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm btn-md">
+                        <i class="fas fa-arrow-left me-1 me-md-2"></i>Назад
                     </a>
                 </div>
             </div>
@@ -43,13 +89,13 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search me-2"></i>Найти
+                            <div class="d-flex flex-column flex-md-row gap-2">
+                                <button type="submit" class="btn btn-primary btn-sm btn-md">
+                                    <i class="fas fa-search me-1 me-md-2"></i>Найти
                                 </button>
                                 @if($search)
-                                    <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-times me-2"></i>Очистить
+                                    <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm btn-md">
+                                        <i class="fas fa-times me-1 me-md-2"></i>Очистить
                                     </a>
                                 @endif
                             </div>
@@ -65,9 +111,9 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-light">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="fas fa-list me-2"></i>
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                        <h5 class="h6 h5-md mb-2 mb-md-0">
+                            <i class="fas fa-list me-2 d-none d-md-inline"></i>
                             Список пользователей
                         </h5>
                         <span class="badge bg-primary fs-6">

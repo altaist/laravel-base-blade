@@ -3,21 +3,63 @@
 ])
 
 @section('content')
+<style>
+/* Адаптивные размеры кнопок */
+.btn-sm.btn-md {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+@media (min-width: 768px) {
+    .btn-sm.btn-md {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+/* Адаптивные заголовки */
+.h3.h1-md {
+    font-size: 1.75rem;
+}
+@media (min-width: 768px) {
+    .h3.h1-md {
+        font-size: 2.5rem;
+    }
+}
+
+.h5.h4-md {
+    font-size: 1.25rem;
+}
+@media (min-width: 768px) {
+    .h5.h4-md {
+        font-size: 1.5rem;
+    }
+}
+
+.h6.h5-md {
+    font-size: 1rem;
+}
+@media (min-width: 768px) {
+    .h6.h5-md {
+        font-size: 1.25rem;
+    }
+}
+</style>
+
 <div class="container-fluid mt-4">
     <!-- Заголовок -->
-    <div class="row mb-4">
+    <div class="row mb-3 mb-md-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="display-6 fw-bold text-dark mb-2">
-                        <i class="fas fa-user-edit me-3 text-primary"></i>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                <div class="mb-3 mb-md-0">
+                    <h1 class="h3 h1-md fw-bold text-dark mb-2">
+                        <i class="fas fa-user-edit me-2 me-md-3 text-primary d-none d-md-inline"></i>
                         Редактирование пользователя
                     </h1>
-                    <p class="text-muted mb-0">Изменение данных пользователя и персоны</p>
+                    <p class="text-muted mb-0 small d-none d-md-block">Изменение данных пользователя и персоны</p>
                 </div>
                 <div>
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm btn-md">
+                        <i class="fas fa-arrow-left me-1 me-md-2"></i>Назад
                     </a>
                 </div>
             </div>
@@ -29,8 +71,8 @@
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-primary text-white">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                        <h4 class="mb-2 mb-md-0">
-                            <i class="fas fa-user me-2"></i>
+                        <h4 class="h5 h4-md mb-2 mb-md-0">
+                            <i class="fas fa-user me-2 d-none d-md-inline"></i>
                             {{ $user->name }}
                         </h4>
                         <div class="text-light">
@@ -52,8 +94,8 @@
                         <!-- Основная информация пользователя -->
                         <div class="card mb-4">
                             <div class="card-header bg-light">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-user-cog me-2"></i>
+                                <h5 class="h6 h5-md mb-0">
+                                    <i class="fas fa-user-cog me-2 d-none d-md-inline"></i>
                                     Основная информация
                                 </h5>
                             </div>
@@ -137,8 +179,8 @@
                         <!-- Информация о персоне -->
                         <div class="card mb-4">
                             <div class="card-header bg-light">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-id-card me-2"></i>
+                                <h5 class="h6 h5-md mb-0">
+                                    <i class="fas fa-id-card me-2 d-none d-md-inline"></i>
                                     Личная информация
                                 </h5>
                             </div>
@@ -148,27 +190,27 @@
                         </div>
 
                         <!-- Кнопки действий -->
-                        <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+                        <div class="d-flex flex-column gap-3">
                             <div class="d-flex flex-column flex-md-row gap-2">
-                                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-lg">
-                                    <i class="fas fa-arrow-left me-2"></i>Назад к списку
-                                </a>
-                            </div>
-                            
-                            <div class="d-flex flex-column flex-md-row gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-save me-2"></i>Сохранить изменения
+                                <button type="submit" class="btn btn-primary btn-sm btn-md">
+                                    <i class="fas fa-save me-1 me-md-2"></i>Сохранить
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary btn-lg" onclick="resetForm()">
-                                    <i class="fas fa-undo me-2"></i>Сбросить
+                                <button type="button" class="btn btn-outline-secondary btn-sm btn-md" onclick="resetForm()">
+                                    <i class="fas fa-undo me-1 me-md-2"></i>Сбросить
                                 </button>
                                 @if(!$user->isAdmin() || $user->id !== Auth::id())
                                     <button type="button" 
-                                            class="btn btn-outline-danger btn-lg"
+                                            class="btn btn-outline-danger btn-sm btn-md"
                                             onclick="confirmDelete({{ $user->id }}, '{{ $user->name }}')">
-                                        <i class="fas fa-trash me-2"></i>Удалить пользователя
+                                        <i class="fas fa-trash me-1 me-md-2"></i>Удалить
                                     </button>
                                 @endif
+                            </div>
+                            
+                            <div class="d-flex justify-content-center">
+                                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-arrow-left me-1"></i>Назад к списку
+                                </a>
                             </div>
                         </div>
                     </form>

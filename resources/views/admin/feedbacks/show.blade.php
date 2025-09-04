@@ -3,21 +3,63 @@
 ])
 
 @section('content')
+<style>
+/* Адаптивные размеры кнопок */
+.btn-sm.btn-md {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+@media (min-width: 768px) {
+    .btn-sm.btn-md {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+/* Адаптивные заголовки */
+.h3.h1-md {
+    font-size: 1.75rem;
+}
+@media (min-width: 768px) {
+    .h3.h1-md {
+        font-size: 2.5rem;
+    }
+}
+
+.h5.h4-md {
+    font-size: 1.25rem;
+}
+@media (min-width: 768px) {
+    .h5.h4-md {
+        font-size: 1.5rem;
+    }
+}
+
+.h6.h5-md {
+    font-size: 1rem;
+}
+@media (min-width: 768px) {
+    .h6.h5-md {
+        font-size: 1.25rem;
+    }
+}
+</style>
+
 <div class="container-fluid mt-4">
     <!-- Заголовок -->
-    <div class="row mb-4">
+    <div class="row mb-3 mb-md-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="display-6 fw-bold text-dark mb-2">
-                        <i class="fas fa-comment-dots me-3 text-success"></i>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                <div class="mb-3 mb-md-0">
+                    <h1 class="h3 h1-md fw-bold text-dark mb-2">
+                        <i class="fas fa-comment-dots me-2 me-md-3 text-success d-none d-md-inline"></i>
                         Сообщение #{{ $feedback->id }}
                     </h1>
-                    <p class="text-muted mb-0">Детали сообщения от пользователя</p>
+                    <p class="text-muted mb-0 small d-none d-md-block">Детали сообщения от пользователя</p>
                 </div>
                 <div>
-                    <a href="{{ route('admin.feedbacks.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                    <a href="{{ route('admin.feedbacks.index') }}" class="btn btn-outline-secondary btn-sm btn-md">
+                        <i class="fas fa-arrow-left me-1 me-md-2"></i>Назад
                     </a>
                 </div>
             </div>
@@ -30,8 +72,8 @@
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-success text-white">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                        <h4 class="mb-2 mb-md-0">
-                            <i class="fas fa-user me-2"></i>
+                        <h4 class="h5 h4-md mb-2 mb-md-0">
+                            <i class="fas fa-user me-2 d-none d-md-inline"></i>
                             {{ $feedback->json_data['name'] ?? 'Аноним' }}
                         </h4>
                         <div class="text-light">
@@ -49,8 +91,8 @@
                     <!-- Информация об отправителе -->
                     <div class="card mb-4">
                         <div class="card-header bg-light">
-                            <h5 class="mb-0">
-                                <i class="fas fa-user-circle me-2"></i>
+                            <h5 class="h6 h5-md mb-0">
+                                <i class="fas fa-user-circle me-2 d-none d-md-inline"></i>
                                 Информация об отправителе
                             </h5>
                         </div>
@@ -93,8 +135,8 @@
                     <!-- Сообщение -->
                     <div class="card mb-4">
                         <div class="card-header bg-light">
-                            <h5 class="mb-0">
-                                <i class="fas fa-comment me-2"></i>
+                            <h5 class="h6 h5-md mb-0">
+                                <i class="fas fa-comment me-2 d-none d-md-inline"></i>
                                 Сообщение
                             </h5>
                         </div>
@@ -110,8 +152,8 @@
                     <!-- Дополнительная информация -->
                     <div class="card">
                         <div class="card-header bg-light">
-                            <h5 class="mb-0">
-                                <i class="fas fa-info-circle me-2"></i>
+                            <h5 class="h6 h5-md mb-0">
+                                <i class="fas fa-info-circle me-2 d-none d-md-inline"></i>
                                 Дополнительная информация
                             </h5>
                         </div>
@@ -138,20 +180,20 @@
                     </div>
 
                     <!-- Кнопки действий -->
-                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mt-4">
-                        <div class="d-flex flex-column flex-md-row gap-2">
-                            <a href="{{ route('admin.feedbacks.index') }}" class="btn btn-outline-secondary btn-lg">
-                                <i class="fas fa-arrow-left me-2"></i>Назад к списку
-                            </a>
-                        </div>
-                        
+                    <div class="d-flex flex-column gap-3 mt-4">
                         <div class="d-flex flex-column flex-md-row gap-2">
                             @if(isset($feedback->json_data['contact']) && $feedback->json_data['contact'])
                                 <a href="mailto:{{ $feedback->json_data['contact'] }}" 
-                                   class="btn btn-success btn-lg">
-                                    <i class="fas fa-reply me-2"></i>Ответить
+                                   class="btn btn-success btn-sm btn-md">
+                                    <i class="fas fa-reply me-1 me-md-2"></i>Ответить
                                 </a>
                             @endif
+                        </div>
+                        
+                        <div class="d-flex justify-content-center">
+                            <a href="{{ route('admin.feedbacks.index') }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>Назад к списку
+                            </a>
                         </div>
                     </div>
                 </div>
