@@ -8,11 +8,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    @include('components.headers.' . ($header ?? 'default'), [
-        'showBackButton' => $showBackButton ?? false,
-        'backUrl' => $backUrl ?? null,
-        'backText' => $backText ?? 'Назад'
-    ])
+    <div class="sticky-top">
+        @include('components.headers.' . ($header ?? 'default'), [
+            'showBackButton' => $showBackButton ?? false,
+            'backUrl' => $backUrl ?? null,
+            'backText' => $backText ?? 'Назад'
+        ])
+    </div>
 
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
