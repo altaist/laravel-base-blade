@@ -16,6 +16,12 @@ Route::get('/', function () {
 // Feedback form
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
+// Admin feedback routes
+Route::prefix('admin')->middleware(['auth', 'can:admin'])->group(function () {
+    Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
+    Route::get('/feedbacks/{feedback}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
+});
+
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
