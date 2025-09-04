@@ -31,7 +31,7 @@ class ProfileCommand extends BaseTelegramCommand
             $text = "👤 <b>Ваш профиль</b>\n\n" .
                 "<b>Имя:</b> " . ($user->name ?? 'Не указано') . "\n" .
                 "<b>Email:</b> " . ($user->email ?? 'Не указан') . "\n" .
-                "<b>Роль:</b> " . ucfirst($user->role ?? 'user') . "\n" .
+                "<b>Роль:</b> " . ucfirst($user->role?->value ?? 'user') . "\n" .
                 "<b>Дата регистрации:</b> " . $user->created_at->format('d.m.Y H:i') . "\n" .
                 "<b>Telegram ID:</b> " . $user->telegram_id;
         } else {
