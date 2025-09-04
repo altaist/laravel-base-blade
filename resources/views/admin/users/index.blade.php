@@ -92,7 +92,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($users as $user)
-                                        <tr>
+                                        <tr class="clickable-row" data-href="{{ route('admin.users.edit', $user) }}" style="cursor: pointer;">
                                             <td class="fw-bold">#{{ $user->id }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -110,7 +110,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="mailto:{{ $user->email }}" class="text-decoration-none">
+                                                <a href="mailto:{{ $user->email }}" class="text-decoration-none" onclick="event.stopPropagation();">
                                                     {{ $user->email }}
                                                 </a>
                                             </td>
@@ -142,7 +142,7 @@
                                                 </small>
                                             </td>
                                             <td>
-                                                <div class="btn-group" role="group">
+                                                <div class="btn-group" role="group" onclick="event.stopPropagation();">
                                                     <a href="{{ route('admin.users.edit', $user) }}" 
                                                        class="btn btn-sm btn-outline-primary"
                                                        title="Редактировать">
@@ -221,5 +221,28 @@ function confirmDelete(userId, userName) {
         form.submit();
     }
 }
+
+// Обработка кликов по строкам таблицы
+document.addEventListener('DOMContentLoaded', function() {
+    const clickableRows = document.querySelectorAll('.clickable-row');
+    
+    clickableRows.forEach(function(row) {
+        row.addEventListener('click', function() {
+            const href = this.getAttribute('data-href');
+            if (href) {
+                window.location.href = href;
+            }
+        });
+        
+        // Добавляем эффект при наведении
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
 </script>
 @endsection

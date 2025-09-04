@@ -55,7 +55,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($feedbacks as $feedback)
-                                        <tr>
+                                        <tr class="clickable-row" data-href="{{ route('admin.feedbacks.show', $feedback) }}" style="cursor: pointer;">
                                             <td class="fw-bold">#{{ $feedback->id }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -71,7 +71,7 @@
                                             <td>
                                                 @if(isset($feedback->json_data['contact']) && $feedback->json_data['contact'])
                                                     @if(filter_var($feedback->json_data['contact'], FILTER_VALIDATE_EMAIL))
-                                                        <a href="mailto:{{ $feedback->json_data['contact'] }}" class="text-decoration-none">
+                                                        <a href="mailto:{{ $feedback->json_data['contact'] }}" class="text-decoration-none" onclick="event.stopPropagation();">
                                                             {{ $feedback->json_data['contact'] }}
                                                         </a>
                                                     @else
@@ -92,7 +92,7 @@
                                                 </small>
                                             </td>
                                             <td>
-                                                <div class="btn-group" role="group">
+                                                <div class="btn-group" role="group" onclick="event.stopPropagation();">
                                                     <a href="{{ route('admin.feedbacks.show', $feedback) }}" 
                                                        class="btn btn-sm btn-outline-primary"
                                                        title="Просмотр">
@@ -136,4 +136,29 @@
     font-size: 14px;
 }
 </style>
+
+<script>
+// Обработка кликов по строкам таблицы
+document.addEventListener('DOMContentLoaded', function() {
+    const clickableRows = document.querySelectorAll('.clickable-row');
+    
+    clickableRows.forEach(function(row) {
+        row.addEventListener('click', function() {
+            const href = this.getAttribute('data-href');
+            if (href) {
+                window.location.href = href;
+            }
+        });
+        
+        // Добавляем эффект при наведении
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
+</script>
 @endsection

@@ -78,9 +78,7 @@ class AdminController extends Controller
     public function userUpdate(Request $request, User $user): RedirectResponse
     {
         $validated = $request->validate([
-            // Данные пользователя
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            // Данные пользователя (только роль)
             'role' => 'required|in:admin,manager,user',
             
             // Данные персоны
@@ -88,33 +86,68 @@ class AdminController extends Controller
             'last_name' => 'nullable|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|array',
+            'address' => 'nullable',
+            'address.street' => 'nullable|string|max:255',
+            'address.house' => 'nullable|string|max:50',
+            'address.apartment' => 'nullable|string|max:50',
+            'address.city' => 'nullable|string|max:255',
+            'address.postal_code' => 'nullable|string|max:20',
             'region' => 'nullable|string|max:255',
             'gender' => 'nullable|string|in:male,female',
             'birth_date' => 'nullable|date',
             'age' => 'nullable|integer|min:0|max:150',
-            'additional_info' => 'nullable|array',
+            'additional_info' => 'nullable',
         ]);
 
         try {
             // Разделяем данные пользователя и персоны
             $userData = [
-                'name' => $validated['name'],
-                'email' => $validated['email'],
                 'role' => $validated['role'],
             ];
+
+            // Обрабатываем адрес отдельно
+            $address = null;
+            if (isset($validated['address'])) {
+                if (is_array($validated['address'])) {
+                    $addressData = array_filter($validated['address'], function($value) {
+                        return $value !== null && $value !== '';
+                    });
+                    if (!empty($addressData)) {
+                        $address = $addressData;
+                    }
+                } elseif (is_string($validated['address']) && !empty(trim($validated['address']))) {
+                    // Если адрес пришел как строка (например, JSON)
+                    $decoded = json_decode($validated['address'], true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        $address = $decoded;
+                    }
+                }
+            }
+
+            // Обрабатываем additional_info отдельно
+            $additionalInfo = null;
+            if (isset($validated['additional_info'])) {
+                if (is_array($validated['additional_info'])) {
+                    $additionalInfo = $validated['additional_info'];
+                } elseif (is_string($validated['additional_info']) && !empty(trim($validated['additional_info']))) {
+                    $decoded = json_decode($validated['additional_info'], true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        $additionalInfo = $decoded;
+                    }
+                }
+            }
 
             $personData = array_filter([
                 'first_name' => $validated['first_name'] ?? null,
                 'last_name' => $validated['last_name'] ?? null,
                 'middle_name' => $validated['middle_name'] ?? null,
                 'phone' => $validated['phone'] ?? null,
-                'address' => $validated['address'] ?? null,
+                'address' => $address,
                 'region' => $validated['region'] ?? null,
                 'gender' => $validated['gender'] ?? null,
                 'birth_date' => $validated['birth_date'] ?? null,
                 'age' => $validated['age'] ?? null,
-                'additional_info' => $validated['additional_info'] ?? null,
+                'additional_info' => $additionalInfo,
             ], function ($value) {
                 return $value !== null && $value !== '';
             });

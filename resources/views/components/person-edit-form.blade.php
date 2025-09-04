@@ -267,21 +267,6 @@
         </div>
     </div>
 
-    <!-- Кнопки действий -->
-    <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
-        <a href="{{ route('profile') }}" class="btn btn-secondary order-2 order-md-1">
-            <i class="fas fa-arrow-left me-2"></i>Назад к профилю
-        </a>
-        
-        <div class="d-flex flex-column flex-md-row gap-2 order-1 order-md-2">
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-save me-2"></i>Сохранить изменения
-            </button>
-            <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
-                <i class="fas fa-undo me-2"></i>Сбросить
-            </button>
-        </div>
-    </div>
 </div>
 
 <script>

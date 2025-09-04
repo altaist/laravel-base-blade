@@ -59,44 +59,27 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="name" class="form-label">
-                                                Имя пользователя <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="text" 
-                                                   class="form-control @error('name') is-invalid @enderror" 
-                                                   id="name" 
-                                                   name="name" 
-                                                   value="{{ old('name', $user->name) }}"
-                                                   placeholder="Введите имя пользователя"
-                                                   required>
-                                            @error('name')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                                            <label class="form-label">Имя пользователя</label>
+                                            <div class="form-control-plaintext fw-bold">
+                                                {{ $user->name }}
+                                            </div>
+                                            <small class="text-muted">Автоматически формируется из данных персоны</small>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label for="email" class="form-label">
-                                                Email <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="email" 
-                                                   class="form-control @error('email') is-invalid @enderror" 
-                                                   id="email" 
-                                                   name="email" 
-                                                   value="{{ old('email', $user->email) }}"
-                                                   placeholder="Введите email"
-                                                   required>
-                                            @error('email')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                                            <label class="form-label">Email</label>
+                                            <div class="form-control-plaintext">
+                                                <a href="mailto:{{ $user->email }}" class="text-decoration-none">
+                                                    {{ $user->email }}
+                                                </a>
+                                            </div>
+                                            <small class="text-muted">Неизменяемое поле</small>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="role" class="form-label">
                                                 Роль <span class="text-danger">*</span>
@@ -121,6 +104,9 @@
                                             @enderror
                                         </div>
                                     </div>
+                                </div>
+                                
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">Telegram</label>
@@ -133,6 +119,14 @@
                                                 @else
                                                     <span class="badge bg-secondary">Не привязан</span>
                                                 @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Дата регистрации</label>
+                                            <div class="form-control-plaintext">
+                                                {{ $user->created_at->format('d.m.Y H:i') }}
                                             </div>
                                         </div>
                                     </div>
@@ -156,18 +150,18 @@
                         <!-- Кнопки действий -->
                         <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
                             <div class="d-flex flex-column flex-md-row gap-2">
+                                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i>Назад к списку
+                                </a>
+                            </div>
+                            
+                            <div class="d-flex flex-column flex-md-row gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="fas fa-save me-2"></i>Сохранить изменения
                                 </button>
                                 <button type="button" class="btn btn-outline-secondary btn-lg" onclick="resetForm()">
                                     <i class="fas fa-undo me-2"></i>Сбросить
                                 </button>
-                            </div>
-                            
-                            <div class="d-flex flex-column flex-md-row gap-2">
-                                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-lg">
-                                    <i class="fas fa-arrow-left me-2"></i>Отмена
-                                </a>
                                 @if(!$user->isAdmin() || $user->id !== Auth::id())
                                     <button type="button" 
                                             class="btn btn-outline-danger btn-lg"
