@@ -37,7 +37,7 @@ class PersonEditController extends Controller
         $validated = $request->validated();
 
         try {
-            $this->personService->updatePerson($user, $validated);
+            $this->personService->updatePerson($user, $validated, true);
 
             return redirect()
                 ->route('person.edit')

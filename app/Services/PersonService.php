@@ -25,11 +25,12 @@ class PersonService
      *
      * @param User $user
      * @param array $data
+     * @param bool $updateUserName Обновлять ли имя пользователя из first_name
      * @return Person
      */
-    public function updatePerson(User $user, array $data): Person
+    public function updatePerson(User $user, array $data, bool $updateUserName = true): Person
     {
-        return DB::transaction(function () use ($user, $data) {
+        return DB::transaction(function () use ($user, $data, $updateUserName) {
             $person = $this->getOrCreatePerson($user);
             
             // Обрабатываем JSON поля
@@ -41,8 +42,8 @@ class PersonService
                 $data['additional_info'] = $data['additional_info'];
             }
 
-            // Если обновляется first_name, также обновляем name в таблице users
-            if (isset($data['first_name']) && !empty($data['first_name'])) {
+            // Если обновляется first_name, также обновляем name в таблице users (только если разрешено)
+            if ($updateUserName && isset($data['first_name']) && !empty($data['first_name'])) {
                 $user->update(['name' => $data['first_name']]);
                 
                 Log::info('Имя пользователя обновлено из профиля', [

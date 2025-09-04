@@ -40,6 +40,8 @@ class PersonEditRequest extends FormRequest
             'address.city' => 'nullable|string|max:255',
             'address.postal_code' => 'nullable|string|max:20',
             
+            // Дополнительная информация
+            'additional_info' => 'nullable',
         ];
     }
 
@@ -70,10 +72,6 @@ class PersonEditRequest extends FormRequest
             'address.apartment.max' => 'Номер квартиры не должен превышать 50 символов.',
             'address.city.max' => 'Название города не должно превышать 255 символов.',
             'address.postal_code.max' => 'Почтовый индекс не должен превышать 20 символов.',
-            'additional_info.array' => 'Дополнительная информация должна быть массивом данных.',
-            
-            // Дополнительная информация
-            'additional_info' => 'nullable|array',
         ];
     }
 
