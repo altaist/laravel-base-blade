@@ -17,6 +17,13 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ route('profile') }}">Личный кабинет</a>
           </li>
+          @can('admin')
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('admin.dashboard') }}">
+                <i class="fas fa-cog me-1"></i>Админка
+              </a>
+            </li>
+          @endcan
           <li class="nav-item">
             <form method="POST" action="{{ route('logout') }}">
               @csrf
