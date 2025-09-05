@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthLinkController;
 use App\Http\Controllers\FeedbackController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\TelegramAuthController;
+use App\Http\Controllers\FileController;
 
 Route::get('/', function () { 
     return view('home'); 
@@ -66,4 +67,18 @@ Route::middleware('auth')->group(function () {
     Route::put('/person/update-additional-info', [PersonEditController::class, 'updateAdditionalInfo'])->name('person.update.additional-info');
     
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    
+    // File routes
+    Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
+    Route::post('/files/upload-multiple', [FileController::class, 'uploadMultiple'])->name('files.upload-multiple');
+    Route::get('/files/{file}/download', [FileController::class, 'download'])->name('files.download');
+    Route::get('/files/{file}/image', [FileController::class, 'showImage'])->name('files.image');
+    Route::get('/img/{file}', [FileController::class, 'showImage'])->name('img.show');
+    Route::delete('/files/{file}', [FileController::class, 'delete'])->name('files.delete');
+    Route::post('/files/{file}/public-url', [FileController::class, 'createPublicUrl'])->name('files.public-url');
 });
+
+// Public file routes
+Route::get('/files/public/{key}/download', [FileController::class, 'publicDownload'])->name('files.public.download');
+Route::get('/files/public/{key}/image', [FileController::class, 'showPublicImage'])->name('files.public.image');
+Route::get('/img/public/{key}', [FileController::class, 'showPublicImage'])->name('img.public');
