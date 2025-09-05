@@ -26,9 +26,7 @@ class UserFilesController extends Controller
     {
         $user = Auth::user();
         
-        $files = File::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $files = $this->fileService->getUserFiles($user->id, 20);
 
         return view('user.files.index', compact('files'));
     }
@@ -119,9 +117,7 @@ class UserFilesController extends Controller
         $fileIds = $request->input('file_ids');
         
         // Получаем файлы пользователя
-        $files = File::where('user_id', $user->id)
-            ->whereIn('id', $fileIds)
-            ->get();
+        $files = $this->fileService->getUserFilesByIds($user->id, $fileIds);
 
         if ($files->isEmpty()) {
             return response()->json([
@@ -225,5 +221,59 @@ class UserFilesController extends Controller
             }
         }
         rmdir($dir);
+    }
+
+    /**
+     * Получить изображения пользователя
+     */
+    public function getImages(Request $request)
+    {
+        $user = Auth::user();
+        $images = $this->fileService->getUserImages($user->id);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'images' => $images->map(fn($file) => $this->formatFileResponse($file))
+            ]);
+        }
+
+        return view('user.files.images', compact('images'));
+    }
+
+    /**
+     * Получить документы пользователя
+     */
+    public function getDocuments(Request $request)
+    {
+        $user = Auth::user();
+        $documents = $this->fileService->getUserDocuments($user->id);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'documents' => $documents->map(fn($file) => $this->formatFileResponse($file))
+            ]);
+        }
+
+        return view('user.files.documents', compact('documents'));
+    }
+
+    /**
+     * Получить статистику файлов пользователя
+     */
+    public function getStats(Request $request)
+    {
+        $user = Auth::user();
+        $stats = $this->fileService->getUserFileStats($user->id);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'stats' => $stats
+            ]);
+        }
+
+        return view('user.files.stats', compact('stats'));
     }
 }

@@ -220,9 +220,46 @@ $attachment = $attachmentService->createAttachmentFromUrl(
 - Файлы проверяются на размер (максимум 10MB)
 - Поддерживается валидация типов файлов
 
+## Дополнительные методы FileService
+
+### Работа с файлами пользователей
+```php
+use App\Services\Files\FileService;
+
+$fileService = app(FileService::class);
+
+// Получить файлы пользователя с пагинацией
+$files = $fileService->getUserFiles($userId, $perPage = 20);
+
+// Получить файлы пользователя по ID
+$files = $fileService->getUserFilesByIds($userId, [1, 2, 3]);
+
+// Получить изображения пользователя
+$images = $fileService->getUserImages($userId);
+
+// Получить документы пользователя
+$documents = $fileService->getUserDocuments($userId);
+
+// Проверить, принадлежит ли файл пользователю
+$isOwned = $fileService->isFileOwnedByUser($file, $userId);
+
+// Получить статистику файлов пользователя
+$stats = $fileService->getUserFileStats($userId);
+// Возвращает: total_files, total_size, images_count, documents_count, public_files, private_files
+```
+
+### Новые маршруты для файлов пользователей
+```http
+GET /files/images          # Получить изображения пользователя
+GET /files/documents       # Получить документы пользователя  
+GET /files/stats           # Получить статистику файлов
+```
+
 ## Особенности
 
 - Attachment может существовать без файла (только URL)
 - При удалении attachment можно выбрать, удалять ли физический файл
 - Система автоматически определяет тип attachment по MIME типу файла
 - Поддержка морф-связей позволяет привязывать attachments к любым моделям
+- Все контроллеры теперь используют методы из FileService для работы с файлами пользователей
+- Централизованная проверка прав доступа через FileService

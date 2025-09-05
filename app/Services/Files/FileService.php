@@ -134,4 +134,71 @@ class FileService
             'error_count' => count($errors),
         ];
     }
+
+    /**
+     * Получить файлы пользователя
+     */
+    public function getUserFiles(int $userId, int $perPage = 20): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return File::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+    }
+
+    /**
+     * Получить файлы пользователя по ID
+     */
+    public function getUserFilesByIds(int $userId, array $fileIds): \Illuminate\Database\Eloquent\Collection
+    {
+        return File::where('user_id', $userId)
+            ->whereIn('id', $fileIds)
+            ->get();
+    }
+
+    /**
+     * Получить изображения пользователя
+     */
+    public function getUserImages(int $userId): \Illuminate\Database\Eloquent\Collection
+    {
+        return File::where('user_id', $userId)
+            ->where('mime_type', 'like', 'image/%')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    /**
+     * Получить документы пользователя
+     */
+    public function getUserDocuments(int $userId): \Illuminate\Database\Eloquent\Collection
+    {
+        return File::where('user_id', $userId)
+            ->where('mime_type', 'not like', 'image/%')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    /**
+     * Проверить, принадлежит ли файл пользователю
+     */
+    public function isFileOwnedByUser(File $file, int $userId): bool
+    {
+        return $file->user_id === $userId;
+    }
+
+    /**
+     * Получить статистику файлов пользователя
+     */
+    public function getUserFileStats(int $userId): array
+    {
+        $files = File::where('user_id', $userId)->get();
+        
+        return [
+            'total_files' => $files->count(),
+            'total_size' => $files->sum('size'),
+            'images_count' => $files->where('mime_type', 'like', 'image/%')->count(),
+            'documents_count' => $files->where('mime_type', 'not like', 'image/%')->count(),
+            'public_files' => $files->where('is_public', true)->count(),
+            'private_files' => $files->where('is_public', false)->count(),
+        ];
+    }
 }

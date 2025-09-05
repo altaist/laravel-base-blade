@@ -77,6 +77,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/files/{file}', [UserFilesController::class, 'delete'])->name('user.files.delete');
     Route::post('/files/{file}/toggle-public', [UserFilesController::class, 'togglePublic'])->name('user.files.toggle-public');
     
+    // User files additional routes
+    Route::get('/files/images', [UserFilesController::class, 'getImages'])->name('user.files.images');
+    Route::get('/files/documents', [UserFilesController::class, 'getDocuments'])->name('user.files.documents');
+    Route::get('/files/stats', [UserFilesController::class, 'getStats'])->name('user.files.stats');
+    
     // API File routes
     Route::post('/api/files/upload', [FileController::class, 'upload'])->name('files.upload');
     Route::post('/api/files/upload-multiple', [FileController::class, 'uploadMultiple'])->name('files.upload-multiple');

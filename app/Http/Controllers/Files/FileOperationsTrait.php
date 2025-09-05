@@ -92,7 +92,7 @@ trait FileOperationsTrait
      */
     protected function downloadFile(File $file, bool $checkOwnership = false): BinaryFileResponse|JsonResponse
     {
-        if ($checkOwnership && $file->user_id !== Auth::id()) {
+        if ($checkOwnership && !$this->fileService->isFileOwnedByUser($file, Auth::id())) {
             return response()->json([
                 'success' => false,
                 'message' => 'Доступ запрещен'
@@ -115,7 +115,7 @@ trait FileOperationsTrait
      */
     protected function deleteFile(File $file, bool $checkOwnership = false): JsonResponse
     {
-        if ($checkOwnership && $file->user_id !== Auth::id()) {
+        if ($checkOwnership && !$this->fileService->isFileOwnedByUser($file, Auth::id())) {
             return response()->json([
                 'success' => false,
                 'message' => 'Доступ запрещен'
@@ -138,7 +138,7 @@ trait FileOperationsTrait
      */
     protected function createPublicUrl(File $file, bool $checkOwnership = false): JsonResponse
     {
-        if ($checkOwnership && $file->user_id !== Auth::id()) {
+        if ($checkOwnership && !$this->fileService->isFileOwnedByUser($file, Auth::id())) {
             return response()->json([
                 'success' => false,
                 'message' => 'Доступ запрещен'
@@ -164,7 +164,7 @@ trait FileOperationsTrait
      */
     protected function toggleFilePublic(File $file, bool $checkOwnership = false): JsonResponse
     {
-        if ($checkOwnership && $file->user_id !== Auth::id()) {
+        if ($checkOwnership && !$this->fileService->isFileOwnedByUser($file, Auth::id())) {
             return response()->json([
                 'success' => false,
                 'message' => 'Доступ запрещен'

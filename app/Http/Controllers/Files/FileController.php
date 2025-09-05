@@ -65,7 +65,7 @@ class FileController extends Controller
     public function showImage(File $file): BinaryFileResponse|JsonResponse
     {
         // Проверяем, что пользователь имеет доступ к файлу
-        if (!Auth::check() || (Auth::id() !== $file->user_id && !$file->is_public)) {
+        if (!Auth::check() || (!$this->fileService->isFileOwnedByUser($file, Auth::id()) && !$file->is_public)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Доступ запрещен'
