@@ -11,19 +11,21 @@ use App\Http\Controllers\Auth\TelegramAuthController;
 use App\Http\Controllers\Files\FileController;
 use App\Http\Controllers\Files\UserFilesController;
 
+// ===== PUBLIC ROUTES =====
 Route::get('/', function () { 
     return view('home'); 
 })->name('home');
 
-// Feedback form
+// ===== FEEDBACK ROUTES =====
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
-// Admin feedback routes
+// ===== ADMIN ROUTES =====
 Route::prefix('admin')->middleware(['auth', 'can:admin'])->group(function () {
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
     Route::get('/feedbacks/{feedback}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
 });
 
+// ===== GUEST AUTH ROUTES =====
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/register', [RegisteredUserController::class, 'store']);
@@ -36,63 +38,81 @@ Route::middleware('guest')->group(function () {
     })->name('password.request');
 });
 
-// Telegram Auth Routes
+// ===== TELEGRAM AUTH ROUTES =====
 Route::get('/auth/telegram/callback', [TelegramAuthController::class, 'callback'])
     ->name('telegram.callback');
 
-// Auth Link Routes - доступны без авторизации
+// ===== AUTH LINK ROUTES =====
 Route::prefix('auth-link')->group(function () {
+    // Public auth link routes
     Route::post('/generate', [AuthLinkController::class, 'generate'])->name('auth-link.generate');
     Route::post('/generate-registration', [AuthLinkController::class, 'generateRegistrationLink'])->name('auth-link.generate-registration');
     Route::get('/{token}', [AuthLinkController::class, 'authenticate'])->name('auth-link.authenticate');
-});
-
-// Auth Link Routes - требуют авторизации
-Route::prefix('auth-link')->middleware('auth')->group(function () {
-    Route::delete('/revoke', [AuthLinkController::class, 'revoke'])->name('auth-link.revoke');
-    Route::get('/stats', [AuthLinkController::class, 'stats'])->name('auth-link.stats');
+    
+    // Protected auth link routes
+    Route::middleware('auth')->group(function () {
+        Route::delete('/revoke', [AuthLinkController::class, 'revoke'])->name('auth-link.revoke');
+        Route::get('/stats', [AuthLinkController::class, 'stats'])->name('auth-link.stats');
+    });
 });
 
 Route::middleware('auth')->group(function () {
-    // Профиль пользователя
+    // ===== USER PROFILE ROUTES =====
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::get('/dashboard', [ProfileController::class, 'show'])->name('dashboard');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/address', [ProfileController::class, 'updateAddress'])->name('profile.update.address');
     Route::put('/profile/additional-info', [ProfileController::class, 'updateAdditionalInfo'])->name('profile.update.additional-info');
     
-    // Редактирование персоны
-    Route::get('/person/edit', [PersonEditController::class, 'edit'])->name('person.edit');
-    Route::put('/person/update', [PersonEditController::class, 'update'])->name('person.update');
-    Route::put('/person/update-address', [PersonEditController::class, 'updateAddress'])->name('person.update.address');
-    Route::put('/person/update-additional-info', [PersonEditController::class, 'updateAdditionalInfo'])->name('person.update.additional-info');
+    // ===== PERSON MANAGEMENT ROUTES =====
+    Route::prefix('person')->group(function () {
+        Route::get('/edit', [PersonEditController::class, 'edit'])->name('person.edit');
+        Route::put('/update', [PersonEditController::class, 'update'])->name('person.update');
+        Route::put('/update-address', [PersonEditController::class, 'updateAddress'])->name('person.update.address');
+        Route::put('/update-additional-info', [PersonEditController::class, 'updateAdditionalInfo'])->name('person.update.additional-info');
+    });
     
+    // ===== AUTH ROUTES =====
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     
-    // User files routes
-    Route::get('/files', [UserFilesController::class, 'index'])->name('user.files.index');
-    Route::post('/files/upload', [UserFilesController::class, 'upload'])->name('user.files.upload');
-    Route::get('/files/{file}/download', [UserFilesController::class, 'download'])->name('user.files.download');
-    Route::post('/files/download-multiple', [UserFilesController::class, 'downloadMultiple'])->name('user.files.download-multiple');
-    Route::delete('/files/{file}', [UserFilesController::class, 'delete'])->name('user.files.delete');
-    Route::post('/files/{file}/toggle-public', [UserFilesController::class, 'togglePublic'])->name('user.files.toggle-public');
+    // ===== FILE ROUTES =====
     
-    // User files additional routes
-    Route::get('/files/images', [UserFilesController::class, 'getImages'])->name('user.files.images');
-    Route::get('/files/documents', [UserFilesController::class, 'getDocuments'])->name('user.files.documents');
-    Route::get('/files/stats', [UserFilesController::class, 'getStats'])->name('user.files.stats');
+    // User Files Management
+    Route::prefix('files')->group(function () {
+        // Main file operations
+        Route::get('/', [UserFilesController::class, 'index'])->name('user.files.index');
+        Route::post('/upload', [UserFilesController::class, 'upload'])->name('user.files.upload');
+        Route::post('/download-multiple', [UserFilesController::class, 'downloadMultiple'])->name('user.files.download-multiple');
+        
+        // File categories
+        Route::get('/images', [UserFilesController::class, 'getImages'])->name('user.files.images');
+        Route::get('/documents', [UserFilesController::class, 'getDocuments'])->name('user.files.documents');
+        Route::get('/stats', [UserFilesController::class, 'getStats'])->name('user.files.stats');
+        
+        // Individual file operations
+        Route::get('/{file}/download', [UserFilesController::class, 'download'])->name('user.files.download');
+        Route::delete('/{file}', [UserFilesController::class, 'delete'])->name('user.files.delete');
+        Route::post('/{file}/toggle-public', [UserFilesController::class, 'togglePublic'])->name('user.files.toggle-public');
+    });
     
-    // API File routes
-    Route::post('/api/files/upload', [FileController::class, 'upload'])->name('files.upload');
-    Route::post('/api/files/upload-multiple', [FileController::class, 'uploadMultiple'])->name('files.upload-multiple');
-    Route::get('/api/files/{file}/download', [FileController::class, 'download'])->name('files.download');
-    Route::get('/api/files/{file}/image', [FileController::class, 'showImage'])->name('files.image');
+    // API File Routes
+    Route::prefix('api/files')->group(function () {
+        Route::post('/upload', [FileController::class, 'upload'])->name('files.upload');
+        Route::post('/upload-multiple', [FileController::class, 'uploadMultiple'])->name('files.upload-multiple');
+        Route::get('/{file}/download', [FileController::class, 'download'])->name('files.download');
+        Route::get('/{file}/image', [FileController::class, 'showImage'])->name('files.image');
+        Route::delete('/{file}', [FileController::class, 'delete'])->name('files.delete');
+        Route::post('/{file}/public-url', [FileController::class, 'createPublicUrl'])->name('files.public-url');
+    });
+    
+    // Image display routes
     Route::get('/img/{file}', [FileController::class, 'showImage'])->name('img.show');
-    Route::delete('/api/files/{file}', [FileController::class, 'delete'])->name('files.delete');
-    Route::post('/api/files/{file}/public-url', [FileController::class, 'createPublicUrl'])->name('files.public-url');
 });
 
-// Public file routes
-Route::get('/files/public/{key}/download', [FileController::class, 'publicDownload'])->name('files.public.download');
-Route::get('/files/public/{key}/image', [FileController::class, 'showPublicImage'])->name('files.public.image');
+// ===== PUBLIC FILE ROUTES =====
+Route::prefix('files/public')->group(function () {
+    Route::get('/{key}/download', [FileController::class, 'publicDownload'])->name('files.public.download');
+    Route::get('/{key}/image', [FileController::class, 'showPublicImage'])->name('files.public.image');
+});
+
 Route::get('/img/public/{key}', [FileController::class, 'showPublicImage'])->name('img.public');
