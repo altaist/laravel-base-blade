@@ -73,6 +73,33 @@ class FileService
         });
     }
 
+    /**
+     * Безопасное удаление файла с проверкой attachments
+     */
+    public function safeDelete(File $file): array
+    {
+        return DB::transaction(function () use ($file) {
+            // Проверяем, используется ли файл в attachments
+            $attachmentsCount = \App\Models\Attachment::where('file_id', $file->id)->count();
+            
+            if ($attachmentsCount > 0) {
+                return [
+                    'success' => false,
+                    'message' => "Файл используется в {$attachmentsCount} attachment(s). Сначала удалите attachments.",
+                    'attachments_count' => $attachmentsCount
+                ];
+            }
+            
+            // Если файл не используется, удаляем его
+            $deleted = $this->delete($file);
+            
+            return [
+                'success' => $deleted,
+                'message' => $deleted ? 'Файл успешно удален' : 'Ошибка при удалении файла'
+            ];
+        });
+    }
+
     public function createPublicUrl(File $file): string
     {
         if ($file->is_public && $file->key) {

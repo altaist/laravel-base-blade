@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class User extends Authenticatable
 {
@@ -69,5 +70,37 @@ class User extends Authenticatable
     public function authLinks(): HasMany
     {
         return $this->hasMany(AuthLink::class);
+    }
+
+    /**
+     * Связь с attachments (морф)
+     */
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'related');
+    }
+
+    /**
+     * Связь с файлами
+     */
+    public function files(): HasMany
+    {
+        return $this->hasMany(File::class);
+    }
+
+    /**
+     * Получить изображения пользователя
+     */
+    public function getImagesAttribute()
+    {
+        return $this->attachments()->where('type', 'image')->get();
+    }
+
+    /**
+     * Получить документы пользователя
+     */
+    public function getDocumentsAttribute()
+    {
+        return $this->attachments()->where('type', 'document')->get();
     }
 }
