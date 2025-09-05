@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/files', [UserFilesController::class, 'index'])->name('user.files.index');
     Route::post('/files/upload', [UserFilesController::class, 'upload'])->name('user.files.upload');
     Route::get('/files/{file}/download', [UserFilesController::class, 'download'])->name('user.files.download');
+    Route::post('/files/download-multiple', [UserFilesController::class, 'downloadMultiple'])->name('user.files.download-multiple');
     Route::delete('/files/{file}', [UserFilesController::class, 'delete'])->name('user.files.delete');
     Route::post('/files/{file}/toggle-public', [UserFilesController::class, 'togglePublic'])->name('user.files.toggle-public');
     

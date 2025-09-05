@@ -208,7 +208,7 @@
                                         <i class="fas fa-check-square"></i> Выбрать все
                                     </button>
                                     <button id="downloadSelectedBtn" class="btn btn-lg btn-primary w-100 mt-2" disabled>
-                                        <i class="fas fa-download"></i> Скачать выбранные (<span id="selectedCount">0</span>)
+                                        <i class="fas fa-download"></i> <span id="downloadBtnText">Скачать выбранные</span> (<span id="selectedCount">0</span>)
                                     </button>
                                 </div>
                                 
@@ -219,7 +219,7 @@
                                             <i class="fas fa-check-square"></i> Выбрать все
                                         </button>
                                         <button id="downloadSelectedBtnDesktop" class="btn btn-sm btn-primary" disabled>
-                                            <i class="fas fa-download"></i> Скачать выбранные (<span id="selectedCountDesktop">0</span>)
+                                            <i class="fas fa-download"></i> <span id="downloadBtnTextDesktop">Скачать выбранные</span> (<span id="selectedCountDesktop">0</span>)
                                         </button>
                                     </div>
                                     <div class="text-muted">
@@ -401,11 +401,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = document.getElementById('downloadSelectedBtn');
         const countSpan = document.getElementById('selectedCount');
         const filesCountSpan = document.getElementById('selectedFilesCount');
+        const btnText = document.getElementById('downloadBtnText');
         
         // Десктопные кнопки
         const btnDesktop = document.getElementById('downloadSelectedBtnDesktop');
         const countSpanDesktop = document.getElementById('selectedCountDesktop');
         const filesCountSpanDesktop = document.getElementById('selectedFilesCountDesktop');
+        const btnTextDesktop = document.getElementById('downloadBtnTextDesktop');
         
         if (btn) {
             btn.disabled = selectedFiles.size === 0;
@@ -413,6 +415,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnDesktop) {
             btnDesktop.disabled = selectedFiles.size === 0;
         }
+        
+        // Обновляем текст кнопки в зависимости от количества файлов
+        const downloadText = selectedFiles.size === 1 ? 'Скачать файл' : 
+                           selectedFiles.size > 1 ? 'Скачать архив' : 'Скачать выбранные';
+        
+        if (btnText) btnText.textContent = downloadText;
+        if (btnTextDesktop) btnTextDesktop.textContent = downloadText;
         
         if (countSpan) countSpan.textContent = selectedFiles.size;
         if (countSpanDesktop) countSpanDesktop.textContent = selectedFiles.size;
@@ -424,9 +433,66 @@ document.addEventListener('DOMContentLoaded', function() {
     function downloadSelectedFiles() {
         if (selectedFiles.size === 0) return;
         
-        selectedFiles.forEach(fileId => {
+        // Если выбран только один файл, скачиваем его напрямую
+        if (selectedFiles.size === 1) {
+            const fileId = Array.from(selectedFiles)[0];
             window.open(`/files/${fileId}/download`, '_blank');
+            return;
+        }
+        
+        // Для нескольких файлов создаем ZIP-архив
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        const token = csrfToken ? csrfToken.getAttribute('content') : '';
+        
+        // Показываем уведомление о создании архива
+        const toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-white bg-info border-0 position-fixed top-0 end-0 m-3';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-archive me-2"></i>Создание архива...
+                </div>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        // Создаем форму для отправки данных
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("user.files.download-multiple") }}';
+        form.style.display = 'none';
+        
+        // Добавляем CSRF токен
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = token;
+        form.appendChild(csrfInput);
+        
+        // Добавляем ID файлов
+        selectedFiles.forEach(fileId => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'file_ids[]';
+            input.value = fileId;
+            form.appendChild(input);
         });
+        
+        // Отправляем форму
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+        
+        // Убираем уведомление через 3 секунды
+        setTimeout(() => {
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
+            }
+        }, 3000);
     }
 
     // Download selected files
