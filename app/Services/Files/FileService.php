@@ -101,7 +101,7 @@ class FileService
         }
 
         return [
-            'files' => $uploadedFiles,
+            'files' => collect($uploadedFiles),
             'errors' => $errors,
             'success_count' => count($uploadedFiles),
             'error_count' => count($errors),

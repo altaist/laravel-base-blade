@@ -18,6 +18,9 @@
             <a class="nav-link" href="{{ route('profile') }}">Личный кабинет</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link" href="{{ route('user.files.index') }}">Файлы</a>
+          </li>
+          <li class="nav-item">
             <form method="POST" action="{{ route('logout') }}">
               @csrf
               <button type="submit" class="nav-link btn btn-link">Выход</button>

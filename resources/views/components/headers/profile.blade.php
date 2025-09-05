@@ -16,6 +16,9 @@
         <li class="nav-item">
           <a class="nav-link" href="/">На главную</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('user.files.index') }}">Файлы</a>
+        </li>
       </ul>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">

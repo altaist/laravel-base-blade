@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\File;
 use App\Services\Files\FileService;
+use App\Helpers\FileHelper;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FileController extends Controller
@@ -24,7 +26,7 @@ class FileController extends Controller
         try {
             $file = $this->fileService->upload(
                 $request->file('file'),
-                auth()->id(),
+                Auth::id(),
                 $request->boolean('is_public', false)
             );
 
@@ -115,7 +117,7 @@ class FileController extends Controller
         try {
             $result = $this->fileService->uploadMultiple(
                 $request->file('files'),
-                auth()->id(),
+                Auth::id(),
                 $request->boolean('is_public', false)
             );
 
@@ -144,6 +146,14 @@ class FileController extends Controller
 
     public function showImage(File $file): BinaryFileResponse|JsonResponse
     {
+        // Проверяем, что пользователь имеет доступ к файлу
+        if (!Auth::check() || (Auth::id() !== $file->user_id && !$file->is_public)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Доступ запрещен'
+            ], 403);
+        }
+
         if (!FileHelper::isImage($file->mime_type)) {
             return response()->json([
                 'success' => false,
