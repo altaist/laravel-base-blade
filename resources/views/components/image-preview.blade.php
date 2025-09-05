@@ -5,7 +5,7 @@
          alt="{{ $alt }}" 
          class="img-thumbnail cursor-pointer" 
          style="width: {{ $size }}; height: {{ $size }}; object-fit: cover;"
-         onclick="openImagePreview('{{ $src }}', '{{ $alt }}')"
+         onclick="ImagePreview.show('{{ $src }}', '{{ $alt }}')"
          title="Нажмите для увеличения">
 </div>
 
