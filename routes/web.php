@@ -8,8 +8,8 @@ use App\Http\Controllers\AuthLinkController;
 use App\Http\Controllers\FeedbackController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\TelegramAuthController;
-use App\Http\Controllers\FileController;
-use App\Http\Controllers\UserFilesController;
+use App\Http\Controllers\Files\FileController;
+use App\Http\Controllers\Files\UserFilesController;
 
 Route::get('/', function () { 
     return view('home'); 

@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Files;
 
 use App\Models\File;
 use App\Services\Files\FileService;
+use App\Http\Controllers\Files\FileOperationsTrait;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -12,9 +14,13 @@ use Illuminate\Support\Facades\Process;
 
 class UserFilesController extends Controller
 {
+    use FileOperationsTrait;
+
     public function __construct(
-        private FileService $fileService
-    ) {}
+        FileService $fileService
+    ) {
+        $this->fileService = $fileService;
+    }
 
     public function index(Request $request): View
     {
@@ -29,131 +35,76 @@ class UserFilesController extends Controller
 
     public function upload(Request $request)
     {
-        $request->validate([
-            'files' => 'required|array|max:10',
-            'files.*' => 'file|max:10240', // 10MB per file
-        ]);
+        $result = $this->uploadMultipleFiles($request, true);
+        
+        if ($request->expectsJson()) {
+            return $result;
+        }
 
-        try {
-            $result = $this->fileService->uploadMultiple(
-                $request->file('files'),
-                Auth::id(),
-                $request->boolean('is_public', false)
-            );
-
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => "Загружено файлов: {$result['success_count']}",
-                    'errors' => $result['errors'],
-                    'files' => $result['files']->map(function ($file) {
-                        return [
-                            'id' => $file->id,
-                            'original_name' => $file->original_name,
-                            'size' => $file->size,
-                            'mime_type' => $file->mime_type,
-                            'created_at' => $file->created_at->format('d.m.Y H:i'),
-                        ];
-                    })
-                ]);
-            }
-
+        // Для веб-интерфейса обрабатываем JSON ответ
+        $data = $result->getData(true);
+        
+        if ($data['success']) {
             return redirect()->route('user.files.index')
-                ->with('success', "Загружено файлов: {$result['success_count']}")
-                ->with('errors', $result['errors']);
-
-        } catch (\Exception $e) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage()
-                ], 400);
-            }
-
+                ->with('success', "Загружено файлов: {$data['success_count']}")
+                ->with('errors', $data['errors'] ?? []);
+        } else {
             return redirect()->route('user.files.index')
-                ->with('error', $e->getMessage());
+                ->with('error', $data['message']);
         }
     }
 
     public function download(File $file)
     {
-        if ($file->user_id !== Auth::id()) {
-            abort(403, 'Доступ запрещен');
-        }
-
-        try {
-            $filePath = $this->fileService->download($file);
-            return response()->download($filePath, $file->original_name);
-        } catch (\Exception $e) {
+        $result = $this->downloadFile($file, true);
+        
+        // Если это JSON ответ (ошибка), перенаправляем с сообщением
+        if ($result instanceof \Illuminate\Http\JsonResponse) {
+            $data = $result->getData(true);
             return redirect()->route('user.files.index')
-                ->with('error', 'Файл не найден');
+                ->with('error', $data['message']);
         }
+        
+        return $result;
     }
 
     public function delete(File $file)
     {
-        if ($file->user_id !== Auth::id()) {
-            abort(403, 'Доступ запрещен');
+        $result = $this->deleteFile($file, true);
+        
+        if (request()->expectsJson()) {
+            return $result;
         }
 
-        try {
-            $this->fileService->delete($file);
-            
-            if (request()->expectsJson()) {
-                return response()->json(['success' => true]);
-            }
-
+        // Для веб-интерфейса обрабатываем JSON ответ
+        $data = $result->getData(true);
+        
+        if ($data['success']) {
             return redirect()->route('user.files.index')
                 ->with('success', 'Файл удален');
-        } catch (\Exception $e) {
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage()
-                ], 400);
-            }
-
+        } else {
             return redirect()->route('user.files.index')
-                ->with('error', $e->getMessage());
+                ->with('error', $data['message']);
         }
     }
 
     public function togglePublic(File $file)
     {
-        if ($file->user_id !== Auth::id()) {
-            abort(403, 'Доступ запрещен');
+        $result = $this->toggleFilePublic($file, true);
+        
+        if (request()->expectsJson()) {
+            return $result;
         }
 
-        try {
-            if ($file->is_public) {
-                $file->update(['is_public' => false, 'key' => null]);
-                $message = 'Файл сделан приватным';
-            } else {
-                $this->fileService->createPublicUrl($file);
-                $message = 'Файл сделан публичным';
-            }
-
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => $message,
-                    'is_public' => $file->fresh()->is_public,
-                    'public_url' => $file->fresh()->public_url
-                ]);
-            }
-
+        // Для веб-интерфейса обрабатываем JSON ответ
+        $data = $result->getData(true);
+        
+        if ($data['success']) {
             return redirect()->route('user.files.index')
-                ->with('success', $message);
-        } catch (\Exception $e) {
-            if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage()
-                ], 400);
-            }
-
+                ->with('success', $data['message']);
+        } else {
             return redirect()->route('user.files.index')
-                ->with('error', $e->getMessage());
+                ->with('error', $data['message']);
         }
     }
 
