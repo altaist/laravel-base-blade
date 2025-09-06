@@ -35,59 +35,13 @@
             
             <!-- Правая часть навигации -->
             <ul class="navbar-nav">
-                <!-- Информация о текущем пользователе -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="avatar-sm bg-light text-primary rounded-circle d-flex align-items-center justify-content-center me-2">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                        </div>
-                        <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <h6 class="dropdown-header">
-                                <i class="fas fa-user-shield me-1"></i>
-                                Администратор
-                            </h6>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('dashboard') }}">
-                                <i class="fas fa-user me-2"></i>
-                                Личный кабинет
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('home') }}">
-                                <i class="fas fa-home me-2"></i>
-                                Главная страница
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="fas fa-sign-out-alt me-2"></i>
-                                    Выход
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </li>
+                @include('components.user-menu')
             </ul>
         </div>
     </div>
 </nav>
 
 <style>
-.avatar-sm {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
 .navbar-nav .nav-link.active {
     color: var(--bs-primary) !important;
     font-weight: 600;
