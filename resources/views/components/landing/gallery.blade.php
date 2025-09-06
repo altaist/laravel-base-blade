@@ -117,6 +117,9 @@
     .carousel-control-prev-icon,
     .carousel-control-next-icon {
         background-size: 15px 15px;
+        border-radius: 50% !important;
+        width: 40px !important;
+        height: 40px !important;
     }
     
     .card-img-top {
@@ -125,6 +128,16 @@
     
     .d-block.w-100 {
         height: 300px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-size: 12px 12px;
+        border-radius: 50% !important;
+        width: 35px !important;
+        height: 35px !important;
     }
 }
 </style>

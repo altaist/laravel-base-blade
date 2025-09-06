@@ -1,24 +1,169 @@
 @extends('layouts.app')
 
 @section('content')
-    @include('components.hero')
-    
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-12">
-                <!-- Современный заголовок секции -->
-                <div class="text-center mb-5">
-                    <h2 class="display-6 fw-bold text-dark mb-3">Обратная связь</h2>
-                    <p class="lead text-muted">Мы всегда рады услышать ваше мнение и ответить на вопросы</p>
-                    <div class="mx-auto" style="width: 60px; height: 3px; background: linear-gradient(90deg, #007bff, #6f42c1); border-radius: 2px;"></div>
-                </div>
-                
-                <div class="card shadow-lg border-0 rounded-lg">
-                    <div class="card-body p-4">
-                        <x-feedback-form />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    {{-- Hero секция --}}
+    @include('components.landing.hero', [
+        'title' => 'Добро пожаловать в Kvadro!',
+        'subtitle' => 'Лучшие квадроциклы и аксессуары для ваших приключений. Качество, надежность и страсть к движению.',
+        'buttonText' => 'Смотреть каталог',
+        'buttonUrl' => '#catalog',
+        'backgroundImage' => '/images/hero-bg.jpg'
+    ])
+
+    {{-- Преимущества --}}
+    @include('components.landing.features', [
+        'title' => 'Почему выбирают нас',
+        'subtitle' => 'Мы предлагаем только лучшее для ваших приключений',
+        'features' => [
+            [
+                'icon' => 'fa-shipping-fast',
+                'title' => 'Быстрая доставка',
+                'description' => 'Доставляем квадроциклы по всей России в течение 3-7 дней'
+            ],
+            [
+                'icon' => 'fa-shield-alt',
+                'title' => 'Гарантия качества',
+                'description' => 'Официальная гарантия на все модели от производителя'
+            ],
+            [
+                'icon' => 'fa-headset',
+                'title' => 'Поддержка 24/7',
+                'description' => 'Круглосуточная техническая поддержка и консультации'
+            ]
+        ]
+    ])
+
+    {{-- Галерея --}}
+    @include('components.landing.gallery', [
+        'title' => 'Наши квадроциклы',
+        'images' => [
+            [
+                [
+                    'url' => '/images/quad1.jpg',
+                    'alt' => 'Спортивный квадроцикл',
+                    'title' => 'Спортивная модель',
+                    'description' => 'Высокая скорость и маневренность'
+                ],
+                [
+                    'url' => '/images/quad2.jpg',
+                    'alt' => 'Утилитарный квадроцикл',
+                    'title' => 'Утилитарная модель',
+                    'description' => 'Надежность для работы и отдыха'
+                ],
+                [
+                    'url' => '/images/quad3.jpg',
+                    'alt' => 'Детский квадроцикл',
+                    'title' => 'Детская модель',
+                    'description' => 'Безопасность для маленьких водителей'
+                ]
+            ]
+        ]
+    ])
+
+    {{-- Тарифы --}}
+    @include('components.landing.pricing', [
+        'title' => 'Наши услуги',
+        'subtitle' => 'Выберите подходящий пакет услуг',
+        'plans' => [
+            [
+                'name' => 'Базовый',
+                'price' => '₽15,000',
+                'period' => 'месяц',
+                'description' => 'Для начинающих райдеров',
+                'features' => [
+                    'Аренда квадроцикла на 1 день',
+                    'Базовая экипировка',
+                    'Инструктаж по безопасности',
+                    'Страховка'
+                ],
+                'button' => [
+                    'text' => 'Заказать',
+                    'url' => '#contact'
+                ]
+            ],
+            [
+                'name' => 'Стандарт',
+                'price' => '₽35,000',
+                'period' => 'месяц',
+                'description' => 'Для опытных водителей',
+                'featured' => true,
+                'features' => [
+                    'Аренда квадроцикла на 3 дня',
+                    'Полная экипировка',
+                    'Инструктаж по безопасности',
+                    'Страховка',
+                    'Гид по маршрутам',
+                    'Фотосессия'
+                ],
+                'button' => [
+                    'text' => 'Заказать',
+                    'url' => '#contact'
+                ]
+            ],
+            [
+                'name' => 'Премиум',
+                'price' => '₽65,000',
+                'period' => 'месяц',
+                'description' => 'Для профессионалов',
+                'features' => [
+                    'Аренда квадроцикла на неделю',
+                    'Премиум экипировка',
+                    'Персональный инструктор',
+                    'Расширенная страховка',
+                    'Эксклюзивные маршруты',
+                    'Профессиональная фотосессия',
+                    'Трансфер до места'
+                ],
+                'button' => [
+                    'text' => 'Заказать',
+                    'url' => '#contact'
+                ]
+            ]
+        ]
+    ])
+
+    {{-- Отзывы --}}
+    @include('components.landing.testimonials', [
+        'title' => 'Отзывы наших клиентов',
+        'subtitle' => 'Что говорят о нас наши клиенты',
+        'testimonials' => [
+            [
+                'name' => 'Алексей Петров',
+                'position' => 'Владелец квадроцикла',
+                'text' => 'Отличный сервис! Квадроцикл приехал в идеальном состоянии, доставка была быстрой. Рекомендую всем!',
+                'rating' => 5,
+                'avatar' => '/images/avatar1.jpg'
+            ],
+            [
+                'name' => 'Мария Сидорова',
+                'position' => 'Любитель активного отдыха',
+                'text' => 'Первый раз каталась на квадроцикле. Инструктор был очень терпеливым и профессиональным. Осталась в восторге!',
+                'rating' => 5,
+                'avatar' => '/images/avatar2.jpg'
+            ],
+            [
+                'name' => 'Дмитрий Козлов',
+                'position' => 'Предприниматель',
+                'text' => 'Заказывал квадроцикл для корпоратива. Все прошло на высшем уровне. Сотрудники остались довольны!',
+                'rating' => 5,
+                'avatar' => '/images/avatar3.jpg'
+            ]
+        ]
+    ])
+
+    {{-- Call-to-Action --}}
+    @include('components.landing.cta', [
+        'title' => 'Готовы к приключениям?',
+        'subtitle' => 'Закажите квадроцикл прямо сейчас и получите скидку 10% на первый заказ!',
+        'buttonText' => 'Заказать со скидкой',
+        'buttonUrl' => '#contact',
+        'backgroundClass' => 'bg-primary',
+        'textClass' => 'text-white'
+    ])
+
+    {{-- Форма обратной связи --}}
+    @include('components.landing.feedback-form', [
+        'title' => 'Свяжитесь с нами',
+        'subtitle' => 'Оставьте заявку и мы свяжемся с вами в течение 15 минут'
+    ])
 @endsection

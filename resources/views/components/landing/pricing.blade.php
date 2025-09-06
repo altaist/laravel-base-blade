@@ -23,14 +23,14 @@
             <div class="row g-4 justify-content-center">
                 @foreach($plans as $index => $plan)
                     <div class="col-lg-{{ 12 / $columns }} col-md-6">
-                        <div class="card h-100 border-0 shadow-sm pricing-card {{ isset($plan['featured']) && $plan['featured'] ? 'featured' : '' }}">
+                        <div class="card h-100 border-0 shadow-sm pricing-card {{ isset($plan['featured']) && $plan['featured'] ? 'featured' : '' }} d-flex flex-column">
                             @if(isset($plan['featured']) && $plan['featured'])
                                 <div class="badge bg-primary position-absolute top-0 start-50 translate-middle px-3 py-2">
                                     Популярный
                                 </div>
                             @endif
                             
-                            <div class="card-body text-center p-4">
+                            <div class="card-body text-center p-4 d-flex flex-column flex-grow-1">
                                 @if(isset($plan['name']))
                                     <h5 class="card-title fw-bold mb-3">{{ $plan['name'] }}</h5>
                                 @endif
@@ -49,7 +49,7 @@
                                 @endif
 
                                 @if(isset($plan['features']) && is_array($plan['features']))
-                                    <ul class="list-unstyled mb-4">
+                                    <ul class="list-unstyled mb-4 flex-grow-1">
                                         @foreach($plan['features'] as $feature)
                                             <li class="mb-2">
                                                 <i class="fas fa-check text-success me-2"></i>
@@ -60,7 +60,7 @@
                                 @endif
 
                                 @if(isset($plan['button']))
-                                    <div class="d-grid">
+                                    <div class="d-grid mt-auto">
                                         <a href="{{ $plan['button']['url'] ?? '#' }}" 
                                            class="btn {{ isset($plan['featured']) && $plan['featured'] ? 'btn-primary' : 'btn-outline-primary' }} btn-lg">
                                             {{ $plan['button']['text'] ?? 'Выбрать план' }}
@@ -76,65 +76,65 @@
             {{-- Пример данных по умолчанию --}}
             <div class="row g-4 justify-content-center">
                 <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center p-4">
+                    <div class="card h-100 border-0 shadow-sm d-flex flex-column">
+                        <div class="card-body text-center p-4 d-flex flex-column flex-grow-1">
                             <h5 class="card-title fw-bold mb-3">Базовый</h5>
                             <div class="pricing-price mb-4">
                                 <span class="display-4 fw-bold text-primary">₽1,000</span>
                                 <span class="text-muted">/ месяц</span>
                             </div>
                             <p class="text-muted mb-4">Идеально для начинающих</p>
-                            <ul class="list-unstyled mb-4">
+                            <ul class="list-unstyled mb-4 flex-grow-1">
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>До 5 проектов</li>
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Базовая поддержка</li>
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>5GB хранилища</li>
                             </ul>
-                            <div class="d-grid">
+                            <div class="d-grid mt-auto">
                                 <a href="#" class="btn btn-outline-primary btn-lg">Выбрать план</a>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 border-0 shadow-sm featured">
+                    <div class="card h-100 border-0 shadow-sm featured d-flex flex-column">
                         <div class="badge bg-primary position-absolute top-0 start-50 translate-middle px-3 py-2">
                             Популярный
                         </div>
-                        <div class="card-body text-center p-4">
+                        <div class="card-body text-center p-4 d-flex flex-column flex-grow-1">
                             <h5 class="card-title fw-bold mb-3">Профессиональный</h5>
                             <div class="pricing-price mb-4">
                                 <span class="display-4 fw-bold text-primary">₽2,500</span>
                                 <span class="text-muted">/ месяц</span>
                             </div>
                             <p class="text-muted mb-4">Для растущего бизнеса</p>
-                            <ul class="list-unstyled mb-4">
+                            <ul class="list-unstyled mb-4 flex-grow-1">
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>До 25 проектов</li>
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Приоритетная поддержка</li>
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>50GB хранилища</li>
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Аналитика</li>
                             </ul>
-                            <div class="d-grid">
+                            <div class="d-grid mt-auto">
                                 <a href="#" class="btn btn-primary btn-lg">Выбрать план</a>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center p-4">
+                    <div class="card h-100 border-0 shadow-sm d-flex flex-column">
+                        <div class="card-body text-center p-4 d-flex flex-column flex-grow-1">
                             <h5 class="card-title fw-bold mb-3">Корпоративный</h5>
                             <div class="pricing-price mb-4">
                                 <span class="display-4 fw-bold text-primary">₽5,000</span>
                                 <span class="text-muted">/ месяц</span>
                             </div>
                             <p class="text-muted mb-4">Для крупных компаний</p>
-                            <ul class="list-unstyled mb-4">
+                            <ul class="list-unstyled mb-4 flex-grow-1">
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Безлимитные проекты</li>
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>24/7 поддержка</li>
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>500GB хранилища</li>
                                 <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Персональный менеджер</li>
                             </ul>
-                            <div class="d-grid">
+                            <div class="d-grid mt-auto">
                                 <a href="#" class="btn btn-outline-primary btn-lg">Выбрать план</a>
                             </div>
                         </div>
