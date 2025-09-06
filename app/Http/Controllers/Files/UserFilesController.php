@@ -28,7 +28,7 @@ class UserFilesController extends Controller
         
         $files = $this->fileService->getUserFiles($user->id, 20);
 
-        return view('user.files.index', compact('files'));
+        return view('pages.user.files.index', compact('files'));
     }
 
     public function upload(Request $request)

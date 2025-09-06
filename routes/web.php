@@ -15,7 +15,7 @@ use App\Http\Controllers\Files\UserFilesController;
 
 // ===== PUBLIC ROUTES =====
 Route::get('/', function () { 
-    return view('home'); 
+    return view('pages.home'); 
 })->name('home');
 
 // ===== FEEDBACK ROUTES =====
