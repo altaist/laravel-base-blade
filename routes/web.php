@@ -7,6 +7,7 @@ use App\Http\Controllers\PersonEditController;
 use App\Http\Controllers\AuthLinkController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Referral\ReferralController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\TelegramAuthController;
 use App\Http\Controllers\Files\FileController;
@@ -19,6 +20,10 @@ Route::get('/', function () {
 
 // ===== FEEDBACK ROUTES =====
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+
+// ===== REFERRAL ROUTES =====
+// Публичные маршруты для реферальных ссылок
+Route::get('/ref/{code}', [ReferralController::class, 'handle'])->name('referral.handle');
 
 // ===== ADMIN ROUTES =====
 // Admin routes
@@ -86,6 +91,17 @@ Route::middleware('auth')->group(function () {
     
     // ===== AUTH ROUTES =====
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    
+    // ===== REFERRAL ROUTES =====
+    Route::prefix('referral')->group(function () {
+        Route::get('/', [ReferralController::class, 'list'])->name('referral.list');
+        Route::post('/', [ReferralController::class, 'create'])->name('referral.create');
+        Route::get('/stats', [ReferralController::class, 'stats'])->name('referral.stats');
+        Route::get('/referred-users', [ReferralController::class, 'referredUsers'])->name('referral.referred-users');
+        Route::put('/{link}', [ReferralController::class, 'update'])->name('referral.update');
+        Route::post('/{link}/activate', [ReferralController::class, 'activate'])->name('referral.activate');
+        Route::post('/{link}/deactivate', [ReferralController::class, 'deactivate'])->name('referral.deactivate');
+    });
     
     // ===== FILE ROUTES =====
     

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Models\User;
 use App\Services\UserService;
+use App\Services\Referral\ReferralService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +18,8 @@ use Illuminate\Validation\ValidationException;
 class RegisteredUserController extends Controller
 {
     public function __construct(
-        private UserService $userService
+        private UserService $userService,
+        private ReferralService $referralService
     ) {}
 
     /**
@@ -40,11 +42,25 @@ class RegisteredUserController extends Controller
                 'password' => Hash::make($request->validated('password')),
             ]);
 
+            // Обработка реферальной регистрации
+            $referralProcessed = $this->referralService->processReferralRegistration($user);
+            
+            if ($referralProcessed) {
+                Log::info('Пользователь зарегистрирован по реферальной ссылке', [
+                    'user_id' => $user->id,
+                    'user_email' => $user->email,
+                ]);
+            }
+
             event(new Registered($user));
 
             Auth::login($user);
 
-            return redirect()->route('profile')->with('success', 'Регистрация успешна! Добро пожаловать!');
+            $message = $referralProcessed 
+                ? 'Регистрация успешна! Добро пожаловать! Вы зарегистрированы по реферальной ссылке.'
+                : 'Регистрация успешна! Добро пожаловать!';
+
+            return redirect()->route('profile')->with('success', $message);
             
         } catch (\Exception $e) {
             Log::error('Ошибка при регистрации: ' . $e->getMessage());

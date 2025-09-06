@@ -89,6 +89,30 @@ class User extends Authenticatable
     }
 
     /**
+     * Связь с реферальными ссылками пользователя
+     */
+    public function referralLinks(): HasMany
+    {
+        return $this->hasMany(\App\Models\Referral\ReferralLink::class);
+    }
+
+    /**
+     * Связь с рефералами, где пользователь является реферером
+     */
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(\App\Models\Referral\Referral::class, 'referrer_id');
+    }
+
+    /**
+     * Связь с рефералом, где пользователь был приглашен
+     */
+    public function referredBy(): HasOne
+    {
+        return $this->hasOne(\App\Models\Referral\Referral::class, 'referred_id');
+    }
+
+    /**
      * Получить изображения пользователя
      */
     public function getImagesAttribute()
