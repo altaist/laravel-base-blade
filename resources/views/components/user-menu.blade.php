@@ -48,30 +48,31 @@
     </ul>
 </li>
 
-<!-- Mobile: Красивый блок меню пользователя -->
+<!-- Mobile: Улучшенный блок меню пользователя -->
 <li class="nav-item d-lg-none">
     <div class="mobile-user-menu">
         <div class="user-info">
-            <div class="avatar-sm bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center me-2">
-                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-            </div>
-            <span class="fw-bold">{{ Auth::user()->name }}</span>
+            <span class="fw-bold text-primary">{{ Auth::user()->name }}</span>
         </div>
         <div class="user-actions">
-            <a class="btn btn-outline-primary btn-sm" href="{{ route('dashboard') }}">
+            <a class="btn btn-primary btn-sm w-100 mb-2" href="{{ route('dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>
                 Личный кабинет
             </a>
-            <a class="btn btn-outline-primary btn-sm" href="{{ route('user.files.index') }}">
-                Файлы
+            <a class="btn btn-primary btn-sm w-100 mb-2" href="{{ route('user.files.index') }}">
+                <i class="fas fa-folder me-2"></i>
+                Мои файлы
             </a>
             @can('admin')
-                <a class="btn btn-outline-warning btn-sm" href="{{ route('admin.dashboard') }}">
+                <a class="btn btn-warning btn-sm w-100 mb-2" href="{{ route('admin.dashboard') }}">
+                    <i class="fas fa-cog me-2"></i>
                     Админка
                 </a>
             @endcan
-            <form method="POST" action="{{ route('logout') }}" class="d-inline">
+            <form method="POST" action="{{ route('logout') }}" class="w-100">
                 @csrf
-                <button type="submit" class="btn btn-outline-danger btn-sm">
+                <button type="submit" class="btn btn-danger btn-sm w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i>
                     Выход
                 </button>
             </form>
@@ -90,30 +91,40 @@
 /* Мобильный блок пользователя */
 .mobile-user-menu {
     background: #f8f9fa;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    margin: 0.5rem 0;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin: 0.75rem 0;
     border: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .mobile-user-menu .user-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid #dee2e6;
+    text-align: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.mobile-user-menu .user-info span {
+    font-size: 1.1rem;
 }
 
 .mobile-user-menu .user-actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 0.5rem;
-    justify-content: center;
 }
 
 .mobile-user-menu .btn {
-    flex: 1;
-    min-width: 80px;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.mobile-user-menu .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 </style>
