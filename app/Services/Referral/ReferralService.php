@@ -22,6 +22,7 @@ class ReferralService
             'type' => ReferralLinkType::CUSTOM,
             'max_uses' => null,
             'expires_at' => null,
+            'redirect_url' => null,
         ];
 
         $options = array_merge($defaultOptions, $options);
@@ -33,6 +34,7 @@ class ReferralService
             'type' => $options['type']->value,
             'max_uses' => $options['max_uses'],
             'expires_at' => $options['expires_at'],
+            'redirect_url' => $options['redirect_url'],
         ]);
     }
 
@@ -69,6 +71,7 @@ class ReferralService
                 'metadata' => [
                     'clicked_at' => now()->toISOString(),
                     'referrer' => now()->toISOString(),
+                    'redirect_url' => $referralLink->redirect_url,
                 ],
             ]);
 

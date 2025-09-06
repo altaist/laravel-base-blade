@@ -49,8 +49,16 @@ class ReferralController extends Controller
                 'ip' => request()->ip()
             ]);
 
-            // Редирект на главную страницу с информацией о реферале
-            return redirect()->route('home')->with('success', 'Добро пожаловать! Вы перешли по реферальной ссылке.');
+            // Определяем URL для перенаправления
+            $redirectUrl = $result['referral']->metadata['redirect_url'] ?? null;
+            
+            if ($redirectUrl) {
+                // Перенаправляем на указанный URL
+                return redirect($redirectUrl)->with('success', 'Добро пожаловать! Вы перешли по реферальной ссылке.');
+            } else {
+                // Редирект на главную страницу с информацией о реферале
+                return redirect()->route('home')->with('success', 'Добро пожаловать! Вы перешли по реферальной ссылке.');
+            }
 
         } catch (\Exception $e) {
             Log::error('Критическая ошибка при обработке реферальной ссылки', [
@@ -79,6 +87,7 @@ class ReferralController extends Controller
                 'type' => $request->validated('type'),
                 'max_uses' => $request->validated('max_uses'),
                 'expires_at' => $request->validated('expires_at'),
+                'redirect_url' => $request->validated('redirect_url'),
             ];
 
             $referralLink = $this->referralService->createLinkForUser($user, $options);
@@ -103,6 +112,7 @@ class ReferralController extends Controller
                     'max_uses' => $referralLink->max_uses,
                     'current_uses' => $referralLink->current_uses,
                     'expires_at' => $referralLink->expires_at,
+                    'redirect_url' => $referralLink->redirect_url,
                     'created_at' => $referralLink->created_at,
                 ]
             ]);
@@ -141,6 +151,7 @@ class ReferralController extends Controller
                     'max_uses' => $link->max_uses,
                     'current_uses' => $link->current_uses,
                     'expires_at' => $link->expires_at,
+                    'redirect_url' => $link->redirect_url,
                     'created_at' => $link->created_at,
                     'stats' => $link->stats,
                 ];
@@ -268,6 +279,7 @@ class ReferralController extends Controller
                     'is_active' => $link->is_active,
                     'max_uses' => $link->max_uses,
                     'expires_at' => $link->expires_at,
+                    'redirect_url' => $link->redirect_url,
                 ]
             ]);
 

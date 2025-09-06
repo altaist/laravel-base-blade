@@ -22,6 +22,7 @@ class ReferralLink extends Model
         'max_uses',
         'current_uses',
         'expires_at',
+        'redirect_url',
     ];
 
     protected $casts = [
@@ -151,6 +152,14 @@ class ReferralLink extends Model
     public function getFullUrlAttribute(): string
     {
         return url("/ref/{$this->code}");
+    }
+
+    /**
+     * Получить URL для перенаправления
+     */
+    public function getRedirectUrlAttribute(): ?string
+    {
+        return $this->attributes['redirect_url'];
     }
 
     /**

@@ -27,6 +27,7 @@ class UpdateReferralLinkRequest extends FormRequest
             'max_uses' => 'nullable|integer|min:1|max:10000',
             'expires_at' => 'nullable|date|after:now',
             'is_active' => 'nullable|boolean',
+            'redirect_url' => 'nullable|url|max:2048',
         ];
     }
 
@@ -44,6 +45,8 @@ class UpdateReferralLinkRequest extends FormRequest
             'expires_at.date' => 'Некорректная дата истечения',
             'expires_at.after' => 'Дата истечения должна быть в будущем',
             'is_active.boolean' => 'Статус активности должен быть true или false',
+            'redirect_url.url' => 'Некорректный URL для перенаправления',
+            'redirect_url.max' => 'URL для перенаправления не может быть длиннее 2048 символов',
         ];
     }
 

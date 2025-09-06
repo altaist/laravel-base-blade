@@ -26,6 +26,7 @@ class CreateReferralLinkRequest extends FormRequest
             'type' => ['required', Rule::enum(ReferralLinkType::class)],
             'max_uses' => 'nullable|integer|min:1|max:10000',
             'expires_at' => 'nullable|date|after:now',
+            'redirect_url' => 'nullable|url|max:2048',
         ];
     }
 
@@ -43,6 +44,8 @@ class CreateReferralLinkRequest extends FormRequest
             'max_uses.max' => 'Максимальное количество использований: 10000',
             'expires_at.date' => 'Некорректная дата истечения',
             'expires_at.after' => 'Дата истечения должна быть в будущем',
+            'redirect_url.url' => 'Некорректный URL для перенаправления',
+            'redirect_url.max' => 'URL для перенаправления не может быть длиннее 2048 символов',
         ];
     }
 
