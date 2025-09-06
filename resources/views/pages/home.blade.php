@@ -7,7 +7,7 @@
         'subtitle' => 'Лучшие квадроциклы и аксессуары для ваших приключений. Качество, надежность и страсть к движению.',
         'buttonText' => 'Смотреть каталог',
         'buttonUrl' => '#catalog',
-        'backgroundImage' => '/images/hero-bg.jpg'
+        'backgroundImage' => 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=600&fit=crop'
     ])
 
     {{-- Преимущества --}}
@@ -39,19 +39,19 @@
         'images' => [
             [
                 [
-                    'url' => '/images/quad1.jpg',
+                    'url' => 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
                     'alt' => 'Спортивный квадроцикл',
                     'title' => 'Спортивная модель',
                     'description' => 'Высокая скорость и маневренность'
                 ],
                 [
-                    'url' => '/images/quad2.jpg',
+                    'url' => 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
                     'alt' => 'Утилитарный квадроцикл',
                     'title' => 'Утилитарная модель',
                     'description' => 'Надежность для работы и отдыха'
                 ],
                 [
-                    'url' => '/images/quad3.jpg',
+                    'url' => 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=300&fit=crop',
                     'alt' => 'Детский квадроцикл',
                     'title' => 'Детская модель',
                     'description' => 'Безопасность для маленьких водителей'

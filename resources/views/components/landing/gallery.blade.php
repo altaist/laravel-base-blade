@@ -26,10 +26,23 @@
                                     @foreach($image as $img)
                                         <div class="col-md-4">
                                             <div class="card h-100 shadow-sm">
-                                                <img src="{{ $img['url'] ?? $img }}" 
-                                                     class="card-img-top" 
-                                                     alt="{{ $img['alt'] ?? 'Изображение' }}"
-                                                     style="height: 250px; object-fit: cover;">
+                                                <div class="gallery-image-container" style="height: 250px; position: relative; overflow: hidden;">
+                                                    @if(isset($img['url']) && $img['url'])
+                                                        <img src="{{ $img['url'] }}" 
+                                                             class="card-img-top" 
+                                                             alt="{{ $img['alt'] ?? 'Изображение' }}"
+                                                             style="height: 100%; width: 100%; object-fit: cover;"
+                                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    @endif
+                                                    <div class="gallery-placeholder {{ isset($img['url']) && $img['url'] ? 'd-none' : '' }}" 
+                                                         style="height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); color: #6c757d;">
+                                                        <i class="fas fa-image fa-3x mb-3"></i>
+                                                        <span class="fw-bold">{{ $img['title'] ?? 'Изображение' }}</span>
+                                                        @if(isset($img['description']))
+                                                            <small class="text-muted mt-1">{{ $img['description'] }}</small>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                                 @if(isset($img['title']))
                                                     <div class="card-body">
                                                         <h5 class="card-title">{{ $img['title'] }}</h5>
@@ -44,10 +57,23 @@
                                 @else
                                     {{-- Если передано одно изображение --}}
                                     <div class="col-12">
-                                        <img src="{{ $image['url'] ?? $image }}" 
-                                             class="d-block w-100 rounded" 
-                                             alt="{{ $image['alt'] ?? 'Изображение' }}"
-                                             style="height: 400px; object-fit: cover;">
+                                        <div class="gallery-image-container" style="height: 400px; position: relative; overflow: hidden; border-radius: 0.5rem;">
+                                            @if(isset($image['url']) && $image['url'])
+                                                <img src="{{ $image['url'] }}" 
+                                                     class="d-block w-100" 
+                                                     alt="{{ $image['alt'] ?? 'Изображение' }}"
+                                                     style="height: 100%; width: 100%; object-fit: cover;"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                            @endif
+                                            <div class="gallery-placeholder {{ isset($image['url']) && $image['url'] ? 'd-none' : '' }}" 
+                                                 style="height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); color: #6c757d;">
+                                                <i class="fas fa-image fa-4x mb-4"></i>
+                                                <span class="fw-bold fs-4">{{ $image['title'] ?? 'Изображение' }}</span>
+                                                @if(isset($image['description']))
+                                                    <small class="text-muted mt-2">{{ $image['description'] }}</small>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
@@ -139,5 +165,28 @@
         width: 35px !important;
         height: 35px !important;
     }
+}
+
+/* Стили для placeholder'ов */
+.gallery-placeholder {
+    transition: all 0.3s ease;
+}
+
+.gallery-placeholder:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%) !important;
+    transform: scale(1.02);
+}
+
+.gallery-image-container {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.gallery-image-container img {
+    transition: transform 0.3s ease;
+}
+
+.gallery-image-container:hover img {
+    transform: scale(1.05);
 }
 </style>
