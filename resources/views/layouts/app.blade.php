@@ -20,7 +20,7 @@
                 } elseif (request()->routeIs('profile') || request()->routeIs('person.*') || request()->routeIs('user.*')) {
                     $headerType = 'profile';
                 } else {
-                    $headerType = 'user';
+                    $headerType = 'default';
                 }
             }
         @endphp
