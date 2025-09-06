@@ -1,7 +1,7 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container-fluid">
         <!-- Логотип и название -->
-        <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
+        <a class="navbar-brand fw-bold text-primary" href="{{ route('admin.dashboard') }}">
             <i class="fas fa-cog me-2"></i>
             Админ панель
         </a>
@@ -11,26 +11,23 @@
         </button>
         
         <div class="collapse navbar-collapse" id="adminNavbar">
-            <!-- Основное меню админки -->
-            <ul class="navbar-nav me-auto">
+            <!-- Основное меню админки по центру -->
+            <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" 
                        href="{{ route('admin.dashboard') }}">
-                        <i class="fas fa-tachometer-alt me-1"></i>
                         Панель управления
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" 
                        href="{{ route('admin.users.index') }}">
-                        <i class="fas fa-users me-1"></i>
                         Пользователи
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.feedbacks.*') ? 'active' : '' }}" 
                        href="{{ route('admin.feedbacks.index') }}">
-                        <i class="fas fa-comments me-1"></i>
                         Обратная связь
                     </a>
                 </li>
@@ -92,12 +89,39 @@
 }
 
 .navbar-nav .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 0.375rem;
+    color: var(--bs-primary) !important;
+    font-weight: 600;
 }
 
 .navbar-nav .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 0.375rem;
+    color: var(--bs-primary) !important;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 991.98px) {
+    .navbar-nav.mx-auto {
+        margin: 0 !important;
+        text-align: center;
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 0.5rem 1rem;
+    }
+    
+    .dropdown-menu {
+        width: 100%;
+        text-align: center;
+    }
+    
+    /* Выравнивание правого блока по центру на мобильных */
+    .navbar-nav:last-child {
+        justify-content: center;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    
+    .navbar-nav:last-child .nav-item {
+        margin: 0 0.25rem;
+    }
 }
 </style>

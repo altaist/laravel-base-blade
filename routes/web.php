@@ -76,7 +76,7 @@ Route::prefix('auth-link')->group(function () {
 Route::middleware('auth')->group(function () {
     // ===== USER PROFILE ROUTES =====
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
-    Route::get('/dashboard', [ProfileController::class, 'show'])->name('dashboard');
+    Route::get('/dashboard', [ProfileController::class, 'dashboard'])->name('dashboard');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/address', [ProfileController::class, 'updateAddress'])->name('profile.update.address');
     Route::put('/profile/additional-info', [ProfileController::class, 'updateAdditionalInfo'])->name('profile.update.additional-info');

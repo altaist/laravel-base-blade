@@ -1,6 +1,4 @@
-@extends('layouts.app', [
-    'header' => 'admin'
-])
+@extends('layouts.app')
 
 @section('content')
 <style>

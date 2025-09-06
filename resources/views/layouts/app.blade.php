@@ -10,7 +10,22 @@
 </head>
 <body>
     <div class="sticky-top">
-        @include('components.headers.' . ($header ?? 'default'), [
+        @php
+            // Автоматическое определение типа header, если не задан явно
+            $headerType = $header ?? 'auto';
+            
+            if ($headerType === 'auto') {
+                if (request()->routeIs('admin.*')) {
+                    $headerType = 'admin';
+                } elseif (request()->routeIs('profile') || request()->routeIs('person.*') || request()->routeIs('user.*')) {
+                    $headerType = 'profile';
+                } else {
+                    $headerType = 'user';
+                }
+            }
+        @endphp
+        
+        @include('components.headers.' . $headerType, [
             'showBackButton' => $showBackButton ?? false,
             'backUrl' => $backUrl ?? null,
             'backText' => $backText ?? 'Назад'

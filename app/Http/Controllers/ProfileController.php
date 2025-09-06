@@ -67,6 +67,57 @@ class ProfileController extends Controller
             'referralLink' => $referralLink
         ]);
     }
+    
+    public function dashboard(): View
+    {
+        $person = Auth::user()->person ?? new Person();
+        $user = Auth::user();
+        
+        // Генерируем ссылку для Telegram если пользователь не привязан
+        $telegramLink = null;
+        if (!$user->telegram_id) {
+            try {
+                $telegramLink = $this->authLinkService->createTelegramLink($user, [
+                    'expires_in_minutes' => 60,
+                    'ip_address' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                    'author_id' => $user->id,
+                ]);
+            } catch (\Exception $e) {
+                // Ошибка логируется, но не прерывает работу
+                Log::channel('telegram')->error("Ошибка создания Telegram ссылки в профиле", [
+                    'error' => $e->getMessage(),
+                    'user_id' => $user->id,
+                ]);
+            }
+        }
+
+        // Получаем или создаем основную реферальную ссылку
+        $referralLink = null;
+        try {
+            $existingLinks = $this->referralService->getUserLinks($user);
+            $referralLink = $existingLinks->where('name', 'Основная ссылка')->first();
+            
+            if (!$referralLink) {
+                $referralLink = $this->referralService->createLinkForUser($user, [
+                    'name' => 'Основная ссылка',
+                    'type' => \App\Enums\Referral\ReferralLinkType::CUSTOM,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error("Ошибка получения реферальной ссылки в профиле", [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
+            ]);
+        }
+        
+        return view('dashboard', [
+            'person' => $person,
+            'telegramLink' => $telegramLink,
+            'referralLink' => $referralLink
+        ]);
+    }
+
 
     public function update(Request $request): RedirectResponse
     {
