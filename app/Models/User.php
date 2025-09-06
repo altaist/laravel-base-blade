@@ -81,6 +81,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Связь с лайками пользователя
+     */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Связь с избранным пользователя
+     */
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    /**
      * Связь с файлами
      */
     public function files(): HasMany
