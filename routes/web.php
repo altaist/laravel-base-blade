@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PersonEditController;
 use App\Http\Controllers\AuthLinkController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\TelegramAuthController;
 use App\Http\Controllers\Files\FileController;
@@ -20,7 +21,18 @@ Route::get('/', function () {
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 
 // ===== ADMIN ROUTES =====
+// Admin routes
 Route::prefix('admin')->middleware(['auth', 'can:admin'])->group(function () {
+    // Dashboard
+    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    
+    // Users management
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');
+    Route::get('/users/{user}/edit', [AdminController::class, 'userEdit'])->name('admin.users.edit');
+    Route::put('/users/{user}', [AdminController::class, 'userUpdate'])->name('admin.users.update');
+    Route::delete('/users/{user}', [AdminController::class, 'userDestroy'])->name('admin.users.destroy');
+    
+    // Feedback routes
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
     Route::get('/feedbacks/{feedback}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
 });

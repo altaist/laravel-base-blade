@@ -19,6 +19,13 @@
         <li class="nav-item">
           <a class="nav-link" href="{{ route('user.files.index') }}">Файлы</a>
         </li>
+        @can('admin')
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.dashboard') }}">
+              <i class="fas fa-cog me-1"></i>Админка
+            </a>
+          </li>
+        @endcan
       </ul>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">

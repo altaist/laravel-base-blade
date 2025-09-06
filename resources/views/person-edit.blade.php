@@ -30,6 +30,24 @@
                         
                         <x-person-edit-form :personData="$personData" :user="$user" />
                     </form>
+                    
+                    <!-- Кнопки действий -->
+                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mt-3">
+                        <div class="d-flex flex-column flex-md-row gap-2">
+                            <a href="{{ route('profile') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Назад к профилю
+                            </a>
+                        </div>
+                        
+                        <div class="d-flex flex-column flex-md-row gap-2">
+                            <button type="submit" form="personEditForm" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Сохранить изменения
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetForm()">
+                                <i class="fas fa-undo me-2"></i>Сбросить
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -50,6 +68,12 @@
 </form>
 
 <script>
+function resetForm() {
+    if (confirm('Вы уверены, что хотите сбросить все изменения?')) {
+        document.querySelector('form').reset();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Валидация формы
     const form = document.getElementById('personEditForm');
