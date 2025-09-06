@@ -60,7 +60,7 @@ class RegisteredUserController extends Controller
                 ? 'Регистрация успешна! Добро пожаловать! Вы зарегистрированы по реферальной ссылке.'
                 : 'Регистрация успешна! Добро пожаловать!';
 
-            return redirect()->route('profile')->with('success', $message);
+            return redirect()->route('dashboard')->with('success', $message);
             
         } catch (\Exception $e) {
             Log::error('Ошибка при регистрации: ' . $e->getMessage());

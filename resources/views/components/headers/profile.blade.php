@@ -35,14 +35,8 @@
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('profile') }}">
+                            <a class="dropdown-item" href="{{ route('dashboard') }}">
                                 <i class="fas fa-user-circle me-2"></i>
-                                Профиль
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('profile') }}">
-                                <i class="fas fa-tachometer-alt me-2"></i>
                                 Личный кабинет
                             </a>
                         </li>
@@ -84,7 +78,7 @@
                             <span class="fw-bold">{{ Auth::user()->name }}</span>
                         </div>
                         <div class="user-actions">
-                            <a class="btn btn-outline-primary btn-sm" href="{{ route('profile') }}">
+                            <a class="btn btn-outline-primary btn-sm" href="{{ route('dashboard') }}">
                                 Профиль
                             </a>
                             <a class="btn btn-outline-primary btn-sm" href="{{ route('user.files.index') }}">

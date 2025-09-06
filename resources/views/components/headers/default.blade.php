@@ -15,7 +15,7 @@
           </li>
         @else
           <li class="nav-item">
-            <a class="nav-link" href="{{ route('profile') }}">Личный кабинет</a>
+            <a class="nav-link" href="{{ route('dashboard') }}">Личный кабинет</a>
           </li>
           @can('admin')
             <li class="nav-item">

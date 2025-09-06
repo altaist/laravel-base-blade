@@ -146,7 +146,7 @@ class ProfileController extends Controller
         $person->fill($validated);
         $person->save();
 
-        return redirect()->route('profile')->with('status', 'Профиль успешно обновлен');
+        return redirect()->route('dashboard')->with('status', 'Профиль успешно обновлен');
     }
 
     public function updateAddress(Request $request): RedirectResponse
@@ -169,7 +169,7 @@ class ProfileController extends Controller
         $person->address = $validated['address'];
         $person->save();
 
-        return redirect()->route('profile')->with('status', 'Адрес успешно обновлен');
+        return redirect()->route('dashboard')->with('status', 'Адрес успешно обновлен');
     }
 
     public function updateAdditionalInfo(Request $request): RedirectResponse
@@ -187,6 +187,6 @@ class ProfileController extends Controller
         $person->additional_info = $validated['additional_info'];
         $person->save();
 
-        return redirect()->route('profile')->with('status', 'Дополнительная информация успешно обновлена');
+        return redirect()->route('dashboard')->with('status', 'Дополнительная информация успешно обновлена');
     }
 }

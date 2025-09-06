@@ -29,7 +29,7 @@ class EmailVerificationTest extends TestCase
 
         Event::assertDispatched(Verified::class);
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        $response->assertRedirect(route('profile'));
+        $response->assertRedirect(route('dashboard'));
     }
 
     public function test_email_is_not_verified_with_invalid_hash(): void

@@ -1,6 +1,6 @@
 @extends('layouts.app', [
     'showBackButton' => true,
-    'backUrl' => route('profile'),
+    'backUrl' => route('dashboard'),
     'backText' => ''
 ])
 
@@ -33,7 +33,7 @@
                     <!-- Кнопки действий -->
                     <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mt-3">
                         <div class="d-flex flex-column flex-md-row gap-2">
-                            <a href="{{ route('profile') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Назад к профилю
                             </a>
                         </div>

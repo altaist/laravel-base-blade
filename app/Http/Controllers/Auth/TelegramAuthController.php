@@ -66,7 +66,7 @@ class TelegramAuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->intended(route('profile'));
+        return redirect()->intended(route('dashboard'));
     }
 
     private function checkTelegramAuthorization(array $auth_data): bool

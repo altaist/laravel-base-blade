@@ -52,7 +52,7 @@
                         </li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('profile') }}">
+                            <a class="dropdown-item" href="{{ route('dashboard') }}">
                                 <i class="fas fa-user me-2"></i>
                                 Личный кабинет
                             </a>

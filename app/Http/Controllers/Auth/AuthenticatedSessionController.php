@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->route('profile')
+            return redirect()->route('dashboard')
                 ->with('success', 'Добро пожаловать, ' . Auth::user()->name . '!');
                 
         } catch (ValidationException $e) {
