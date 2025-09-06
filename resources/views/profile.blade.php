@@ -57,6 +57,89 @@
                         </div>
                     </div>
                     
+                    <!-- Реферальная ссылка -->
+                    @if($referralLink)
+                    <div class="mt-4 pt-3 border-top">
+                        <h5 class="text-muted mb-3">Реферальная ссылка</h5>
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                <h6 class="card-title text-warning">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-2">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    </svg>
+                                    Пригласите друзей
+                                </h6>
+                                <p class="card-text small text-muted mb-3">
+                                    Поделитесь этой ссылкой с друзьями. Когда они зарегистрируются по вашей ссылке, вы получите бонус!
+                                </p>
+                                
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" id="referralLink" 
+                                           value="{{ $referralLink->full_url }}" readonly>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="copyReferralLink()">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                        </svg>
+                                        Копировать
+                                    </button>
+                                </div>
+                                
+                                <div class="row text-center" id="referralStats">
+                                    <div class="col-4">
+                                        <div class="border-end">
+                                            <div class="h5 mb-0 text-primary" id="totalClicks">{{ $referralLink->stats['total_clicks'] }}</div>
+                                            <small class="text-muted">Переходов</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="border-end">
+                                            <div class="h5 mb-0 text-success" id="completedRegistrations">{{ $referralLink->stats['completed_registrations'] }}</div>
+                                            <small class="text-muted">Регистраций</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="h5 mb-0 text-info" id="conversionRate">{{ $referralLink->stats['conversion_rate'] }}%</div>
+                                        <small class="text-muted">Конверсия</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-2 text-center">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="refreshReferralStats()">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                        </svg>
+                                        Обновить статистику
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                        </svg>
+                                        Ссылка действует бессрочно
+                                    </small>
+                                </div>
+                                
+                                <div class="mt-3 p-3 bg-light rounded">
+                                    <h6 class="text-muted mb-2">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        Как это работает?
+                                    </h6>
+                                    <ul class="small text-muted mb-0">
+                                        <li>Поделитесь ссылкой с друзьями в соцсетях, мессенджерах или лично</li>
+                                        <li>Когда друг перейдет по ссылке и зарегистрируется, вы получите бонус</li>
+                                        <li>Статистика обновляется в реальном времени</li>
+                                        <li>Каждый переход отслеживается в течение месяца</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    
                 </div>
             </div>
         </div>
@@ -151,6 +234,125 @@ function generateRegistrationLink() {
                 <small>Ошибка: ${error.message}</small>
             </div>
         `;
+    });
+}
+
+function copyReferralLink() {
+    const referralInput = document.getElementById('referralLink');
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    
+    // Выделяем и копируем текст
+    referralInput.select();
+    referralInput.setSelectionRange(0, 99999); // Для мобильных устройств
+    
+    try {
+        document.execCommand('copy');
+        
+        // Показываем успешное копирование
+        button.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+            Скопировано!
+        `;
+        button.classList.remove('btn-outline-secondary');
+        button.classList.add('btn-success');
+        
+        // Возвращаем исходный вид через 2 секунды
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-secondary');
+        }, 2000);
+        
+    } catch (err) {
+        // Fallback для современных браузеров
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(referralInput.value).then(() => {
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Скопировано!
+                `;
+                button.classList.remove('btn-outline-secondary');
+                button.classList.add('btn-success');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-outline-secondary');
+                }, 2000);
+            }).catch(() => {
+                alert('Не удалось скопировать ссылку. Выделите и скопируйте вручную.');
+            });
+        } else {
+            alert('Не удалось скопировать ссылку. Выделите и скопируйте вручную.');
+        }
+    }
+}
+
+function refreshReferralStats() {
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    
+    // Показываем загрузку
+    button.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+        </svg>
+        Обновление...
+    `;
+    button.disabled = true;
+    
+    fetch('{{ route("referral.stats") }}', {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Обновляем статистику
+            document.getElementById('totalClicks').textContent = data.data.total_clicks;
+            document.getElementById('completedRegistrations').textContent = data.data.total_registrations;
+            document.getElementById('conversionRate').textContent = data.data.overall_conversion_rate + '%';
+            
+            // Показываем успех
+            button.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                Обновлено!
+            `;
+            button.classList.remove('btn-outline-primary');
+            button.classList.add('btn-success');
+        } else {
+            throw new Error(data.message || 'Ошибка получения статистики');
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка обновления статистики:', error);
+        button.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/>
+            </svg>
+            Ошибка
+        `;
+        button.classList.remove('btn-outline-primary');
+        button.classList.add('btn-danger');
+    })
+    .finally(() => {
+        // Возвращаем исходный вид через 2 секунды
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.remove('btn-success', 'btn-danger');
+            button.classList.add('btn-outline-primary');
+            button.disabled = false;
+        }, 2000);
     });
 }
 </script>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Person;
 use App\Services\AuthLinkService;
+use App\Services\Referral\ReferralService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,8 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     public function __construct(
-        private AuthLinkService $authLinkService
+        private AuthLinkService $authLinkService,
+        private ReferralService $referralService
     ) {}
 
     public function show(): View
@@ -39,10 +41,30 @@ class ProfileController extends Controller
                 ]);
             }
         }
+
+        // Получаем или создаем основную реферальную ссылку
+        $referralLink = null;
+        try {
+            $existingLinks = $this->referralService->getUserLinks($user);
+            $referralLink = $existingLinks->where('name', 'Основная ссылка')->first();
+            
+            if (!$referralLink) {
+                $referralLink = $this->referralService->createLinkForUser($user, [
+                    'name' => 'Основная ссылка',
+                    'type' => \App\Enums\Referral\ReferralLinkType::CUSTOM,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error("Ошибка получения реферальной ссылки в профиле", [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id,
+            ]);
+        }
         
         return view('profile', [
             'person' => $person,
-            'telegramLink' => $telegramLink
+            'telegramLink' => $telegramLink,
+            'referralLink' => $referralLink
         ]);
     }
 
