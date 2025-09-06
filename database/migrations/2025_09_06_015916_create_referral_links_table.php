@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('max_uses')->nullable(); // Максимальное количество использований
             $table->integer('current_uses')->default(0); // Текущее количество использований
             $table->timestamp('expires_at')->nullable(); // Срок действия ссылки
+            $table->text('redirect_url')->nullable(); // URL для перенаправления после перехода
             $table->timestamps();
             
             $table->index(['user_id', 'is_active']);
