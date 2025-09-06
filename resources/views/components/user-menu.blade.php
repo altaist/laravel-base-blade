@@ -21,9 +21,9 @@
             </a>
         </li>
         <li>
-            <a class="dropdown-item" href="{{ route('user.files.index') }}">
-                <i class="fas fa-folder me-2"></i>
-                Мои файлы
+            <a class="dropdown-item" href="{{ route('profile') }}">
+                <i class="fas fa-user me-2"></i>
+                Профиль
             </a>
         </li>
         @can('admin')
@@ -59,9 +59,9 @@
                 <i class="fas fa-tachometer-alt me-2"></i>
                 Личный кабинет
             </a>
-            <a class="btn btn-primary btn-sm w-100 mb-2" href="{{ route('user.files.index') }}">
-                <i class="fas fa-folder me-2"></i>
-                Мои файлы
+            <a class="btn btn-primary btn-sm w-100 mb-2" href="{{ route('profile') }}">
+                <i class="fas fa-user me-2"></i>
+                Профиль
             </a>
             @can('admin')
                 <a class="btn btn-warning btn-sm w-100 mb-2" href="{{ route('admin.dashboard') }}">
