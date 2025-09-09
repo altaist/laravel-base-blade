@@ -7,124 +7,63 @@
 
 @section('content')
 <div class="container-fluid admin-container">
-    <!-- Заголовок -->
-    <div class="row mb-3 mb-md-4">
-        <div class="col-12">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                <div class="text-muted">
-                    <small>Добро пожаловать, {{ Auth::user()->name }}!</small>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Статистика -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card bg-primary text-white h-100 stats-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 class="card-title">{{ $userStats['total'] }}</h4>
-                            <p class="card-text">Всего пользователей</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-users fa-2x opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3 mb-3">
-            <div class="card bg-success text-white h-100 stats-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 class="card-title">{{ $userStats['recent'] }}</h4>
-                            <p class="card-text">Новых за неделю</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-user-plus fa-2x opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3 mb-3">
-            <div class="card bg-info text-white h-100 stats-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 class="card-title">{{ $userStats['with_telegram'] }}</h4>
-                            <p class="card-text">С Telegram</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fab fa-telegram fa-2x opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3 mb-3">
-            <div class="card bg-warning text-white h-100 stats-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4 class="card-title">{{ $feedbackStats['total'] }}</h4>
-                            <p class="card-text">Сообщений</p>
-                        </div>
-                        <div class="align-self-center">
-                            <i class="fas fa-comments fa-2x opacity-75"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Основные разделы -->
     <div class="row">
         <div class="col-12 col-md-4 mb-4">
-            <div class="card shadow-lg border-0 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="card-body text-white p-4">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <h3 class="card-title mb-1">{{ $userStats['total'] }}</h3>
-                            <p class="card-text mb-0 opacity-75">Всего пользователей</p>
+            <div class="card shadow-sm h-100">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-users fa-2x text-primary"></i>
                         </div>
-                        <div class="bg-white bg-opacity-20 rounded-circle p-3">
-                            <i class="fas fa-users fa-2x"></i>
-                        </div>
+                        <h2 class="card-title text-dark mb-2">{{ $userStats['total'] }}</h2>
+                        <p class="text-muted mb-1">Всего пользователей</p>
+                        <small class="text-success fw-semibold">+{{ $userStats['recent'] }} новых за неделю</small>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <small class="opacity-75">+{{ $userStats['recent'] }} новых за неделю</small>
-                        </div>
-                        <a href="{{ route('admin.users.index') }}" class="btn btn-light btn-sm">
-                            <i class="fas fa-arrow-right me-1"></i>
-                            Управление
-                        </a>
-                    </div>
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-users me-2"></i>
+                        Пользователи
+                    </a>
                 </div>
             </div>
         </div>
         
-        <div class="col-12 col-md-8 mb-4">
+        <div class="col-12 col-md-4 mb-4">
             <div class="card shadow-sm h-100">
-                <div class="card-body text-center p-4">
-                    <div class="mb-3">
-                        <i class="fas fa-comments fa-3x text-success mb-3"></i>
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-comments fa-2x text-success"></i>
+                        </div>
+                        <h2 class="card-title text-dark mb-2">{{ $feedbackStats['total'] }}</h2>
+                        <p class="text-muted mb-1">Всего сообщений</p>
+                        <small class="text-success fw-semibold">+{{ $feedbackStats['recent'] }} новых за неделю</small>
                     </div>
-                    <h5 class="card-title">Обратная связь</h5>
-                    <p class="card-text text-muted">
-                        Просмотр сообщений и обращений от пользователей
-                    </p>
-                    <a href="{{ route('admin.feedbacks.index') }}" class="btn btn-success btn-sm btn-md">
-                        <i class="fas fa-arrow-right me-1 me-md-2"></i>
-                        Перейти к сообщениям
+                    <a href="{{ route('admin.feedbacks.index') }}" class="btn btn-success btn-lg px-4">
+                        <i class="fas fa-comments me-2"></i>
+                        Обратная связь
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="fas fa-newspaper fa-2x text-info"></i>
+                        </div>
+                        <h2 class="card-title text-dark mb-2">{{ $articleStats['total'] ?? 0 }}</h2>
+                        <p class="text-muted mb-1">Всего статей</p>
+                        <small class="text-info fw-semibold">+{{ $articleStats['recent'] ?? 0 }} новых за неделю</small>
+                    </div>
+                    <a href="{{ route('admin.articles.index') }}" class="btn btn-info btn-lg px-4">
+                        <i class="fas fa-newspaper me-2"></i>
+                        Статьи
                     </a>
                 </div>
             </div>
