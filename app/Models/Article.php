@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\Favoritable;
+use App\Traits\Likeable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Article extends Model
+{
+    use Likeable, Favoritable;
+
+    protected $fillable = [
+        'user_id',
+        'name',
+        'slug',
+        'description',
+        'content',
+        'seo_title',
+        'seo_description',
+        'seo_h1_title',
+        'img_file_id',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * Связь с автором статьи
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Связь с файлом изображения
+     */
+    public function imgFile(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'img_file_id');
+    }
+}
