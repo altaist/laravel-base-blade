@@ -109,7 +109,7 @@
                                             <label class="form-label fw-bold text-muted">Имя</label>
                                             <div class="p-3 bg-light rounded">
                                                 <i class="fas fa-user me-2 text-primary"></i>
-                                                {{ $user->person->first_name ?? 'Не указано' }}
+                                                {{ $user->name ?? 'Не указано' }}
                                             </div>
                                         </div>
                                     </div>
@@ -347,7 +347,7 @@
                                         <label class="form-label fw-bold text-muted">Имя</label>
                                         <div class="p-3 bg-light rounded">
                                             <i class="fas fa-user me-2 text-primary"></i>
-                                            {{ $user->person->first_name ?? 'Не указано' }}
+                                            {{ $user->name ?? 'Не указано' }}
                                         </div>
                                     </div>
                                 </div>

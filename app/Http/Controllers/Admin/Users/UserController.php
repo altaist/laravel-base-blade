@@ -7,6 +7,8 @@ use App\Services\Admin\AdminUserService;
 use App\Services\PersonService;
 use App\Models\User;
 use App\Http\Requests\PersonEditRequest;
+use App\Http\Requests\AdminUserCreateRequest;
+use App\Http\Requests\AdminUserEditRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -61,19 +63,21 @@ class UserController extends Controller
     /**
      * Переопределяем метод update для пользователей
      */
-    public function update(PersonEditRequest $request, User $user): RedirectResponse
+    public function update(AdminUserEditRequest $request, User $user): RedirectResponse
     {
-        // Валидируем роль отдельно
-        $roleValidated = $request->validate([
-            'role' => 'required|in:admin,manager,user',
-        ]);
-
         try {
-            // Обновляем роль пользователя
-            $user->update(['role' => $roleValidated['role']]);
+            $validated = $request->validated();
+            
+            // Обновляем основные данные пользователя
+            $user->update([
+                'name' => $validated['name'],
+                'role' => $validated['role'],
+            ]);
 
             // Обновляем данные персоны через PersonService (без обновления имени пользователя)
-            $this->personService->updatePerson($user, $request->validated(), false);
+            // Исключаем поля users из данных персоны
+            $personData = collect($validated)->except(['name', 'email', 'role'])->toArray();
+            $this->personService->updatePerson($user, $personData, false);
 
             return redirect()
                 ->route('admin.users.show', $user)
@@ -91,15 +95,40 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        abort(404); // Пока не реализовано
+        return view('admin.users.create');
     }
 
     /**
      * Сохранение нового пользователя
      */
-    public function store(Request $request): RedirectResponse
+    public function store(AdminUserCreateRequest $request): RedirectResponse
     {
-        abort(404); // Пока не реализовано
+        try {
+            // Создаем пользователя
+            $validated = $request->validated();
+            $firstName = $validated['first_name'] ?? '';
+            $lastName = $validated['last_name'] ?? '';
+            $userName = trim($firstName . ' ' . $lastName) ?: $validated['email'];
+            
+            $user = User::create([
+                'email' => $validated['email'],
+                'password' => bcrypt($validated['password']),
+                'role' => $validated['role'],
+                'name' => $userName,
+            ]);
+
+            // Создаем персону через PersonService
+            $this->personService->createPerson($user, $validated);
+
+            return redirect()
+                ->route('admin.users.show', $user)
+                ->with('success', 'Пользователь успешно создан');
+
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Ошибка при создании пользователя: ' . $e->getMessage()]);
+        }
     }
 
     /**

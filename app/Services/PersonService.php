@@ -21,6 +21,55 @@ class PersonService
     }
 
     /**
+     * Создать персону для пользователя с данными
+     *
+     * @param User $user
+     * @param array $data
+     * @return Person
+     */
+    public function createPerson(User $user, array $data): Person
+    {
+        return DB::transaction(function () use ($user, $data) {
+            // Обрабатываем JSON поля
+            $personData = [];
+            
+            if (isset($data['first_name'])) {
+                $personData['first_name'] = $data['first_name'];
+            }
+            if (isset($data['last_name'])) {
+                $personData['last_name'] = $data['last_name'];
+            }
+            if (isset($data['middle_name'])) {
+                $personData['middle_name'] = $data['middle_name'];
+            }
+            if (isset($data['phone'])) {
+                $personData['phone'] = $data['phone'];
+            }
+            if (isset($data['birth_date'])) {
+                $personData['birth_date'] = $data['birth_date'];
+            }
+            if (isset($data['gender'])) {
+                $personData['gender'] = $data['gender'];
+            }
+            
+            // Копируем email из user в person
+            $personData['email'] = $user->email;
+            
+            // Обрабатываем адрес
+            if (isset($data['address']) && is_array($data['address'])) {
+                $personData['address'] = $data['address'];
+            }
+            
+            // Обрабатываем дополнительную информацию
+            if (isset($data['additional_info']) && is_array($data['additional_info'])) {
+                $personData['additional_info'] = $data['additional_info'];
+            }
+
+            return $user->person()->create($personData);
+        });
+    }
+
+    /**
      * Обновить данные персоны
      *
      * @param User $user
@@ -53,12 +102,18 @@ class PersonService
                 ]);
             }
 
-            $person->update($data);
+            // Исключаем поля, которые не должны попадать в таблицу persons
+            $personFields = collect($data)->except(['name', 'email', 'role', 'password'])->toArray();
+            
+            // Копируем email из user в person
+            $personFields['email'] = $user->email;
+            
+            $person->update($personFields);
 
             Log::info('Данные персоны обновлены', [
                 'user_id' => $user->id,
                 'person_id' => $person->id,
-                'updated_fields' => array_keys($data)
+                'updated_fields' => array_keys($personFields)
             ]);
 
             return $person;

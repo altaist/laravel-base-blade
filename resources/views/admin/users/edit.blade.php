@@ -41,22 +41,27 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label class="form-label">Имя пользователя</label>
-                                            <div class="form-control-plaintext fw-bold">
-                                                {{ $user->name }}
-                                            </div>
-                                            <small class="text-muted">Автоматически формируется из данных персоны</small>
+                                            <label for="name" class="form-label">
+                                                Имя пользователя <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" 
+                                                   class="form-control @error('name') is-invalid @enderror" 
+                                                   id="name" 
+                                                   name="name" 
+                                                   value="{{ old('name', $user->name) }}"
+                                                   placeholder="Введите имя пользователя"
+                                                   required>
+                                            @error('name')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="mb-3">
                                             <label class="form-label">Email</label>
                                             <div class="form-control-plaintext">
-                                                <a href="mailto:{{ $user->email }}" class="text-decoration-none">
-                                                    {{ $user->email }}
-                                                </a>
+                                                {{ $user->email }}
                                             </div>
-                                            <small class="text-muted">Неизменяемое поле</small>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -252,22 +257,21 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="mb-3">
-                                        <label class="form-label">Имя пользователя</label>
-                                        <div class="form-control-plaintext fw-bold">
-                                            {{ $user->name }}
-                                        </div>
-                                        <small class="text-muted">Автоматически формируется из данных персоны</small>
+                                        <label for="name_mobile" class="form-label">Имя пользователя *</label>
+                                        <input type="text" 
+                                               class="form-control @error('name') is-invalid @enderror" 
+                                               id="name_mobile" 
+                                               name="name" 
+                                               value="{{ old('name', $user->name) }}"
+                                               required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label class="form-label">Email</label>
                                         <div class="form-control-plaintext">
-                                            <a href="mailto:{{ $user->email }}" class="text-decoration-none">
-                                                {{ $user->email }}
-                                            </a>
+                                            {{ $user->email }}
                                         </div>
-                                        <small class="text-muted">Неизменяемое поле</small>
                                     </div>
                                 </div>
                                 <div class="col-md-4">

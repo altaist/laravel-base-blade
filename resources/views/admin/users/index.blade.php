@@ -43,9 +43,16 @@
                             <i class="fas fa-list me-2 d-none d-md-inline"></i>
                             Список пользователей
                         </h5>
-                        <span class="badge bg-primary fs-6 d-none d-md-inline">
-                            Всего: {{ $users->total() }}
-                        </span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary fs-6 d-none d-md-inline">
+                                Всего: {{ $users->total() }}
+                            </span>
+                            <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>
+                                <span class="d-none d-md-inline">Создать пользователя</span>
+                                <span class="d-md-none">Создать</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body p-0">
