@@ -43,4 +43,24 @@ class Article extends Model
     {
         return $this->belongsTo(File::class, 'img_file_id');
     }
+
+    /**
+     * Получить URL изображения для HTML
+     */
+    public function getImgUrlAttribute(): ?string
+    {
+        if (!$this->img_file_id || !$this->imgFile) {
+            return null;
+        }
+
+        return $this->imgFile->public_url;
+    }
+
+    /**
+     * Получить альтернативный текст для изображения
+     */
+    public function getImgAltAttribute(): string
+    {
+        return $this->seo_h1_title ?: $this->name;
+    }
 }
