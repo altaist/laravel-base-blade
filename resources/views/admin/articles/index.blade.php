@@ -241,32 +241,10 @@
     @method('DELETE')
 </form>
 
+<script src="{{ asset('js/admin-common.js') }}"></script>
 <script>
 function confirmDeleteArticle(button) {
-    const articleId = button.getAttribute('data-article-id');
-    const articleTitle = button.getAttribute('data-article-title');
-    
-    if (confirm(`Вы уверены, что хотите удалить статью "${articleTitle}"?\n\nЭто действие нельзя отменить.`)) {
-        const form = document.getElementById('deleteForm');
-        form.action = `/admin/articles/${articleId}`;
-        form.submit();
-    }
+    AdminUtils.confirmDeleteArticle(button);
 }
-
-// Обработка кликов по строкам таблицы
-document.addEventListener('DOMContentLoaded', function() {
-    const clickableRows = document.querySelectorAll('.clickable-row');
-    
-    clickableRows.forEach(function(row) {
-        row.addEventListener('click', function() {
-            const href = this.getAttribute('data-href');
-            if (href) {
-                window.location.href = href;
-            }
-        });
-        
-        // Эффект при наведении теперь обрабатывается CSS
-    });
-});
 </script>
 @endsection

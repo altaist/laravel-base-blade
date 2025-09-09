@@ -19,20 +19,11 @@
             <div class="card shadow-lg border-0 d-none d-md-block">
                 <div class="card-body p-3">
                     <!-- Кнопки действий сверху -->
-                    <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2 mb-3">
-                        <button type="submit" form="articleCreateForm" class="btn btn-success">
-                            <i class="fas fa-save d-md-inline d-none"></i>
-                            <span class="d-none d-md-inline ms-1">Создать</span>
-                        </button>
-                        <button type="button" class="btn btn-outline-danger" onclick="resetForm()">
-                            <i class="fas fa-undo d-md-inline d-none"></i>
-                            <span class="d-none d-md-inline ms-1">Сбросить</span>
-                        </button>
-                        <a href="{{ route('admin.articles.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times d-md-inline d-none"></i>
-                            <span class="d-none d-md-inline ms-1">Отмена</span>
-                        </a>
-                    </div>
+                    <x-admin.action-buttons 
+                        formId="articleCreateForm" 
+                        saveText="Создать" 
+                        cancelUrl="{{ route('admin.articles.index') }}" 
+                        variant="desktop" />
 
                     <form method="POST" action="{{ route('admin.articles.store') }}" id="articleCreateForm" class="admin-form">
                         @csrf
@@ -263,25 +254,17 @@
                     </div>
 
                     <!-- Кнопки действий -->
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save me-2"></i>Создать
-                        </button>
-                        <a href="{{ route('admin.articles.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times me-2"></i>Отмена
-                        </a>
-                    </div>
+                    <x-admin.action-buttons 
+                        formId="articleCreateForm" 
+                        saveText="Создать" 
+                        cancelUrl="{{ route('admin.articles.index') }}" 
+                        variant="mobile-grid" 
+                        :showReset="false" />
                 </form>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-function resetForm() {
-    if (confirm('Вы уверены, что хотите сбросить все изменения?')) {
-        document.getElementById('articleCreateForm').reset();
-    }
-}
-</script>
+<script src="{{ asset('js/admin-common.js') }}"></script>
 @endsection

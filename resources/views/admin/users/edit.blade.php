@@ -20,20 +20,11 @@
             <div class="card shadow-lg border-0 d-none d-md-block">
                 <div class="card-body p-3">
                     <!-- Кнопки действий сверху -->
-                    <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2 mb-3">
-                        <button type="submit" form="userEditForm" class="btn btn-success">
-                            <i class="fas fa-save d-md-inline d-none"></i>
-                            <span class="d-none d-md-inline ms-1">Сохранить</span>
-                        </button>
-                        <button type="button" class="btn btn-outline-danger" onclick="resetForm()">
-                            <i class="fas fa-undo d-md-inline d-none"></i>
-                            <span class="d-none d-md-inline ms-1">Сбросить</span>
-                        </button>
-                        <a href="{{ route('admin.users.show', $user) }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times d-md-inline d-none"></i>
-                            <span class="d-none d-md-inline ms-1">Отмена</span>
-                        </a>
-                    </div>
+                    <x-admin.action-buttons 
+                        formId="userEditForm" 
+                        saveText="Сохранить" 
+                        cancelUrl="{{ route('admin.users.show', $user) }}" 
+                        variant="desktop" />
 
                     <form method="POST" action="{{ route('admin.users.update', $user) }}" id="userEditForm" class="admin-form">
                         @csrf
@@ -227,20 +218,11 @@
                         </div>
 
                         <!-- Кнопки действий снизу -->
-                        <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2 mt-4">
-                            <button type="submit" form="userEditForm" class="btn btn-success">
-                                <i class="fas fa-save d-md-inline d-none"></i>
-                                <span class="d-none d-md-inline ms-1">Сохранить</span>
-                            </button>
-                            <button type="button" class="btn btn-outline-danger" onclick="resetForm()">
-                                <i class="fas fa-undo d-md-inline d-none"></i>
-                                <span class="d-none d-md-inline ms-1">Сбросить</span>
-                            </button>
-                            <a href="{{ route('admin.users.show', $user) }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times d-md-inline d-none"></i>
-                                <span class="d-none d-md-inline ms-1">Отмена</span>
-                            </a>
-                        </div>
+                        <x-admin.action-buttons 
+                            formId="userEditForm" 
+                            saveText="Сохранить" 
+                            cancelUrl="{{ route('admin.users.show', $user) }}" 
+                            variant="bottom" />
 
                     </form>
                 </div>
@@ -249,17 +231,11 @@
             <!-- Мобильная версия без карточки -->
             <div class="d-block d-md-none">
                 <!-- Кнопки действий сверху -->
-                <div class="d-flex gap-2 mb-3">
-                    <button type="submit" form="userEditForm" class="btn btn-success flex-fill">
-                        <i class="fas fa-save"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-danger flex-fill" onclick="resetForm()">
-                        <i class="fas fa-undo"></i>
-                    </button>
-                    <a href="{{ route('admin.users.show', $user) }}" class="btn btn-outline-secondary flex-fill">
-                        <i class="fas fa-times"></i>
-                    </a>
-                </div>
+                <x-admin.action-buttons 
+                    formId="userEditForm" 
+                    saveText="Сохранить" 
+                    cancelUrl="{{ route('admin.users.show', $user) }}" 
+                    variant="mobile" />
 
                 <form method="POST" action="{{ route('admin.users.update', $user) }}" id="userEditForm" class="admin-form">
                     @csrf
@@ -453,17 +429,11 @@
                     </div>
 
                     <!-- Кнопки действий снизу -->
-                    <div class="d-flex gap-2 mt-3 mb-3">
-                        <button type="submit" form="userEditForm" class="btn btn-success flex-fill">
-                            <i class="fas fa-save"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-danger flex-fill" onclick="resetForm()">
-                            <i class="fas fa-undo"></i>
-                        </button>
-                        <a href="{{ route('admin.users.show', $user) }}" class="btn btn-outline-secondary flex-fill">
-                            <i class="fas fa-times"></i>
-                        </a>
-                    </div>
+                    <x-admin.action-buttons 
+                        formId="userEditForm" 
+                        saveText="Сохранить" 
+                        cancelUrl="{{ route('admin.users.show', $user) }}" 
+                        variant="mobile-bottom" />
                 </form>
             </div>
         </div>
@@ -476,50 +446,10 @@
     @method('DELETE')
 </form>
 
+<script src="{{ asset('js/admin-common.js') }}"></script>
 <script>
-function resetForm() {
-    if (confirm('Вы уверены, что хотите сбросить все изменения?')) {
-        document.querySelector('form').reset();
-    }
-}
-
 function confirmDelete(userId, userName) {
-    if (confirm(`Вы уверены, что хотите удалить пользователя "${userName}"?\n\nЭто действие нельзя отменить.`)) {
-        const form = document.getElementById('deleteForm');
-        form.action = `/admin/users/${userId}`;
-        form.submit();
-    }
+    AdminUtils.confirmDelete(userId, userName, 'пользователя');
 }
-
-// Валидация формы
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('userEditForm');
-    form.addEventListener('submit', function(e) {
-        const requiredFields = form.querySelectorAll('[required]');
-        let isValid = true;
-
-        requiredFields.forEach(function(field) {
-            if (!field.value.trim()) {
-                field.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                field.classList.remove('is-invalid');
-            }
-        });
-
-        if (!isValid) {
-            e.preventDefault();
-            alert('Пожалуйста, заполните все обязательные поля');
-        }
-    });
-
-    // Очистка ошибок при вводе
-    const inputs = form.querySelectorAll('input, select, textarea');
-    inputs.forEach(function(input) {
-        input.addEventListener('input', function() {
-            this.classList.remove('is-invalid');
-        });
-    });
-});
 </script>
 @endsection

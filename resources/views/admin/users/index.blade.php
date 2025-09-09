@@ -240,29 +240,10 @@
     @method('DELETE')
 </form>
 
+<script src="{{ asset('js/admin-common.js') }}"></script>
 <script>
 function confirmDelete(userId, userName) {
-    if (confirm(`Вы уверены, что хотите удалить пользователя "${userName}"?\n\nЭто действие нельзя отменить.`)) {
-        const form = document.getElementById('deleteForm');
-        form.action = `/admin/users/${userId}`;
-        form.submit();
-    }
+    AdminUtils.confirmDelete(userId, userName, 'пользователя');
 }
-
-// Обработка кликов по строкам таблицы
-document.addEventListener('DOMContentLoaded', function() {
-    const clickableRows = document.querySelectorAll('.clickable-row');
-    
-    clickableRows.forEach(function(row) {
-        row.addEventListener('click', function() {
-            const href = this.getAttribute('data-href');
-            if (href) {
-                window.location.href = href;
-            }
-        });
-        
-        // Эффект при наведении теперь обрабатывается CSS
-    });
-});
 </script>
 @endsection
