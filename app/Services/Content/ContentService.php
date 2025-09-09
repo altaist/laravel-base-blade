@@ -2,6 +2,8 @@
 
 namespace App\Services\Content;
 
+use Illuminate\Support\Facades\Log;
+
 class ContentService
 {
     /**
@@ -13,17 +15,28 @@ class ContentService
             return $content;
         }
 
-        switch ($format) {
-            case 'html':
-                return $this->processHtmlContent($content);
-            case 'text':
-                return $this->processTextContent($content);
-            case 'markdown':
-                return $this->processMarkdownContent($content);
-            case 'raw':
-                return $content;
-            default:
-                return $this->processHtmlContent($content);
+        try {
+            switch ($format) {
+                case 'html':
+                    return $this->processHtmlContent($content);
+                case 'text':
+                    return $this->processTextContent($content);
+                case 'markdown':
+                    return $this->processMarkdownContent($content);
+                case 'raw':
+                    return $content;
+                default:
+                    return $this->processHtmlContent($content);
+            }
+        } catch (\Exception $e) {
+            // Логируем ошибку и возвращаем исходный контент
+            Log::warning('Ошибка обработки контента', [
+                'error' => $e->getMessage(),
+                'format' => $format,
+                'content_length' => is_string($content) ? strlen($content) : 0
+            ]);
+            
+            return $content;
         }
     }
 

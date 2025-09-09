@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Content;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Services\Content\ArticleService;
-use App\Services\Content\ArticleSeoService;
+use App\Services\Content\ContentService;
+use App\Services\Content\RichContentService;
+use App\Services\Content\SeoService;
+use App\Services\Content\MediaService;
+use App\Traits\ValidatesContent;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -14,9 +18,14 @@ use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
+    use ValidatesContent;
+
     public function __construct(
         private ArticleService $articleService,
-        private ArticleSeoService $seoService
+        private SeoService $seoService,
+        private ContentService $contentService,
+        private RichContentService $richContentService,
+        private MediaService $mediaService
     ) {}
 
     /**
@@ -51,18 +60,10 @@ class ArticleController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'content' => 'required|string',
-            'seo_title' => 'nullable|string|max:60',
-            'seo_description' => 'nullable|string|max:160',
-            'seo_h1_title' => 'nullable|string|max:100',
-            'img_file_id' => 'nullable|exists:files,id',
-        ]);
+        $validated = $request->validate($this->getArticleValidationRules());
 
         $validated['user_id'] = Auth::id();
-        $validated['slug'] = $this->seoService->generateSlug($validated['name']);
+        $validated['slug'] = $this->seoService->generateSlug($validated['name'], null, Article::class);
 
         $article = $this->articleService->create($validated);
 
@@ -91,19 +92,11 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'content' => 'required|string',
-            'seo_title' => 'nullable|string|max:60',
-            'seo_description' => 'nullable|string|max:160',
-            'seo_h1_title' => 'nullable|string|max:100',
-            'img_file_id' => 'nullable|exists:files,id',
-        ]);
+        $validated = $request->validate($this->getArticleUpdateValidationRules());
 
         // Если название изменилось, генерируем новый slug
         if ($validated['name'] !== $article->name) {
-            $validated['slug'] = $this->seoService->generateSlug($validated['name'], $article->id);
+            $validated['slug'] = $this->seoService->generateSlug($validated['name'], $article->id, Article::class);
         }
 
         $this->articleService->update($article, $validated);
@@ -174,18 +167,10 @@ class ArticleController extends Controller
      */
     public function apiStore(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'content' => 'required|string',
-            'seo_title' => 'nullable|string|max:60',
-            'seo_description' => 'nullable|string|max:160',
-            'seo_h1_title' => 'nullable|string|max:100',
-            'img_file_id' => 'nullable|exists:files,id',
-        ]);
+        $validated = $request->validate($this->getArticleValidationRules());
 
         $validated['user_id'] = Auth::id();
-        $validated['slug'] = $this->seoService->generateSlug($validated['name']);
+        $validated['slug'] = $this->seoService->generateSlug($validated['name'], null, Article::class);
 
         $article = $this->articleService->create($validated);
 
@@ -200,19 +185,11 @@ class ArticleController extends Controller
      */
     public function apiUpdate(Request $request, Article $article): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'content' => 'required|string',
-            'seo_title' => 'nullable|string|max:60',
-            'seo_description' => 'nullable|string|max:160',
-            'seo_h1_title' => 'nullable|string|max:100',
-            'img_file_id' => 'nullable|exists:files,id',
-        ]);
+        $validated = $request->validate($this->getArticleUpdateValidationRules());
 
         // Если название изменилось, генерируем новый slug
         if ($validated['name'] !== $article->name) {
-            $validated['slug'] = $this->seoService->generateSlug($validated['name'], $article->id);
+            $validated['slug'] = $this->seoService->generateSlug($validated['name'], $article->id, Article::class);
         }
 
         $this->articleService->update($article, $validated);
@@ -232,6 +209,142 @@ class ArticleController extends Controller
 
         return response()->json([
             'message' => 'Статья успешно удалена',
+        ]);
+    }
+
+    /**
+     * API: Получить RichContent статьи
+     */
+    public function apiGetRichContent(Article $article): JsonResponse
+    {
+        return response()->json([
+            'rich_content' => $article->getRichContent(),
+            'has_rich_content' => $article->hasRichContent(),
+        ]);
+    }
+
+    /**
+     * API: Обновить RichContent статьи
+     */
+    public function apiUpdateRichContent(Request $request, Article $article): JsonResponse
+    {
+        $validated = $request->validate([
+            'rich_content' => 'required|array',
+        ]);
+
+        $article->setRichContent($validated['rich_content']);
+
+        return response()->json([
+            'rich_content' => $article->getRichContent(),
+            'message' => 'RichContent успешно обновлен',
+        ]);
+    }
+
+    /**
+     * API: Добавить блок в RichContent
+     */
+    public function apiAddRichContentBlock(Request $request, Article $article): JsonResponse
+    {
+        $validated = $request->validate([
+            'type' => 'required|string|in:text,heading,image,video,quote,code,list,table',
+            'content' => 'required',
+            'metadata' => 'nullable|array',
+        ]);
+
+        $article->addRichContentBlock(
+            $validated['type'],
+            $validated['content'],
+            $validated['metadata'] ?? []
+        );
+
+        return response()->json([
+            'rich_content' => $article->getRichContent(),
+            'message' => 'Блок успешно добавлен',
+        ]);
+    }
+
+    /**
+     * API: Удалить блок из RichContent
+     */
+    public function apiRemoveRichContentBlock(Request $request, Article $article): JsonResponse
+    {
+        $validated = $request->validate([
+            'block_id' => 'required|string',
+        ]);
+
+        $article->removeRichContentBlock($validated['block_id']);
+
+        return response()->json([
+            'rich_content' => $article->getRichContent(),
+            'message' => 'Блок успешно удален',
+        ]);
+    }
+
+    /**
+     * API: Получить контент в HTML формате
+     */
+    public function apiGetContentAsHtml(Article $article): JsonResponse
+    {
+        $html = '';
+        
+        // Добавляем обычный контент
+        if ($article->hasContentField('body')) {
+            $html .= $article->getContentField('body', 'html');
+        }
+        
+        // Добавляем RichContent если есть
+        if ($article->hasRichContent()) {
+            $html .= $article->getRichContentAsHtml();
+        }
+
+        return response()->json([
+            'html' => $html,
+        ]);
+    }
+
+    /**
+     * API: Получить контент в Markdown формате
+     */
+    public function apiGetContentAsMarkdown(Article $article): JsonResponse
+    {
+        $markdown = '';
+        
+        // Добавляем обычный контент
+        if ($article->hasContentField('body')) {
+            $markdown .= $article->getContentField('body', 'markdown');
+        }
+        
+        // Добавляем RichContent если есть
+        if ($article->hasRichContent()) {
+            $markdown .= $article->getRichContentAsMarkdown();
+        }
+
+        return response()->json([
+            'markdown' => $markdown,
+        ]);
+    }
+
+    /**
+     * API: Получить статистику контента
+     */
+    public function apiGetContentStats(Article $article): JsonResponse
+    {
+        return response()->json([
+            'content_stats' => $article->getContentStats(),
+            'rich_content_stats' => $article->hasRichContent() ? $article->getRichContentStats() : null,
+        ]);
+    }
+
+    /**
+     * API: Синхронизировать RichContent с обычным контентом
+     */
+    public function apiSyncRichContent(Article $article): JsonResponse
+    {
+        $article->syncRichContentWithContent();
+
+        return response()->json([
+            'rich_content' => $article->getRichContent(),
+            'message' => 'RichContent синхронизирован с обычным контентом',
         ]);
     }
 }

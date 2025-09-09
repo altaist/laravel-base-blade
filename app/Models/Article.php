@@ -7,6 +7,10 @@ use App\Traits\Favoritable;
 use App\Traits\HasAttachments;
 use App\Traits\Likeable;
 use App\Traits\Statusable;
+use App\Traits\HasContent;
+use App\Traits\HasRichContent;
+use App\Traits\HasSeo;
+use App\Traits\HasMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +18,8 @@ use Illuminate\Support\Collection;
 
 class Article extends Model
 {
-    use HasFactory, Likeable, Favoritable, HasAttachments, Statusable;
+    use HasFactory, Likeable, Favoritable, HasAttachments, Statusable, 
+        HasContent, HasRichContent, HasSeo, HasMedia;
 
     protected $fillable = [
         'user_id',
@@ -22,6 +27,7 @@ class Article extends Model
         'slug',
         'description',
         'content',
+        'rich_content',
         'seo_title',
         'seo_description',
         'seo_h1_title',
@@ -33,6 +39,17 @@ class Article extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'status' => ArticleStatus::class,
+        'rich_content' => 'array',
+    ];
+
+    /**
+     * Конфигурация полей контента для Article
+     */
+    protected $contentFields = [
+        'title' => ['field' => 'name', 'type' => 'text', 'required' => true],
+        'summary' => ['field' => 'description', 'type' => 'text', 'required' => false],
+        'body' => ['field' => 'content', 'type' => 'html', 'required' => true],
+        'rich' => ['field' => 'rich_content', 'type' => 'json', 'required' => false]
     ];
 
     /**
@@ -44,31 +61,11 @@ class Article extends Model
     }
 
     /**
-     * Связь с файлом изображения
+     * Связь с файлом изображения (дублируется в HasMedia, но оставляем для совместимости)
      */
     public function imgFile(): BelongsTo
     {
         return $this->belongsTo(File::class, 'img_file_id');
-    }
-
-    /**
-     * Получить URL изображения для HTML
-     */
-    public function getImgUrlAttribute(): ?string
-    {
-        if (!$this->img_file_id || !$this->imgFile) {
-            return null;
-        }
-
-        return $this->imgFile->public_url;
-    }
-
-    /**
-     * Получить альтернативный текст для изображения
-     */
-    public function getImgAltAttribute(): string
-    {
-        return $this->seo_h1_title ?: $this->name;
     }
 
 

@@ -38,7 +38,7 @@ class MediaService
             return null;
         }
 
-        return $file->public_url;
+        return $file->public_url ?? null;
     }
 
     /**
@@ -87,11 +87,6 @@ class MediaService
      */
     public function validateFile(File $file, ?Model $model = null): bool
     {
-        // Проверяем, что файл существует
-        if (!$file->exists()) {
-            return false;
-        }
-
         // Проверяем тип файла
         if (!$this->isImage($file)) {
             return false;

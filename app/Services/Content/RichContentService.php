@@ -38,7 +38,9 @@ class RichContentService
         $processed = $this->validateStructure($processed);
         
         // Обрабатываем блоки
-        $processed['blocks'] = $this->processBlocks($processed['blocks']);
+        $processed['blocks'] = is_array($processed['blocks']) 
+            ? $this->processBlocks($processed['blocks']) 
+            : [];
         
         // Обновляем метаданные
         $processed['metadata'] = $this->updateMetadata($processed);
@@ -185,7 +187,7 @@ class RichContentService
         $processedBlocks = [];
         
         foreach ($blocks as $block) {
-            if ($this->isValidBlock($block)) {
+            if (is_array($block) && $this->isValidBlock($block)) {
                 $processedBlocks[] = $this->processBlock($block);
             }
         }

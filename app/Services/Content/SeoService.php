@@ -201,7 +201,7 @@ class SeoService
         $titleFields = ['name', 'title', 'subject'];
         
         foreach ($titleFields as $field) {
-            if (isset($model->$field) && !empty($model->$field)) {
+            if ($model->offsetExists($field) && !empty($model->$field)) {
                 return $model->$field;
             }
         }
@@ -227,7 +227,7 @@ class SeoService
         $descriptionFields = ['description', 'summary', 'excerpt'];
         
         foreach ($descriptionFields as $field) {
-            if (isset($model->$field) && !empty($model->$field)) {
+            if ($model->offsetExists($field) && !empty($model->$field)) {
                 return $model->$field;
             }
         }
@@ -247,7 +247,7 @@ class SeoService
         // Пытаемся извлечь из основного контента
         $contentFields = ['content', 'body', 'text'];
         foreach ($contentFields as $field) {
-            if (isset($model->$field) && !empty($model->$field)) {
+            if ($model->offsetExists($field) && !empty($model->$field)) {
                 $content = $model->$field;
                 $text = strip_tags($content);
                 if (!empty($text)) {
@@ -302,7 +302,7 @@ class SeoService
         $title = strip_tags($title);
         
         // Первая буква заглавная
-        $title = mb_ucfirst($title);
+        $title = Str::ucfirst($title);
         
         return $title;
     }
@@ -336,7 +336,7 @@ class SeoService
         $h1 = strip_tags($h1);
         
         // Первая буква заглавная
-        $h1 = mb_ucfirst($h1);
+        $h1 = Str::ucfirst($h1);
         
         return $h1;
     }
