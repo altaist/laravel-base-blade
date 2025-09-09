@@ -45,6 +45,10 @@ Route::prefix('admin')->middleware(['auth', 'can:admin'])->group(function () {
     // Feedback routes
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
     Route::get('/feedbacks/{feedback}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
+    
+    // Articles routes (пример)
+    Route::get('/articles', function() { return view('admin.articles.index'); })->name('admin.articles.index');
+    Route::get('/articles/{id}/edit', function($id) { return view('admin.articles.edit'); })->name('admin.articles.edit');
 });
 
 // ===== GUEST AUTH ROUTES =====

@@ -1,4 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.app', [
+    'header' => 'admin',
+    'breadcrumbs' => [
+        ['name' => 'Админка', 'url' => route('admin.dashboard')],
+        ['name' => 'Пользователи', 'url' => route('admin.users.index')]
+    ]
+])
 
 @section('content')
 <div class="container-fluid admin-container">
@@ -6,13 +12,6 @@
     <div class="row mb-3 mb-md-4">
         <div class="col-12">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                <div class="mb-3 mb-md-0">
-                    <h1 class="h3 h1-md fw-bold text-dark mb-2">
-                        <i class="fas fa-users me-2 me-md-3 text-primary d-none d-md-inline"></i>
-                        Управление пользователями
-                    </h1>
-                    <p class="text-muted mb-0 small d-none d-md-block">Просмотр и редактирование пользователей системы</p>
-                </div>
                 <div>
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm btn-md">
                         <i class="fas fa-arrow-left me-1 me-md-2"></i>Назад
@@ -90,7 +89,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($users as $user)
-                                        <tr class="clickable-row" data-href="{{ route('admin.users.edit', $user) }}" style="cursor: pointer;">
+                                        <tr class="clickable-row" data-href="{{ $user->isAdmin() ? '#' : route('admin.users.edit', $user) }}" style="cursor: {{ $user->isAdmin() ? 'default' : 'pointer' }};">
                                             <td class="fw-bold">#{{ $user->id }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -108,9 +107,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="mailto:{{ $user->email }}" class="text-decoration-none" onclick="event.stopPropagation();">
-                                                    {{ $user->email }}
-                                                </a>
+                                                {{ $user->email }}
                                             </td>
                                             <td>
                                                 @switch($user->role->value)
@@ -141,11 +138,13 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group action-buttons" role="group" onclick="event.stopPropagation();">
-                                                    <a href="{{ route('admin.users.edit', $user) }}" 
-                                                       class="btn btn-sm btn-outline-primary"
-                                                       title="Редактировать">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    @if(!$user->isAdmin())
+                                                        <a href="{{ route('admin.users.edit', $user) }}" 
+                                                           class="btn btn-sm btn-outline-primary"
+                                                           title="Редактировать">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @endif
                                                     @if(!$user->isAdmin() || $user->id !== Auth::id())
                                                         <button type="button" 
                                                                 class="btn btn-sm btn-outline-danger"
@@ -220,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
     clickableRows.forEach(function(row) {
         row.addEventListener('click', function() {
             const href = this.getAttribute('data-href');
-            if (href) {
+            if (href && href !== '#') {
                 window.location.href = href;
             }
         });

@@ -1,26 +1,16 @@
-@extends('layouts.app')
+@extends('layouts.app', [
+    'header' => 'edit',
+    'backUrl' => route('admin.feedbacks.index'),
+    'backText' => 'К списку сообщений',
+    'breadcrumbs' => [
+        ['name' => 'Админка', 'url' => route('admin.dashboard')],
+        ['name' => 'Обратная связь', 'url' => route('admin.feedbacks.index')],
+        ['name' => 'Сообщение #' . $feedback->id, 'url' => '#']
+    ]
+])
 
 @section('content')
 <div class="container-fluid admin-container">
-    <!-- Заголовок -->
-    <div class="row mb-3 mb-md-4">
-        <div class="col-12">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                <div class="mb-3 mb-md-0">
-                    <h1 class="h3 h1-md fw-bold text-dark mb-2">
-                        <i class="fas fa-comment-dots me-2 me-md-3 text-success d-none d-md-inline"></i>
-                        Сообщение #{{ $feedback->id }}
-                    </h1>
-                    <p class="text-muted mb-0 small d-none d-md-block">Детали сообщения от пользователя</p>
-                </div>
-                <div>
-                    <a href="{{ route('admin.feedbacks.index') }}" class="btn btn-outline-secondary btn-sm btn-md">
-                        <i class="fas fa-arrow-left me-1 me-md-2"></i>Назад
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Детали сообщения -->
     <div class="row">

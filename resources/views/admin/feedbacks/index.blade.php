@@ -1,4 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.app', [
+    'header' => 'admin',
+    'breadcrumbs' => [
+        ['name' => 'Админка', 'url' => route('admin.dashboard')],
+        ['name' => 'Обратная связь', 'url' => route('admin.feedbacks.index')]
+    ]
+])
 
 @section('content')
 <div class="container-fluid admin-container">
@@ -6,13 +12,6 @@
     <div class="row mb-3 mb-md-4">
         <div class="col-12">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                <div class="mb-3 mb-md-0">
-                    <h1 class="h3 h1-md fw-bold text-dark mb-2">
-                        <i class="fas fa-comments me-2 me-md-3 text-success d-none d-md-inline"></i>
-                        Обратная связь
-                    </h1>
-                    <p class="text-muted mb-0 small d-none d-md-block">Управление сообщениями от пользователей</p>
-                </div>
                 <div>
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm btn-md">
                         <i class="fas fa-arrow-left me-1 me-md-2"></i>Назад

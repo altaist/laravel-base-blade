@@ -1,5 +1,8 @@
 @extends('layouts.app', [
-    'header' => 'admin'
+    'header' => 'admin',
+    'breadcrumbs' => [
+        ['name' => 'Админка', 'url' => route('admin.dashboard')]
+    ]
 ])
 
 @section('content')
@@ -8,13 +11,6 @@
     <div class="row mb-3 mb-md-4">
         <div class="col-12">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                <div class="mb-3 mb-md-0">
-                    <h1 class="h3 h1-md fw-bold text-dark mb-2">
-                        <i class="fas fa-tachometer-alt me-2 me-md-3 text-primary d-none d-md-inline"></i>
-                        Админ панель
-                    </h1>
-                    <p class="text-muted mb-0 small d-none d-md-block">Управление системой и пользователями</p>
-                </div>
                 <div class="text-muted">
                     <small>Добро пожаловать, {{ Auth::user()->name }}!</small>
                 </div>

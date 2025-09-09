@@ -31,6 +31,12 @@
                         Обратная связь
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}" 
+                       href="{{ route('admin.articles.index') }}">
+                        Статьи
+                    </a>
+                </li>
             </ul>
             
             <!-- Правая часть навигации -->

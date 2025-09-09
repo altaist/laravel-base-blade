@@ -35,6 +35,10 @@
         ])
     </div>
 
+    @if(request()->routeIs('admin.*'))
+        @include('components.admin.breadcrumbs')
+    @endif
+
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
             {{ session('success') }}
