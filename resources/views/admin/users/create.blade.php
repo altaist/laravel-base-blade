@@ -12,18 +12,25 @@
 
 @section('content')
 <div class="container-fluid admin-container">
-
     <div class="row">
         <div class="col-12">
-            <!-- Десктопная версия с карточкой -->
-            <div class="card shadow-lg border-0 d-none d-md-block">
+            <div class="card shadow-lg border-0">
                 <div class="card-body p-3">
-                    <!-- Кнопки действий сверху -->
+                    <!-- Кнопки действий -->
                     <x-admin.action-buttons 
                         formId="userCreateForm" 
                         saveText="Создать" 
                         cancelUrl="{{ route('admin.users.index') }}" 
                         variant="desktop" />
+                    
+                    <!-- Мобильные кнопки -->
+                    <div class="d-block d-md-none mb-3">
+                        <x-admin.action-buttons 
+                            formId="userCreateForm" 
+                            saveText="Создать" 
+                            cancelUrl="{{ route('admin.users.index') }}" 
+                            variant="mobile" />
+                    </div>
 
                     <form method="POST" action="{{ route('admin.users.store') }}" id="userCreateForm" class="admin-form">
                         @csrf
@@ -57,52 +64,6 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Имя пользователя</label>
-                                            <div class="form-control-plaintext fw-bold" id="userNameDisplay">
-                                                <span class="text-muted">Будет сформировано автоматически</span>
-                                            </div>
-                                            <small class="text-muted">Формируется из ФИО или email</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="password" class="form-label">
-                                                Пароль <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="password" 
-                                                   class="form-control @error('password') is-invalid @enderror" 
-                                                   id="password" 
-                                                   name="password" 
-                                                   placeholder="Минимум 8 символов"
-                                                   required
-                                                   autocomplete="new-password">
-                                            @error('password')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="password_confirmation" class="form-label">
-                                                Подтверждение пароля <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="password" 
-                                                   class="form-control @error('password_confirmation') is-invalid @enderror" 
-                                                   id="password_confirmation" 
-                                                   name="password_confirmation" 
-                                                   placeholder="Повторите пароль"
-                                                   required
-                                                   autocomplete="new-password">
-                                            @error('password_confirmation')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
                                             <label for="role" class="form-label">
                                                 Роль <span class="text-danger">*</span>
                                             </label>
@@ -127,6 +88,43 @@
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">
+                                                Пароль <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="password" 
+                                                   class="form-control @error('password') is-invalid @enderror" 
+                                                   id="password" 
+                                                   name="password" 
+                                                   placeholder="Введите пароль"
+                                                   required
+                                                   autocomplete="new-password">
+                                            @error('password')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="password_confirmation" class="form-label">
+                                                Подтверждение пароля <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="password" 
+                                                   class="form-control @error('password_confirmation') is-invalid @enderror" 
+                                                   id="password_confirmation" 
+                                                   name="password_confirmation" 
+                                                   placeholder="Подтвердите пароль"
+                                                   required
+                                                   autocomplete="new-password">
+                                            @error('password_confirmation')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -139,7 +137,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="first_name" class="form-label">Имя</label>
                                             <input type="text" 
@@ -154,7 +152,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="last_name" class="form-label">Фамилия</label>
                                             <input type="text" 
@@ -169,10 +167,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="middle_name" class="form-label">Отчество</label>
                                             <input type="text" 
@@ -187,7 +182,10 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="phone" class="form-label">Телефон</label>
                                             <input type="tel" 
@@ -196,14 +194,44 @@
                                                    name="phone" 
                                                    value="{{ old('phone') }}"
                                                    placeholder="+7 (999) 123-45-67"
-                                                   autocomplete="tel">
+                                                   autocomplete="tel"
+                                                   pattern="[\+]?[0-9\s\-\(\)]{10,20}">
                                             @error('phone')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="region" class="form-label">Регион</label>
+                                            <input type="text" 
+                                                   class="form-control @error('region') is-invalid @enderror" 
+                                                   id="region" 
+                                                   name="region" 
+                                                   value="{{ old('region') }}"
+                                                   placeholder="Введите регион">
+                                            @error('region')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label for="gender" class="form-label">Пол</label>
+                                            <select class="form-select @error('gender') is-invalid @enderror" 
+                                                    id="gender" 
+                                                    name="gender">
+                                                <option value="">Выберите пол</option>
+                                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Мужской</option>
+                                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Женский</option>
+                                            </select>
+                                            @error('gender')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
@@ -212,8 +240,7 @@
                                                    class="form-control @error('birth_date') is-invalid @enderror" 
                                                    id="birth_date" 
                                                    name="birth_date" 
-                                                   value="{{ old('birth_date') }}"
-                                                   autocomplete="bday">
+                                                   value="{{ old('birth_date') }}">
                                             @error('birth_date')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -221,19 +248,18 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="gender" class="form-label">Пол</label>
-                                            <select class="form-select @error('gender') is-invalid @enderror" 
-                                                    id="gender" 
-                                                    name="gender">
-                                                <option value="">Выберите пол</option>
-                                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>
-                                                    Мужской
-                                                </option>
-                                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>
-                                                    Женский
-                                                </option>
-                                            </select>
-                                            @error('gender')
+                                            <label for="age" class="form-label">Возраст</label>
+                                            <input type="number" 
+                                                   class="form-control @error('age') is-invalid @enderror" 
+                                                   id="age" 
+                                                   name="age" 
+                                                   value="{{ old('age') }}"
+                                                   min="0" 
+                                                   max="150"
+                                                   step="1"
+                                                   placeholder="Введите возраст"
+                                                   autocomplete="bday-year">
+                                            @error('age')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
@@ -332,234 +358,29 @@
                                 </div>
                             </div>
                         </div>
+
                     </form>
-                </div>
-            </div>
-            
-            <!-- Мобильная версия -->
-            <div class="d-block d-md-none">
-                <!-- Кнопки действий сверху -->
-                <x-admin.action-buttons 
-                    formId="userCreateFormMobile" 
-                    saveText="Создать" 
-                    cancelUrl="{{ route('admin.users.index') }}" 
-                    variant="mobile" />
-
-                <form method="POST" action="{{ route('admin.users.store') }}" id="userCreateFormMobile" class="admin-form">
-                    @csrf
                     
-                    <!-- Основная информация -->
-                    <div class="card mb-3">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">Основная информация</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="email_mobile" class="form-label">Email *</label>
-                                <input type="email" 
-                                       class="form-control @error('email') is-invalid @enderror" 
-                                       id="email_mobile" 
-                                       name="email" 
-                                       value="{{ old('email') }}"
-                                       required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password_mobile" class="form-label">Пароль *</label>
-                                <input type="password" 
-                                       class="form-control @error('password') is-invalid @enderror" 
-                                       id="password_mobile" 
-                                       name="password" 
-                                       required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password_confirmation_mobile" class="form-label">Подтверждение пароля *</label>
-                                <input type="password" 
-                                       class="form-control @error('password_confirmation') is-invalid @enderror" 
-                                       id="password_confirmation_mobile" 
-                                       name="password_confirmation" 
-                                       required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="role_mobile" class="form-label">Роль *</label>
-                                <select class="form-select @error('role') is-invalid @enderror" 
-                                        id="role_mobile" 
-                                        name="role" 
-                                        required>
-                                    <option value="">Выберите роль</option>
-                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Администратор</option>
-                                    <option value="manager" {{ old('role') == 'manager' ? 'selected' : '' }}>Менеджер</option>
-                                    <option value="user" {{ old('role', 'user') == 'user' ? 'selected' : '' }}>Пользователь</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Личная информация -->
-                    <div class="card mb-3">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">Личная информация</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="first_name_mobile" class="form-label">Имя</label>
-                                <input type="text" 
-                                       class="form-control @error('first_name') is-invalid @enderror" 
-                                       id="first_name_mobile" 
-                                       name="first_name" 
-                                       value="{{ old('first_name') }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="last_name_mobile" class="form-label">Фамилия</label>
-                                <input type="text" 
-                                       class="form-control @error('last_name') is-invalid @enderror" 
-                                       id="last_name_mobile" 
-                                       name="last_name" 
-                                       value="{{ old('last_name') }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="middle_name_mobile" class="form-label">Отчество</label>
-                                <input type="text" 
-                                       class="form-control @error('middle_name') is-invalid @enderror" 
-                                       id="middle_name_mobile" 
-                                       name="middle_name" 
-                                       value="{{ old('middle_name') }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="phone_mobile" class="form-label">Телефон</label>
-                                <input type="tel" 
-                                       class="form-control @error('phone') is-invalid @enderror" 
-                                       id="phone_mobile" 
-                                       name="phone" 
-                                       value="{{ old('phone') }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="birth_date_mobile" class="form-label">Дата рождения</label>
-                                <input type="date" 
-                                       class="form-control @error('birth_date') is-invalid @enderror" 
-                                       id="birth_date_mobile" 
-                                       name="birth_date" 
-                                       value="{{ old('birth_date') }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="gender_mobile" class="form-label">Пол</label>
-                                <select class="form-select @error('gender') is-invalid @enderror" 
-                                        id="gender_mobile" 
-                                        name="gender">
-                                    <option value="">Выберите пол</option>
-                                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Мужской</option>
-                                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Женский</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Адрес -->
-                    <div class="card mb-3">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">Адрес</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="address_street_mobile" class="form-label">Улица</label>
-                                <input type="text" 
-                                       class="form-control @error('address.street') is-invalid @enderror" 
-                                       id="address_street_mobile" 
-                                       name="address[street]" 
-                                       value="{{ old('address.street') }}">
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label for="address_house_mobile" class="form-label">Дом</label>
-                                        <input type="text" 
-                                               class="form-control @error('address.house') is-invalid @enderror" 
-                                               id="address_house_mobile" 
-                                               name="address[house]" 
-                                               value="{{ old('address.house') }}">
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="mb-3">
-                                        <label for="address_apartment_mobile" class="form-label">Квартира</label>
-                                        <input type="text" 
-                                               class="form-control @error('address.apartment') is-invalid @enderror" 
-                                               id="address_apartment_mobile" 
-                                               name="address[apartment]" 
-                                               value="{{ old('address.apartment') }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="address_city_mobile" class="form-label">Город</label>
-                                <input type="text" 
-                                       class="form-control @error('address.city') is-invalid @enderror" 
-                                       id="address_city_mobile" 
-                                       name="address[city]" 
-                                       value="{{ old('address.city') }}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="address_postal_code_mobile" class="form-label">Почтовый индекс</label>
-                                <input type="text" 
-                                       class="form-control @error('address.postal_code') is-invalid @enderror" 
-                                       id="address_postal_code_mobile" 
-                                       name="address[postal_code]" 
-                                       value="{{ old('address.postal_code') }}"
-                                       pattern="[0-9]{6}">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Кнопки действий -->
+                    <!-- Кнопки действий снизу -->
                     <x-admin.action-buttons 
-                        formId="userCreateFormMobile" 
+                        formId="userCreateForm" 
                         saveText="Создать" 
                         cancelUrl="{{ route('admin.users.index') }}" 
-                        variant="mobile-grid" 
-                        :showReset="false" />
-                </form>
+                        variant="bottom" />
+                    
+                    <!-- Мобильные кнопки снизу -->
+                    <div class="d-block d-md-none mt-3">
+                        <x-admin.action-buttons 
+                            formId="userCreateForm" 
+                            saveText="Создать" 
+                            cancelUrl="{{ route('admin.users.index') }}" 
+                            variant="mobile-bottom" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script src="{{ asset('js/admin-common.js') }}"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const firstNameInput = document.getElementById('first_name');
-    const lastNameInput = document.getElementById('last_name');
-    const emailInput = document.getElementById('email');
-    const userNameDisplay = document.getElementById('userNameDisplay');
-    
-    function updateUserNameDisplay() {
-        const firstName = firstNameInput ? firstNameInput.value.trim() : '';
-        const lastName = lastNameInput ? lastNameInput.value.trim() : '';
-        const email = emailInput ? emailInput.value.trim() : '';
-        
-        let userName = '';
-        if (firstName || lastName) {
-            userName = (firstName + ' ' + lastName).trim();
-        } else if (email) {
-            userName = email;
-        } else {
-            userName = 'Будет сформировано автоматически';
-        }
-        
-        if (userNameDisplay) {
-            if (userName === 'Будет сформировано автоматически') {
-                userNameDisplay.innerHTML = '<span class="text-muted">Будет сформировано автоматически</span>';
-            } else {
-                userNameDisplay.textContent = userName;
-            }
-        }
-    }
-    
-    // Обновляем при изменении полей
-    if (firstNameInput) firstNameInput.addEventListener('input', updateUserNameDisplay);
-    if (lastNameInput) lastNameInput.addEventListener('input', updateUserNameDisplay);
-    if (emailInput) emailInput.addEventListener('input', updateUserNameDisplay);
-    
-    // Обновляем при загрузке страницы
-    updateUserNameDisplay();
-});
-</script>
 @endsection

@@ -9,7 +9,7 @@
 
 @if($variant === 'desktop' || $variant === 'both')
     <!-- Десктопная версия кнопок -->
-    <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2 mb-3 d-none d-md-block">
+    <div class="d-none d-md-flex flex-column flex-md-row justify-content-end gap-2 mb-3">
         <button type="submit" form="{{ $formId }}" class="btn btn-success">
             <i class="fas fa-save d-md-inline d-none"></i>
             <span class="d-none d-md-inline ms-1">{{ $saveText }}</span>
@@ -54,7 +54,7 @@
 
 @if($variant === 'bottom')
     <!-- Кнопки внизу формы (десктоп) -->
-    <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2 mt-4 d-none d-md-block">
+    <div class="d-none d-md-flex flex-column flex-md-row justify-content-end gap-2 mt-4">
         <button type="submit" form="{{ $formId }}" class="btn btn-success">
             <i class="fas fa-save d-md-inline d-none"></i>
             <span class="d-none d-md-inline ms-1">{{ $saveText }}</span>
