@@ -51,6 +51,14 @@ class AdminController extends Controller
     }
 
     /**
+     * Страница просмотра пользователя
+     */
+    public function userShow(User $user): View
+    {
+        return view('admin.users.show', compact('user'));
+    }
+
+    /**
      * Страница редактирования пользователя
      */
     public function userEdit(User $user): View
@@ -79,7 +87,7 @@ class AdminController extends Controller
             $this->personService->updatePerson($user, $request->validated(), false);
 
             return redirect()
-                ->route('admin.users.index')
+                ->route('admin.users.show', $user)
                 ->with('success', 'Пользователь успешно обновлен');
 
         } catch (\Exception $e) {

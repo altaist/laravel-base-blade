@@ -1,5 +1,5 @@
 @extends('layouts.app', [
-    'header' => 'edit',
+    'header' => 'detail',
     'backUrl' => route('admin.feedbacks.index'),
     'backText' => 'К списку сообщений',
     'breadcrumbs' => [

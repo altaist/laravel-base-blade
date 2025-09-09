@@ -89,7 +89,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($users as $user)
-                                        <tr class="clickable-row" data-href="{{ $user->isAdmin() ? '#' : route('admin.users.edit', $user) }}" style="cursor: {{ $user->isAdmin() ? 'default' : 'pointer' }};">
+                                        <tr class="clickable-row" data-href="{{ route('admin.users.show', $user) }}" style="cursor: pointer;">
                                             <td class="fw-bold">#{{ $user->id }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
     clickableRows.forEach(function(row) {
         row.addEventListener('click', function() {
             const href = this.getAttribute('data-href');
-            if (href && href !== '#') {
+            if (href) {
                 window.location.href = href;
             }
         });

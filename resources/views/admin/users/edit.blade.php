@@ -1,11 +1,13 @@
 @extends('layouts.app', [
-    'header' => 'edit',
-    'backUrl' => route('admin.users.index'),
-    'backText' => 'К списку пользователей',
+    'header' => 'detail',
+    'backUrl' => route('admin.users.show', $user),
+    'backText' => 'К просмотру пользователя',
+    'title' => 'Редактор',
     'breadcrumbs' => [
         ['name' => 'Админка', 'url' => route('admin.dashboard')],
         ['name' => 'Пользователи', 'url' => route('admin.users.index')],
-        ['name' => $user->email, 'url' => '#']
+        ['name' => $user->email, 'url' => route('admin.users.show', $user)],
+        ['name' => 'Редактор', 'url' => '#']
     ]
 ])
 
@@ -154,8 +156,8 @@
                             </div>
                             
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary btn-sm">
-                                    <i class="fas fa-arrow-left me-1"></i>Назад к списку
+                                <a href="{{ route('admin.users.show', $user) }}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fas fa-arrow-left me-1"></i>Назад к просмотру
                                 </a>
                             </div>
                         </div>
