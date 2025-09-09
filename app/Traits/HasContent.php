@@ -14,6 +14,7 @@ trait HasContent
         'title' => ['field' => 'name', 'type' => 'text', 'required' => true],
         'summary' => ['field' => 'description', 'type' => 'text', 'required' => false],
         'body' => ['field' => 'content', 'type' => 'html', 'required' => true],
+        'rich' => ['field' => 'rich_content', 'type' => 'json', 'required' => false]
     ];
 
     /**

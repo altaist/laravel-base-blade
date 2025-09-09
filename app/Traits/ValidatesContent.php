@@ -7,7 +7,7 @@ trait ValidatesContent
     /**
      * Получить правила валидации для статьи
      */
-    protected function getArticleValidationRules(): array
+    public function getArticleValidationRules(): array
     {
         return [
             'name' => 'required|string|max:255',
@@ -24,7 +24,7 @@ trait ValidatesContent
     /**
      * Получить правила валидации для обновления статьи
      */
-    protected function getArticleUpdateValidationRules(): array
+    public function getArticleUpdateValidationRules(): array
     {
         return [
             'name' => 'sometimes|required|string|max:255',

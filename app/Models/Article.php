@@ -42,15 +42,6 @@ class Article extends Model
         'rich_content' => 'array',
     ];
 
-    /**
-     * Конфигурация полей контента для Article
-     */
-    protected $contentFields = [
-        'title' => ['field' => 'name', 'type' => 'text', 'required' => true],
-        'summary' => ['field' => 'description', 'type' => 'text', 'required' => false],
-        'body' => ['field' => 'content', 'type' => 'html', 'required' => true],
-        'rich' => ['field' => 'rich_content', 'type' => 'json', 'required' => false]
-    ];
 
     /**
      * Связь с автором статьи
