@@ -202,7 +202,6 @@
     @method('DELETE')
 </form>
 
-
 <script>
 function confirmDelete(userId, userName) {
     if (confirm(`Вы уверены, что хотите удалить пользователя "${userName}"?\n\nЭто действие нельзя отменить.`)) {

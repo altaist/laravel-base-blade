@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Admin\Feedbacks;
 
 use App\Http\Controllers\Controller;
-use App\Traits\HasAdminCrud;
 use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class FeedbackController extends Controller
 {
-    use HasAdminCrud;
 
     /**
      * Переопределяем метод index для feedbacks
@@ -28,11 +26,7 @@ class FeedbackController extends Controller
             $feedbacks = Feedback::orderBy('created_at', 'desc')->paginate(15);
         }
 
-        return view($this->getViewPath('index'), [
-            'feedbacks' => $feedbacks,
-            'search' => $search,
-            'config' => $this->getEntityConfig()
-        ]);
+        return view('admin.feedbacks.index', compact('feedbacks', 'search'));
     }
 
     /**
@@ -40,10 +34,7 @@ class FeedbackController extends Controller
      */
     public function show(Feedback $feedback): View
     {
-        return view($this->getViewPath('show'), [
-            'feedback' => $feedback,
-            'config' => $this->getEntityConfig()
-        ]);
+        return view('admin.feedbacks.show', compact('feedback'));
     }
 
     /**

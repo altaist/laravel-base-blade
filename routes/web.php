@@ -36,20 +36,27 @@ Route::prefix('admin')->middleware(['auth', 'can:admin'])->group(function () {
     // Dashboard
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     
-    // Users management (новые контроллеры - пока закомментированы)
-    // Route::resource('users', \App\Http\Controllers\Admin\Users\UserController::class);
-    // Route::resource('feedbacks', \App\Http\Controllers\Admin\Feedbacks\FeedbackController::class);
+    // Users management
+    Route::resource('users', \App\Http\Controllers\Admin\Users\UserController::class)->names([
+        'index' => 'admin.users.index',
+        'show' => 'admin.users.show',
+        'create' => 'admin.users.create',
+        'store' => 'admin.users.store',
+        'edit' => 'admin.users.edit',
+        'update' => 'admin.users.update',
+        'destroy' => 'admin.users.destroy'
+    ]);
     
-    // Старые маршруты (пока работают)
-    Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');
-    Route::get('/users/{user}', [AdminController::class, 'userShow'])->name('admin.users.show');
-    Route::get('/users/{user}/edit', [AdminController::class, 'userEdit'])->name('admin.users.edit');
-    Route::put('/users/{user}', [AdminController::class, 'userUpdate'])->name('admin.users.update');
-    Route::delete('/users/{user}', [AdminController::class, 'userDestroy'])->name('admin.users.destroy');
-    
-    // Feedback routes
-    Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('admin.feedbacks.index');
-    Route::get('/feedbacks/{feedback}', [FeedbackController::class, 'show'])->name('admin.feedbacks.show');
+    // Feedbacks management
+    Route::resource('feedbacks', \App\Http\Controllers\Admin\Feedbacks\FeedbackController::class)->names([
+        'index' => 'admin.feedbacks.index',
+        'show' => 'admin.feedbacks.show',
+        'create' => 'admin.feedbacks.create',
+        'store' => 'admin.feedbacks.store',
+        'edit' => 'admin.feedbacks.edit',
+        'update' => 'admin.feedbacks.update',
+        'destroy' => 'admin.feedbacks.destroy'
+    ]);
     
     // Articles routes (пример)
     Route::get('/articles', function() { return view('admin.articles.index'); })->name('admin.articles.index');

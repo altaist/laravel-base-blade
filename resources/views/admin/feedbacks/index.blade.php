@@ -126,7 +126,6 @@
     @endif
 </div>
 
-
 <script>
 // Обработка кликов по строкам таблицы
 document.addEventListener('DOMContentLoaded', function() {

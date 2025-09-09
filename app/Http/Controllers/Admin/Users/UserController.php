@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Admin\Users;
 
 use App\Http\Controllers\Controller;
-use App\Traits\HasAdminCrud;
-use App\Services\UserService;
+use App\Services\Admin\AdminUserService;
 use App\Services\PersonService;
 use App\Models\User;
 use App\Http\Requests\PersonEditRequest;
@@ -14,24 +13,46 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    use HasAdminCrud;
 
     public function __construct(
-        private UserService $userService,
+        private AdminUserService $adminUserService,
         private PersonService $personService
     ) {}
 
     /**
-     * Переопределяем метод edit для пользователей
+     * Список пользователей
+     */
+    public function index(Request $request): View
+    {
+        $search = $request->get('search');
+        
+        if ($search) {
+            $users = $this->adminUserService->searchUsers($search);
+        } else {
+            $users = $this->adminUserService->getAllUsers();
+        }
+        
+        return view('admin.users.index', compact('users', 'search'));
+    }
+
+    /**
+     * Просмотр пользователя
+     */
+    public function show(User $user): View
+    {
+        return view('admin.users.show', compact('user'));
+    }
+
+    /**
+     * Форма редактирования пользователя
      */
     public function edit(User $user): View
     {
         $personData = $this->personService->getPersonDataForForm($user);
         
-        return view($this->getViewPath('edit'), [
+        return view('admin.users.edit', [
             'user' => $user,
-            'personData' => $personData,
-            'config' => $this->getEntityConfig()
+            'personData' => $personData
         ]);
     }
 
@@ -64,12 +85,28 @@ class UserController extends Controller
     }
 
     /**
-     * Переопределяем метод destroy для пользователей
+     * Форма создания пользователя
+     */
+    public function create(): View
+    {
+        abort(404); // Пока не реализовано
+    }
+
+    /**
+     * Сохранение нового пользователя
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        abort(404); // Пока не реализовано
+    }
+
+    /**
+     * Удаление пользователя
      */
     public function destroy(User $user): RedirectResponse
     {
         try {
-            $this->userService->deleteUser($user->id);
+            $this->adminUserService->deleteUser($user->id);
             
             return redirect()
                 ->route('admin.users.index')
