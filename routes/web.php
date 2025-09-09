@@ -36,7 +36,11 @@ Route::prefix('admin')->middleware(['auth', 'can:admin'])->group(function () {
     // Dashboard
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     
-    // Users management
+    // Users management (новые контроллеры - пока закомментированы)
+    // Route::resource('users', \App\Http\Controllers\Admin\Users\UserController::class);
+    // Route::resource('feedbacks', \App\Http\Controllers\Admin\Feedbacks\FeedbackController::class);
+    
+    // Старые маршруты (пока работают)
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users.index');
     Route::get('/users/{user}', [AdminController::class, 'userShow'])->name('admin.users.show');
     Route::get('/users/{user}/edit', [AdminController::class, 'userEdit'])->name('admin.users.edit');
