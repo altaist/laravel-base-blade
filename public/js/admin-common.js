@@ -25,6 +25,7 @@ function confirmDelete(id, name, entityName = 'запись') {
     if (confirm(`Вы уверены, что хотите удалить ${entityName} "${name}"?\n\nЭто действие нельзя отменить.`)) {
         const form = document.getElementById('deleteForm');
         if (form) {
+            // Заменяем последний ID в URL на новый
             form.action = form.action.replace(/\/\d+$/, `/${id}`);
             form.submit();
         }
@@ -42,7 +43,8 @@ function confirmDeleteArticle(button) {
     if (confirm(`Вы уверены, что хотите удалить статью "${articleTitle}"?\n\nЭто действие нельзя отменить.`)) {
         const form = document.getElementById('deleteForm');
         if (form) {
-            form.action = `/admin/articles/${articleId}`;
+            // Заменяем последний ID в URL на новый
+            form.action = form.action.replace(/\/\d+$/, `/${articleId}`);
             form.submit();
         }
     }

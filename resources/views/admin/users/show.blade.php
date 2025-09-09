@@ -493,18 +493,15 @@
 </div>
 
 <!-- Форма для удаления -->
-<form id="deleteForm" method="POST" style="display: none;">
+<form id="deleteForm" method="POST" action="{{ route('admin.users.destroy', 0) }}" style="display: none;">
     @csrf
     @method('DELETE')
 </form>
 
+<script src="{{ asset('js/admin-common.js') }}"></script>
 <script>
 function confirmDelete(userId, userName) {
-    if (confirm(`Вы уверены, что хотите удалить пользователя "${userName}"?\n\nЭто действие нельзя отменить.`)) {
-        const form = document.getElementById('deleteForm');
-        form.action = `/admin/users/${userId}`;
-        form.submit();
-    }
+    AdminUtils.confirmDelete(userId, userName, 'пользователя');
 }
 </script>
 @endsection

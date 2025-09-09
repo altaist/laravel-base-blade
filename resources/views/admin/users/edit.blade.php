@@ -232,12 +232,12 @@
             <div class="d-block d-md-none">
                 <!-- Кнопки действий сверху -->
                 <x-admin.action-buttons 
-                    formId="userEditForm" 
+                    formId="userEditFormMobile" 
                     saveText="Сохранить" 
                     cancelUrl="{{ route('admin.users.show', $user) }}" 
                     variant="mobile" />
 
-                <form method="POST" action="{{ route('admin.users.update', $user) }}" id="userEditForm" class="admin-form">
+                <form method="POST" action="{{ route('admin.users.update', $user) }}" id="userEditFormMobile" class="admin-form">
                     @csrf
                     @method('PUT')
                     
@@ -430,7 +430,7 @@
 
                     <!-- Кнопки действий снизу -->
                     <x-admin.action-buttons 
-                        formId="userEditForm" 
+                        formId="userEditFormMobile" 
                         saveText="Сохранить" 
                         cancelUrl="{{ route('admin.users.show', $user) }}" 
                         variant="mobile-bottom" />
@@ -441,7 +441,7 @@
 </div>
 
 <!-- Форма для удаления -->
-<form id="deleteForm" method="POST" style="display: none;">
+<form id="deleteForm" method="POST" action="{{ route('admin.users.destroy', 0) }}" style="display: none;">
     @csrf
     @method('DELETE')
 </form>

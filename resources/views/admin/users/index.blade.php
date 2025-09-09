@@ -235,7 +235,7 @@
 </div>
 
 <!-- Форма для удаления -->
-<form id="deleteForm" method="POST" style="display: none;">
+<form id="deleteForm" method="POST" action="{{ route('admin.users.destroy', 0) }}" style="display: none;">
     @csrf
     @method('DELETE')
 </form>
