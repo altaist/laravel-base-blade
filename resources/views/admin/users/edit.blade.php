@@ -1,49 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-/* Адаптивные размеры кнопок */
-.btn-sm.btn-md {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-}
-@media (min-width: 768px) {
-    .btn-sm.btn-md {
-        padding: 0.5rem 1rem;
-        font-size: 1rem;
-    }
-}
-
-/* Адаптивные заголовки */
-.h3.h1-md {
-    font-size: 1.75rem;
-}
-@media (min-width: 768px) {
-    .h3.h1-md {
-        font-size: 2.5rem;
-    }
-}
-
-.h5.h4-md {
-    font-size: 1.25rem;
-}
-@media (min-width: 768px) {
-    .h5.h4-md {
-        font-size: 1.5rem;
-    }
-}
-
-.h6.h5-md {
-    font-size: 1rem;
-}
-@media (min-width: 768px) {
-    .h6.h5-md {
-        font-size: 1.25rem;
-    }
-}
-</style>
-
-<div class="container-fluid mt-4">
+<div class="container-fluid admin-container">
     <!-- Заголовок -->
     <div class="row mb-3 mb-md-4">
         <div class="col-12">
@@ -85,7 +43,7 @@
                 </div>
                 
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('admin.users.update', $user) }}" id="userEditForm">
+                    <form method="POST" action="{{ route('admin.users.update', $user) }}" id="userEditForm" class="admin-form">
                         @csrf
                         @method('PUT')
                         
@@ -189,7 +147,7 @@
 
                         <!-- Кнопки действий -->
                         <div class="d-flex flex-column gap-3">
-                            <div class="d-flex flex-column flex-md-row gap-2">
+                            <div class="d-flex flex-column flex-md-row gap-2 action-buttons">
                                 <button type="submit" class="btn btn-primary btn-sm btn-md">
                                     <i class="fas fa-save me-1 me-md-2"></i>Сохранить
                                 </button>

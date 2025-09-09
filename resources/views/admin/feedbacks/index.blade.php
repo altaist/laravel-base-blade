@@ -1,53 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-/* Адаптивные размеры кнопок */
-.btn-sm.btn-md {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-}
-@media (min-width: 768px) {
-    .btn-sm.btn-md {
-        padding: 0.5rem 1rem;
-        font-size: 1rem;
-    }
-}
-
-/* Адаптивные заголовки */
-.h3.h1-md {
-    font-size: 1.75rem;
-}
-@media (min-width: 768px) {
-    .h3.h1-md {
-        font-size: 2.5rem;
-    }
-}
-
-.h6.h5-md {
-    font-size: 1rem;
-}
-@media (min-width: 768px) {
-    .h6.h5-md {
-        font-size: 1.25rem;
-    }
-}
-
-/* Мобильная таблица */
-@media (max-width: 767px) {
-    .table-responsive {
-        font-size: 0.875rem;
-    }
-    .table th, .table td {
-        padding: 0.5rem 0.25rem;
-    }
-    .btn-group .btn {
-        padding: 0.25rem 0.5rem;
-    }
-}
-</style>
-
-<div class="container-fluid mt-4">
+<div class="container-fluid admin-container">
     <!-- Заголовок -->
     <div class="row mb-3 mb-md-4">
         <div class="col-12">
@@ -136,7 +90,7 @@
                                                 </small>
                                             </td>
                                             <td>
-                                                <div class="btn-group" role="group" onclick="event.stopPropagation();">
+                                                <div class="btn-group action-buttons" role="group" onclick="event.stopPropagation();">
                                                     <a href="{{ route('admin.feedbacks.show', $feedback) }}" 
                                                        class="btn btn-sm btn-outline-primary"
                                                        title="Просмотр">
@@ -150,7 +104,7 @@
                             </table>
                         </div>
                     @else
-                        <div class="text-center py-5">
+                        <div class="empty-state">
                             <i class="fas fa-comments fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">Нет сообщений</h5>
                             <p class="text-muted">Пока никто не оставил обратную связь</p>
@@ -173,13 +127,6 @@
     @endif
 </div>
 
-<style>
-.avatar-sm {
-    width: 40px;
-    height: 40px;
-    font-size: 14px;
-}
-</style>
 
 <script>
 // Обработка кликов по строкам таблицы
@@ -194,14 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Добавляем эффект при наведении
-        row.addEventListener('mouseenter', function() {
-            this.style.backgroundColor = '#f8f9fa';
-        });
-        
-        row.addEventListener('mouseleave', function() {
-            this.style.backgroundColor = '';
-        });
+        // Эффект при наведении теперь обрабатывается CSS
     });
 });
 </script>

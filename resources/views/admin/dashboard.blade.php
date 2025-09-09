@@ -3,53 +3,7 @@
 ])
 
 @section('content')
-<style>
-/* Адаптивные размеры кнопок */
-.btn-sm.btn-md {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-}
-@media (min-width: 768px) {
-    .btn-sm.btn-md {
-        padding: 0.5rem 1rem;
-        font-size: 1rem;
-    }
-}
-
-/* Адаптивные заголовки */
-.h3.h1-md {
-    font-size: 1.75rem;
-}
-@media (min-width: 768px) {
-    .h3.h1-md {
-        font-size: 2.5rem;
-    }
-}
-
-.h6.h5-md {
-    font-size: 1rem;
-}
-@media (min-width: 768px) {
-    .h6.h5-md {
-        font-size: 1.25rem;
-    }
-}
-
-/* Мобильные карточки */
-@media (max-width: 767px) {
-    .card-body {
-        padding: 1rem;
-    }
-    .fa-3x {
-        font-size: 2rem !important;
-    }
-    .fa-2x {
-        font-size: 1.5rem !important;
-    }
-}
-</style>
-
-<div class="container-fluid mt-4">
+<div class="container-fluid admin-container">
     <!-- Заголовок -->
     <div class="row mb-3 mb-md-4">
         <div class="col-12">
@@ -71,7 +25,7 @@
     <!-- Статистика -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
-            <div class="card bg-primary text-white h-100">
+            <div class="card bg-primary text-white h-100 stats-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
@@ -87,7 +41,7 @@
         </div>
         
         <div class="col-md-3 mb-3">
-            <div class="card bg-success text-white h-100">
+            <div class="card bg-success text-white h-100 stats-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
@@ -103,7 +57,7 @@
         </div>
         
         <div class="col-md-3 mb-3">
-            <div class="card bg-info text-white h-100">
+            <div class="card bg-info text-white h-100 stats-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
@@ -119,7 +73,7 @@
         </div>
         
         <div class="col-md-3 mb-3">
-            <div class="card bg-warning text-white h-100">
+            <div class="card bg-warning text-white h-100 stats-card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>

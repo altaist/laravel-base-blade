@@ -12,7 +12,7 @@
         
         <div class="collapse navbar-collapse" id="adminNavbar">
             <!-- Основное меню админки по центру -->
-            <ul class="navbar-nav mx-auto">
+            <ul class="navbar-nav mx-auto admin-nav">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" 
                        href="{{ route('admin.dashboard') }}">
@@ -42,15 +42,6 @@
 </nav>
 
 <style>
-.navbar-nav .nav-link.active {
-    color: var(--bs-primary) !important;
-    font-weight: 600;
-}
-
-.navbar-nav .nav-link:hover {
-    color: var(--bs-primary) !important;
-}
-
 /* Адаптивность для мобильных устройств */
 @media (max-width: 991.98px) {
     .navbar-nav.mx-auto {
