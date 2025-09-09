@@ -8,55 +8,28 @@
 
 @section('content')
 <div class="container-fluid admin-container">
-    <!-- Заголовок -->
-    <div class="row mb-3 mb-md-4">
-        <div class="col-12">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                <div>
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm btn-md">
-                        <i class="fas fa-arrow-left me-1 me-md-2"></i>Назад
-                    </a>
-                    <a href="#" class="btn btn-primary btn-sm btn-md">
-                        <i class="fas fa-plus me-1 me-md-2"></i>Добавить статью
-                    </a>
-                    <a href="{{ route('admin.articles.edit', 1) }}" class="btn btn-outline-primary btn-sm btn-md">
-                        <i class="fas fa-edit me-1 me-md-2"></i>Пример редактирования
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Поиск и фильтры -->
     <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <form method="GET" action="#" class="row g-3">
-                        <div class="col-md-8">
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-search"></i>
-                                </span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       name="search" 
-                                       placeholder="Поиск по заголовку, содержанию...">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="d-flex flex-column flex-md-row gap-2">
-                                <button type="submit" class="btn btn-primary btn-sm btn-md">
-                                    <i class="fas fa-search me-1 me-md-2"></i>Найти
-                                </button>
-                                <a href="#" class="btn btn-outline-secondary btn-sm btn-md">
-                                    <i class="fas fa-times me-1 me-md-2"></i>Очистить
-                                </a>
-                            </div>
-                        </div>
-                    </form>
+        <div class="col-12 col-md-6">
+            <form method="GET" action="{{ route('admin.articles.index') }}">
+                <div class="input-group">
+                    <input type="text" 
+                           class="form-control" 
+                           name="search" 
+                           value="{{ $search }}"
+                           placeholder="Поиск по заголовку, содержанию, slug..."
+                           onkeypress="if(event.key==='Enter') this.form.submit();">
+                    <button type="submit" class="btn btn-outline-secondary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    @if($search)
+                        <a href="{{ route('admin.articles.index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    @endif
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -70,23 +43,230 @@
                             <i class="fas fa-list me-2 d-none d-md-inline"></i>
                             Список статей
                         </h5>
-                        <span class="badge bg-primary fs-6">
-                            Всего: 0
+                        <span class="badge bg-primary fs-6 d-none d-md-inline">
+                            Всего: {{ $articles->total() }}
                         </span>
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <div class="empty-state">
-                        <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">Нет статей</h5>
-                        <p class="text-muted">Пока не создано ни одной статьи</p>
-                        <a href="#" class="btn btn-primary btn-sm btn-md">
-                            <i class="fas fa-plus me-1 me-md-2"></i>Создать первую статью
-                        </a>
-                    </div>
+                    @if($articles->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Заголовок</th>
+                                        <th>Slug</th>
+                                        <th>Статус</th>
+                                        <th>Дата создания</th>
+                                        <th>Дата обновления</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($articles as $article)
+                                        <tr class="clickable-row" data-href="{{ route('admin.articles.show', $article) }}" style="cursor: pointer;">
+                                            <td class="fw-bold">#{{ $article->id }}</td>
+                                            <td>
+                                                <div>
+                                                    <div class="fw-bold">{{ $article->name }}</div>
+                                                    @if($article->seo_title)
+                                                        <small class="text-muted">
+                                                            {{ $article->seo_title }}
+                                                        </small>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <code class="text-muted">{{ $article->slug }}</code>
+                                            </td>
+                                            <td>
+                                                @switch($article->status->value)
+                                                    @case('published')
+                                                        <span class="badge bg-success">Опубликована</span>
+                                                        @break
+                                                    @case('draft')
+                                                        <span class="badge bg-secondary">Черновик</span>
+                                                        @break
+                                                    @case('ready_to_publish')
+                                                        <span class="badge bg-warning">Готова к публикации</span>
+                                                        @break
+                                                    @default
+                                                        <span class="badge bg-info">{{ $article->status->value }}</span>
+                                                @endswitch
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    {{ $article->created_at->format('d.m.Y H:i') }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    {{ $article->updated_at->format('d.m.Y H:i') }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group action-buttons" role="group" onclick="event.stopPropagation();">
+                                                    <a href="{{ route('admin.articles.edit', $article) }}" 
+                                                       class="btn btn-sm btn-outline-primary"
+                                                       title="Редактировать">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            data-article-id="{{ $article->id }}"
+                                                            data-article-title="{{ $article->name }}"
+                                                            onclick="confirmDeleteArticle(this)"
+                                                            title="Удалить">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="empty-state">
+                            <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">
+                                @if($search)
+                                    Статьи не найдены
+                                @else
+                                    Нет статей
+                                @endif
+                            </h5>
+                            <p class="text-muted">
+                                @if($search)
+                                    Попробуйте изменить поисковый запрос
+                                @else
+                                    В системе пока нет созданных статей
+                                @endif
+                            </p>
+                            @if(!$search)
+                                <a href="{{ route('admin.articles.create') }}" class="btn btn-primary btn-sm btn-md">
+                                    <i class="fas fa-plus me-1 me-md-2"></i>Создать первую статью
+                                </a>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Пагинация -->
+    @if($articles->hasPages())
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-center">
+                    {{ $articles->links() }}
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Статистика статей -->
+    <!--div class="row mt-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white h-100 stats-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ $articleStats['total'] }}</h4>
+                            <p class="card-text">Всего статей</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-newspaper fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white h-100 stats-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ $articleStats['recent'] }}</h4>
+                            <p class="card-text">Новых за неделю</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-plus fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white h-100 stats-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ $articleStats['published'] }}</h4>
+                            <p class="card-text">Опубликованных</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white h-100 stats-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ $articleStats['draft'] + $articleStats['ready'] }}</h4>
+                            <p class="card-text">Черновиков и готовых</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-edit fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div-->
 </div>
+
+<!-- Форма для удаления -->
+<form id="deleteForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
+</form>
+
+<script>
+function confirmDeleteArticle(button) {
+    const articleId = button.getAttribute('data-article-id');
+    const articleTitle = button.getAttribute('data-article-title');
+    
+    if (confirm(`Вы уверены, что хотите удалить статью "${articleTitle}"?\n\nЭто действие нельзя отменить.`)) {
+        const form = document.getElementById('deleteForm');
+        form.action = `/admin/articles/${articleId}`;
+        form.submit();
+    }
+}
+
+// Обработка кликов по строкам таблицы
+document.addEventListener('DOMContentLoaded', function() {
+    const clickableRows = document.querySelectorAll('.clickable-row');
+    
+    clickableRows.forEach(function(row) {
+        row.addEventListener('click', function() {
+            const href = this.getAttribute('data-href');
+            if (href) {
+                window.location.href = href;
+            }
+        });
+        
+        // Эффект при наведении теперь обрабатывается CSS
+    });
+});
+</script>
 @endsection

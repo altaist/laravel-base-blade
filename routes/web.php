@@ -58,9 +58,16 @@ Route::prefix('admin')->middleware(['auth', 'can:admin'])->group(function () {
         'destroy' => 'admin.feedbacks.destroy'
     ]);
     
-    // Articles routes (пример)
-    Route::get('/articles', function() { return view('admin.articles.index'); })->name('admin.articles.index');
-    Route::get('/articles/{id}/edit', function($id) { return view('admin.articles.edit'); })->name('admin.articles.edit');
+    // Articles management
+    Route::resource('articles', \App\Http\Controllers\Admin\Articles\ArticleController::class)->names([
+        'index' => 'admin.articles.index',
+        'show' => 'admin.articles.show',
+        'create' => 'admin.articles.create',
+        'store' => 'admin.articles.store',
+        'edit' => 'admin.articles.edit',
+        'update' => 'admin.articles.update',
+        'destroy' => 'admin.articles.destroy'
+    ]);
 });
 
 // ===== GUEST AUTH ROUTES =====

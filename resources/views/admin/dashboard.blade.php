@@ -95,6 +95,7 @@
                             <ul class="list-unstyled">
                                 <li><i class="fas fa-user-plus text-success me-2"></i> {{ $userStats['recent'] }} новых пользователей за неделю</li>
                                 <li><i class="fas fa-comments text-info me-2"></i> {{ $feedbackStats['recent'] }} новых сообщений за неделю</li>
+                                <li><i class="fas fa-newspaper text-warning me-2"></i> {{ $articleStats['recent'] }} новых статей за неделю</li>
                             </ul>
                         </div>
                         <div class="col-md-4">
@@ -105,6 +106,9 @@
                                 </a>
                                 <a href="{{ route('admin.feedbacks.index') }}" class="btn btn-outline-success btn-sm">
                                     <i class="fas fa-comments me-1"></i> Все сообщения
+                                </a>
+                                <a href="{{ route('admin.articles.index') }}" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-newspaper me-1"></i> Все статьи
                                 </a>
                             </div>
                         </div>
