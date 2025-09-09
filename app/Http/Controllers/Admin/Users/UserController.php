@@ -32,7 +32,9 @@ class UserController extends Controller
             $users = $this->adminUserService->getAllUsers();
         }
         
-        return view('admin.users.index', compact('users', 'search'));
+        $userStats = $this->adminUserService->getUserStats();
+        
+        return view('admin.users.index', compact('users', 'search', 'userStats'));
     }
 
     /**

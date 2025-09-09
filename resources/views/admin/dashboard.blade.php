@@ -87,25 +87,32 @@
 
     <!-- Основные разделы -->
     <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center p-4">
-                    <div class="mb-3">
-                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+        <div class="col-12 col-md-4 mb-4">
+            <div class="card shadow-lg border-0 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body text-white p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h3 class="card-title mb-1">{{ $userStats['total'] }}</h3>
+                            <p class="card-text mb-0 opacity-75">Всего пользователей</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-circle p-3">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
                     </div>
-                    <h5 class="card-title">Управление пользователями</h5>
-                    <p class="card-text text-muted">
-                        Просмотр, редактирование и управление пользователями системы
-                    </p>
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-primary btn-sm btn-md">
-                        <i class="fas fa-arrow-right me-1 me-md-2"></i>
-                        Перейти к пользователям
-                    </a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="opacity-75">+{{ $userStats['recent'] }} новых за неделю</small>
+                        </div>
+                        <a href="{{ route('admin.users.index') }}" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-right me-1"></i>
+                            Управление
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="col-md-6 mb-4">
+        <div class="col-12 col-md-8 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-body text-center p-4">
                     <div class="mb-3">
