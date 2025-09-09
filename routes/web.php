@@ -12,11 +12,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\TelegramAuthController;
 use App\Http\Controllers\Files\FileController;
 use App\Http\Controllers\Files\UserFilesController;
+use App\Http\Controllers\Content\ArticleController;
+use App\Http\Controllers\Content\StatusController;
 
 // ===== PUBLIC ROUTES =====
 Route::get('/', function () { 
     return view('pages.home'); 
 })->name('home');
+
+// Public article routes
+Route::get('/article/{slug}', [ArticleController::class, 'showBySlug'])->name('article.show');
 
 // ===== FEEDBACK ROUTES =====
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
@@ -135,6 +140,26 @@ Route::middleware('auth')->group(function () {
     
     // Image display routes
     Route::get('/img/{file}', [FileController::class, 'showImage'])->name('img.show');
+    
+    // ===== ARTICLE ROUTES =====
+    Route::prefix('articles')->group(function () {
+        Route::get('/', [ArticleController::class, 'index'])->name('articles.index');
+        Route::get('/create', [ArticleController::class, 'create'])->name('articles.create');
+        Route::post('/', [ArticleController::class, 'store'])->name('articles.store');
+        Route::get('/{article}', [ArticleController::class, 'show'])->name('articles.show');
+        Route::get('/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+        Route::put('/{article}', [ArticleController::class, 'update'])->name('articles.update');
+        Route::delete('/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+    });
+    
+    // ===== STATUS ROUTES =====
+    Route::prefix('status')->group(function () {
+        Route::post('/{article}/change', [StatusController::class, 'changeStatus'])->name('status.change');
+        Route::post('/{article}/publish', [StatusController::class, 'publish'])->name('status.publish');
+        Route::post('/{article}/unpublish', [StatusController::class, 'unpublish'])->name('status.unpublish');
+        Route::post('/{article}/ready', [StatusController::class, 'markAsReady'])->name('status.ready');
+        Route::post('/{article}/draft', [StatusController::class, 'markAsDraft'])->name('status.draft');
+    });
 });
 
 // ===== PUBLIC FILE ROUTES =====

@@ -6,13 +6,15 @@ use App\Enums\ArticleStatus;
 use App\Traits\Favoritable;
 use App\Traits\HasAttachments;
 use App\Traits\Likeable;
+use App\Traits\Statusable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 
 class Article extends Model
 {
-    use Likeable, Favoritable, HasAttachments;
+    use HasFactory, Likeable, Favoritable, HasAttachments, Statusable;
 
     protected $fillable = [
         'user_id',

@@ -4,6 +4,8 @@ use App\Http\Controllers\Reactions\FavoriteController;
 use App\Http\Controllers\Reactions\LikeController;
 use App\Http\Controllers\Files\AttachmentController;
 use App\Http\Controllers\TelegramWebhookController;
+use App\Http\Controllers\Content\ArticleController;
+use App\Http\Controllers\Content\StatusController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -45,4 +47,23 @@ Route::middleware(['auth:sanctum'])->prefix('favorites')->group(function () {
         ->where('favoritableType', '[a-zA-Z\\\\]+')
         ->where('favoritableId', '[0-9]+');
     Route::get('users/{user}', [FavoriteController::class, 'userFavorites']);
+});
+
+// Article routes
+Route::middleware(['auth:sanctum'])->prefix('articles')->group(function () {
+    Route::get('/', [ArticleController::class, 'apiIndex']);
+    Route::post('/', [ArticleController::class, 'apiStore']);
+    Route::get('{article}', [ArticleController::class, 'apiShow']);
+    Route::put('{article}', [ArticleController::class, 'apiUpdate']);
+    Route::delete('{article}', [ArticleController::class, 'apiDestroy']);
+});
+
+// Status routes
+Route::middleware(['auth:sanctum'])->prefix('status')->group(function () {
+    Route::post('{article}/change', [StatusController::class, 'apiChangeStatus']);
+    Route::post('{article}/publish', [StatusController::class, 'apiPublish']);
+    Route::post('{article}/unpublish', [StatusController::class, 'apiUnpublish']);
+    Route::post('{article}/ready', [StatusController::class, 'apiMarkAsReady']);
+    Route::post('{article}/draft', [StatusController::class, 'apiMarkAsDraft']);
+    Route::get('{article}/available', [StatusController::class, 'apiAvailableStatuses']);
 });
