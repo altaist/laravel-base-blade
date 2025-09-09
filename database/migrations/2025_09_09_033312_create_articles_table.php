@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('seo_title')->nullable();
             $table->text('seo_description')->nullable();
             $table->string('seo_h1_title')->nullable();
+            $table->string('status')->default('draft');
             $table->foreignId('img_file_id')->nullable()->constrained('files')->onDelete('set null');
             $table->timestamps();
             
