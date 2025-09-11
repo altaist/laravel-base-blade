@@ -23,6 +23,9 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
-        return view('pages.home', compact('articles'));
+        // Определяем, какую страницу показывать
+        $view = request()->is('home2') ? 'pages.home2' : 'pages.home';
+
+        return view($view, compact('articles'));
     }
 }

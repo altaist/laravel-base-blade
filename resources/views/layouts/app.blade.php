@@ -15,30 +15,17 @@
         <link href="{{ asset('css/articles.css') }}" rel="stylesheet">
     @endif
     @stack('styles')
+    <style>
+        /* Серый фон для всей страницы */
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    <div class="sticky-top">
-        @php
-            // Автоматическое определение типа header, если не задан явно
-            $headerType = $header ?? 'auto';
-            
-            if ($headerType === 'auto') {
-                if (request()->routeIs('admin.*')) {
-                    $headerType = 'admin';
-                } elseif (request()->routeIs('profile') || request()->routeIs('person.*') || request()->routeIs('user.*')) {
-                    $headerType = 'profile';
-                } else {
-                    $headerType = 'default';
-                }
-            }
-        @endphp
-        
-        @include('components.headers.' . $headerType, [
-            'showBackButton' => $showBackButton ?? false,
-            'backUrl' => $backUrl ?? null,
-            'backText' => $backText ?? 'Назад'
-        ])
-    </div>
+    {{-- Header2 для всех страниц --}}
+    <x-headers.header2 />
 
     @if(request()->routeIs('admin.*'))
         @include('components.admin.breadcrumbs')
