@@ -7,6 +7,7 @@ use App\Services\NotificationService;
 use App\Services\Telegram\TelegramBotService;
 use App\Services\Telegram\TelegramService;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\ServiceProvider;
 
@@ -47,5 +48,10 @@ class AppServiceProvider extends ServiceProvider
             $channels['telegram'] = $this->app->make(TelegramChannel::class);
             return $channels;
         });
+
+        // Морфинг маппинг для моделей
+        Relation::morphMap([
+            'article' => \App\Models\Article::class,
+        ]);
     }
 }

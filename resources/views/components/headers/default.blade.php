@@ -14,22 +14,17 @@
             <!-- Центральное меню -->
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="/">
+                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
                         Главная
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#about">
-                        О нас
+                    <a class="nav-link {{ request()->routeIs('articles.*') ? 'active' : '' }}" href="{{ route('articles.index') }}">
+                        Статьи
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#services">
-                        Услуги
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">
+                    <a class="nav-link" href="#">
                         Контакты
                     </a>
                 </li>

@@ -20,6 +20,7 @@ use App\Http\Controllers\Public\HomeController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Public article routes
+Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/article/{slug}', [ArticleController::class, 'showBySlug'])->name('article.show');
 
 // ===== FEEDBACK ROUTES =====

@@ -29,13 +29,14 @@ class LikeController extends Controller
         $likeableType = $request->likeable_type;
         $likeableId = $request->likeable_id;
 
-        // Проверяем, что класс существует
-        if (!class_exists($likeableType)) {
+        // Получаем класс из морфинг маппинга
+        $likeableClass = \Illuminate\Database\Eloquent\Relations\Relation::getMorphedModel($likeableType);
+        if (!$likeableClass) {
             return response()->json(['error' => 'Invalid likeable type'], 400);
         }
 
         // Получаем сущность
-        $likeable = $likeableType::find($likeableId);
+        $likeable = $likeableClass::find($likeableId);
         if (!$likeable) {
             return response()->json(['error' => 'Likeable entity not found'], 404);
         }
@@ -58,13 +59,14 @@ class LikeController extends Controller
     {
         $user = Auth::user();
 
-        // Проверяем, что класс существует
-        if (!class_exists($likeableType)) {
+        // Получаем класс из морфинг маппинга
+        $likeableClass = \Illuminate\Database\Eloquent\Relations\Relation::getMorphedModel($likeableType);
+        if (!$likeableClass) {
             return response()->json(['error' => 'Invalid likeable type'], 400);
         }
 
         // Получаем сущность
-        $likeable = $likeableType::find($likeableId);
+        $likeable = $likeableClass::find($likeableId);
         if (!$likeable) {
             return response()->json(['error' => 'Likeable entity not found'], 404);
         }
@@ -97,13 +99,14 @@ class LikeController extends Controller
         $likeableType = $request->likeable_type;
         $likeableId = $request->likeable_id;
 
-        // Проверяем, что класс существует
-        if (!class_exists($likeableType)) {
+        // Получаем класс из морфинг маппинга
+        $likeableClass = \Illuminate\Database\Eloquent\Relations\Relation::getMorphedModel($likeableType);
+        if (!$likeableClass) {
             return response()->json(['error' => 'Invalid likeable type'], 400);
         }
 
         // Получаем сущность
-        $likeable = $likeableType::find($likeableId);
+        $likeable = $likeableClass::find($likeableId);
         if (!$likeable) {
             return response()->json(['error' => 'Likeable entity not found'], 404);
         }
@@ -111,6 +114,9 @@ class LikeController extends Controller
         // Переключаем лайк
         $isLiked = $this->likeService->toggleLike($user, $likeable);
 
+        // Обновляем модель после изменения
+        $likeable->refresh();
+        
         return response()->json([
             'message' => $isLiked ? 'Liked successfully' : 'Like removed successfully',
             'is_liked' => $isLiked,

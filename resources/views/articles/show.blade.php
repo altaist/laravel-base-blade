@@ -68,7 +68,3 @@
 @push('page-styles')
     <link rel="stylesheet" href="{{ asset('css/components/page.css') }}">
 @endpush
-
-@push('page-scripts')
-    <script src="{{ asset('js/articles.js') }}"></script>
-@endpush

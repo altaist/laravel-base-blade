@@ -435,6 +435,255 @@
     font-weight: 500;
 }
 
+/* Кнопки реакций */
+.reaction-btn {
+    background: none;
+    border: 2px solid #e9ecef;
+    border-radius: 25px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    color: #6c757d;
+    position: relative;
+    z-index: 20;
+}
+
+.reaction-btn:hover {
+    border-color: #007bff;
+    color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
+.reaction-btn.active {
+    border-color: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+}
+
+.reaction-btn.active.like-btn {
+    border-color: #dc3545;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.reaction-btn.active.favorite-btn {
+    border-color: #ffc107;
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #212529;
+}
+
+.reaction-btn i {
+    font-size: 0.9rem;
+}
+
+.reaction-count {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* Список статей */
+.articles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.article-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.article-image-container {
+    height: 100%;
+    min-height: 250px;
+    overflow: hidden;
+}
+
+.article-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.article-card:hover .article-image {
+    transform: scale(1.05);
+}
+
+.article-content {
+    padding: 2rem;
+}
+
+.article-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.article-title a {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.article-title a:hover {
+    color: #007bff;
+}
+
+.article-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.article-description {
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.article-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.article-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.read-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+/* Скрыть текст на мобильных устройствах */
+.read-more-btn .btn-text {
+    display: inline;
+}
+
+@media (max-width: 768px) {
+    .read-more-btn .btn-text {
+        display: none;
+    }
+    
+    .read-more-btn {
+        padding: 0.75rem;
+        border-radius: 6px;
+    }
+}
+
+.read-more-btn:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    color: white;
+}
+
+.pagination-container {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.page-item {
+    margin: 0;
+}
+
+.page-item.disabled .page-link {
+    background: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-color: #0056b3;
+    color: white;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0.5rem;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    background: white;
+    color: #495057;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.page-link:hover {
+    border-color: #007bff;
+    color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+    text-decoration: none;
+}
+
+/* Убираем стрелки и заменяем их на иконки */
+.page-link[rel="prev"]::before {
+    content: "\f104";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+.page-link[rel="next"]::before {
+    content: "\f105";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
     .article-header-modern {
@@ -448,6 +697,44 @@
     
     .article-meta-modern {
         gap: 1rem;
+    }
+    
+    .meta-icon {
+        display: none;
+    }
+    
+    .article-meta-item {
+        gap: 0;
+    }
+    
+    /* Уменьшаем расстояния между блоками на мобильных */
+    .article-description-modern {
+        margin-bottom: 1rem !important;
+    }
+    
+    .article-content-modern {
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .article-gallery-modern {
+        margin-top: 1.5rem !important;
+    }
+    
+    .gallery-header {
+        margin-bottom: 1rem !important;
+    }
+    
+    .sidebar-header {
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Переопределяем Bootstrap классы на мобильных */
+    .mb-5 {
+        margin-bottom: 1rem !important;
+    }
+    
+    .mt-5 {
+        margin-top: 1rem !important;
     }
     
     .article-reactions-modern {

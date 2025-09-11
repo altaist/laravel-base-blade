@@ -5,6 +5,7 @@ namespace App\Services\Reactions;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
 
 abstract class BaseReactionService
@@ -30,6 +31,27 @@ abstract class BaseReactionService
     abstract protected function getUserReactionsRelation(User $user): HasMany;
     
     /**
+     * Получить алиас модели для морфинг маппинга
+     */
+    protected function getModelAlias(Model $model): string
+    {
+        $class = get_class($model);
+        
+        // Получаем маппинг из морфинг маппинга
+        $morphMap = Relation::morphMap();
+        
+        // Ищем алиас для класса
+        foreach ($morphMap as $alias => $mappedClass) {
+            if ($mappedClass === $class) {
+                return $alias;
+            }
+        }
+        
+        // Если алиас не найден, возвращаем полное имя класса
+        return $class;
+    }
+    
+    /**
      * Добавить реакцию
      */
     public function addReaction(User $user, Model $reactable): Model
@@ -40,7 +62,7 @@ abstract class BaseReactionService
             // Проверяем, не добавил ли уже пользователь реакцию
             $existingReaction = $model::where([
                 'user_id' => $user->id,
-                $this->getTypeField() => get_class($reactable),
+                $this->getTypeField() => $this->getModelAlias($reactable),
                 $this->getIdField() => $reactable->id,
             ])->first();
 
@@ -51,7 +73,7 @@ abstract class BaseReactionService
             // Создаем новую реакцию
             return $model::create([
                 'user_id' => $user->id,
-                $this->getTypeField() => get_class($reactable),
+                $this->getTypeField() => $this->getModelAlias($reactable),
                 $this->getIdField() => $reactable->id,
             ]);
         });
@@ -67,7 +89,7 @@ abstract class BaseReactionService
             
             $deleted = $model::where([
                 'user_id' => $user->id,
-                $this->getTypeField() => get_class($reactable),
+                $this->getTypeField() => $this->getModelAlias($reactable),
                 $this->getIdField() => $reactable->id,
             ])->delete();
             
@@ -98,7 +120,7 @@ abstract class BaseReactionService
         
         return $model::where([
             'user_id' => $user->id,
-            $this->getTypeField() => get_class($reactable),
+            $this->getTypeField() => $this->getModelAlias($reactable),
             $this->getIdField() => $reactable->id,
         ])->exists();
     }
@@ -111,7 +133,7 @@ abstract class BaseReactionService
         $model = $this->getReactionModel();
         
         return $model::where([
-            $this->getTypeField() => get_class($reactable),
+            $this->getTypeField() => $this->getModelAlias($reactable),
             $this->getIdField() => $reactable->id,
         ])->count();
     }

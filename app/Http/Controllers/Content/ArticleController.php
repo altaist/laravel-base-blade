@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Content;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Enums\ArticleStatus;
 use App\Services\Content\ArticleService;
 use App\Services\Content\ContentService;
 use App\Services\Content\RichContentService;
@@ -36,15 +37,33 @@ class ArticleController extends Controller
         $status = $request->get('status');
         $user = $request->get('user_id');
 
+        $query = Article::query();
+
         if ($status) {
-            $articles = $this->articleService->getByStatus($status);
-        } elseif ($user) {
-            $articles = $this->articleService->getByUser($user);
+            $query->where('status', $status);
         } else {
-            $articles = $this->articleService->getPublished();
+            $query->where('status', ArticleStatus::PUBLISHED);
         }
 
-        return view('articles.index', compact('articles'));
+        if ($user) {
+            $query->where('user_id', $user);
+        }
+
+        $articles = $query->with([
+            'likes' => function($q) { $q->select('id', 'likeable_id', 'likeable_type'); },
+            'favorites' => function($q) { $q->select('id', 'favoritable_id', 'favoritable_type'); }
+        ])->orderBy('created_at', 'desc')->paginate(10);
+
+        $popularArticles = Article::where('status', ArticleStatus::PUBLISHED)
+            ->with([
+                'likes' => function($q) { $q->select('id', 'likeable_id', 'likeable_type'); },
+                'favorites' => function($q) { $q->select('id', 'favoritable_id', 'favoritable_type'); }
+            ])
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get();
+
+        return view('articles.index', compact('articles', 'popularArticles'));
     }
 
     /**

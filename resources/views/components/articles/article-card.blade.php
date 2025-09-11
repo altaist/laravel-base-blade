@@ -3,10 +3,6 @@
 @php
     // Используем простой SVG placeholder для карточек
     $imageUrl = $article->imgFile?->url ?? asset('images/placeholder-card.svg');
-    $isLiked = auth()->check() && $article->isLikedBy(auth()->user());
-    $isFavorited = auth()->check() && $article->isFavoritedBy(auth()->user());
-    $likesCount = $article->likesCount();
-    $favoritesCount = $article->favoritesCount();
 @endphp
 
 <div class="article-card" data-article-id="{{ $article->id }}">
@@ -27,25 +23,12 @@
     
     <div class="article-card-actions">
         <div class="article-card-reactions">
-            <button class="reaction-btn like-btn {{ $isLiked ? 'active' : '' }}" 
-                    data-type="like" 
-                    data-article-id="{{ $article->id }}"
-                    title="Лайк">
-                <i class="fas fa-heart"></i>
-                <span class="reaction-count">{{ $likesCount }}</span>
-            </button>
-            
-            <button class="reaction-btn favorite-btn {{ $isFavorited ? 'active' : '' }}" 
-                    data-type="favorite" 
-                    data-article-id="{{ $article->id }}"
-                    title="В избранное">
-                <i class="fas fa-star"></i>
-                <span class="reaction-count">{{ $favoritesCount }}</span>
-            </button>
+            <x-reactions.like-button :item="$article" />
+            <x-reactions.favorite-button :item="$article" />
         </div>
         
         <a href="{{ route('article.show', $article->slug) }}" class="article-card-read-link">
-            Читать
+            <span class="btn-text">Читать</span>
             <i class="fas fa-arrow-right"></i>
         </a>
     </div>

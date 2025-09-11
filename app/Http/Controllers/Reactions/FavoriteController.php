@@ -29,13 +29,14 @@ class FavoriteController extends Controller
         $favoritableType = $request->favoritable_type;
         $favoritableId = $request->favoritable_id;
 
-        // Проверяем, что класс существует
-        if (!class_exists($favoritableType)) {
+        // Получаем класс из морфинг маппинга
+        $favoritableClass = \Illuminate\Database\Eloquent\Relations\Relation::getMorphedModel($favoritableType);
+        if (!$favoritableClass) {
             return response()->json(['error' => 'Invalid favoritable type'], 400);
         }
 
         // Получаем сущность
-        $favoritable = $favoritableType::find($favoritableId);
+        $favoritable = $favoritableClass::find($favoritableId);
         if (!$favoritable) {
             return response()->json(['error' => 'Favoritable entity not found'], 404);
         }
@@ -58,13 +59,14 @@ class FavoriteController extends Controller
     {
         $user = Auth::user();
 
-        // Проверяем, что класс существует
-        if (!class_exists($favoritableType)) {
+        // Получаем класс из морфинг маппинга
+        $favoritableClass = \Illuminate\Database\Eloquent\Relations\Relation::getMorphedModel($favoritableType);
+        if (!$favoritableClass) {
             return response()->json(['error' => 'Invalid favoritable type'], 400);
         }
 
         // Получаем сущность
-        $favoritable = $favoritableType::find($favoritableId);
+        $favoritable = $favoritableClass::find($favoritableId);
         if (!$favoritable) {
             return response()->json(['error' => 'Favoritable entity not found'], 404);
         }
@@ -97,19 +99,23 @@ class FavoriteController extends Controller
         $favoritableType = $request->favoritable_type;
         $favoritableId = $request->favoritable_id;
 
-        // Проверяем, что класс существует
-        if (!class_exists($favoritableType)) {
+        // Получаем класс из морфинг маппинга
+        $favoritableClass = \Illuminate\Database\Eloquent\Relations\Relation::getMorphedModel($favoritableType);
+        if (!$favoritableClass) {
             return response()->json(['error' => 'Invalid favoritable type'], 400);
         }
 
         // Получаем сущность
-        $favoritable = $favoritableType::find($favoritableId);
+        $favoritable = $favoritableClass::find($favoritableId);
         if (!$favoritable) {
             return response()->json(['error' => 'Favoritable entity not found'], 404);
         }
 
         // Переключаем избранное
         $isFavorited = $this->favoriteService->toggleFavorite($user, $favoritable);
+
+        // Обновляем модель после изменения
+        $favoritable->refresh();
 
         return response()->json([
             'message' => $isFavorited ? 'Added to favorites successfully' : 'Removed from favorites successfully',
