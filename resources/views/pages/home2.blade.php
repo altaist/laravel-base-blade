@@ -959,6 +959,15 @@
         padding: 0.75rem;
         border-radius: 6px;
     }
+    
+    /* Меньший отступ между header и hero на мобильных */
+    .page {
+        padding: 0.5rem 0 !important;
+    }
+    
+    .row[style*="margin-top: 1rem"] {
+        margin-top: 0.25rem !important;
+    }
 }
 
 @media (max-width: 576px) {

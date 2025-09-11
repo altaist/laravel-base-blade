@@ -1,11 +1,13 @@
 {{-- Header2 в стиле хлебных крошек --}}
 <header class="header2">
-    <div class="container">
-        <div class="header2-content">
-            <div class="d-flex justify-content-between align-items-center">
+    <div class="container-fluid">
+        <div class="container">
+            <div class="header2-content">
+                <div class="d-flex justify-content-between align-items-center">
             {{-- Логотип --}}
             <div class="header2-brand">
-                <a href="{{ route('home') }}" class="text-decoration-none">
+                <a href="{{ route('home') }}" class="text-decoration-none d-flex align-items-center">
+                    <i class="fas fa-cube me-2 text-primary"></i>
                     <h1 class="header2-title">Kvadro</h1>
                 </a>
             </div>
@@ -60,6 +62,7 @@
                 </button>
             </div>
         </div>
+        </div>
     </div>
     
     {{-- Мобильное меню --}}
@@ -86,16 +89,16 @@
                 
                 @auth
                     <div class="d-grid gap-2">
-                        <a href="{{ route('dashboard') }}" class="btn btn-outline-primary btn-sm">Профиль</a>
+                        <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg">Профиль</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">Выйти</button>
+                            <button type="submit" class="btn btn-danger btn-lg w-100">Выйти</button>
                         </form>
                     </div>
                 @else
                     <div class="d-grid gap-2">
-                        <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm">Войти</a>
-                        <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Регистрация</a>
+                        <a href="{{ route('login') }}" class="btn btn-primary btn-lg">Войти</a>
+                        <a href="{{ route('register') }}" class="btn btn-primary btn-lg">Регистрация</a>
                     </div>
                 @endauth
             </nav>
@@ -106,10 +109,10 @@
 <style>
 /* Стили для header2 в стиле хлебных крошек */
 .header2 {
-    padding: 1rem 0;
     position: sticky;
     top: 0;
     z-index: 1030;
+    padding-top: 0;
 }
 
 .header2-content {
@@ -117,6 +120,18 @@
     padding: 1rem 1.5rem;
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Состояние при скроллинге */
+.header2.scrolled {
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.header2.scrolled .header2-content {
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .header2-brand .header2-title {
@@ -215,5 +230,39 @@
         font-size: 0.8rem;
         padding: 0.25rem 0.5rem;
     }
+    
+    /* Мобильная версия - всегда как при скроллинге */
+    .header2 {
+        padding-top: 0 !important;
+        background: white !important;
+        box-shadow: none !important;
+    }
+    
+    .header2-content {
+        background: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        padding: 0.75rem 0.0625rem !important;
+    }
 }
 </style>
+
+<script>
+// Адаптивный header при скроллинге
+document.addEventListener('DOMContentLoaded', function() {
+    const header = document.querySelector('.header2');
+    
+    function handleScroll() {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    }
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    // Проверяем начальное состояние
+    handleScroll();
+});
+</script>
