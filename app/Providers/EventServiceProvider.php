@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Events\TelegramMessageReceived;
 use App\Listeners\ProcessTelegramMessage;
+use App\Listeners\SendRegistrationNotifications;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -16,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         TelegramMessageReceived::class => [
             ProcessTelegramMessage::class,
+        ],
+        Registered::class => [
+            SendRegistrationNotifications::class,
         ],
     ];
 

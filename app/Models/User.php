@@ -143,4 +143,12 @@ class User extends Authenticatable
     {
         return $this->attachments()->where('type', 'document')->get();
     }
+
+    /**
+     * Получить Telegram ID для уведомлений
+     */
+    public function routeNotificationForTelegram()
+    {
+        return $this->telegram_id;
+    }
 }
