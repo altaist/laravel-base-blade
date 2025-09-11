@@ -37,6 +37,33 @@
             </div>
         </div>
 
+        {{-- Галерея --}}
+        @include('components.landing.gallery', [
+            'title' => 'Наши квадроциклы',
+            'images' => [
+                [
+                    [
+                        'url' => 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
+                        'alt' => 'Спортивный квадроцикл',
+                        'title' => 'Спортивная модель',
+                        'description' => 'Высокая скорость и маневренность'
+                    ],
+                    [
+                        'url' => 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
+                        'alt' => 'Утилитарный квадроцикл',
+                        'title' => 'Утилитарная модель',
+                        'description' => 'Надежность для работы и отдыха'
+                    ],
+                    [
+                        'url' => 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=300&fit=crop',
+                        'alt' => 'Детский квадроцикл',
+                        'title' => 'Детская модель',
+                        'description' => 'Безопасность для маленьких водителей'
+                    ]
+                ]
+            ]
+        ])
+
         {{-- Преимущества в карточках --}}
         <div class="row mb-5">
             <div class="col-12">
@@ -242,86 +269,34 @@
             </div>
         </div>
 
-        {{-- Отзывы в карточке --}}
-        <div class="row mb-5">
-            <div class="col-12">
-                <div class="text-center mb-5">
-                    <h2 class="section-title">Отзывы наших клиентов</h2>
-                    <p class="section-subtitle">Что говорят о нас наши клиенты</p>
-                </div>
-                <div class="row g-4">
-                    <div class="col-lg-4 col-md-6">
-                        <div class="testimonial-card h-100">
-                            <div class="testimonial-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="testimonial-content">
-                                <blockquote class="testimonial-quote">
-                                    "Отличный сервис! Квадроцикл приехал в идеальном состоянии, доставка была быстрой. Рекомендую всем!"
-                                </blockquote>
-                                <div class="testimonial-author">
-                                    <h6 class="author-name">Алексей Петров</h6>
-                                    <p class="author-title">Владелец квадроцикла</p>
-                                </div>
-                                <div class="testimonial-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="testimonial-card h-100">
-                            <div class="testimonial-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="testimonial-content">
-                                <blockquote class="testimonial-quote">
-                                    "Первый раз каталась на квадроцикле. Инструктор был очень терпеливым и профессиональным. Осталась в восторге!"
-                                </blockquote>
-                                <div class="testimonial-author">
-                                    <h6 class="author-name">Мария Сидорова</h6>
-                                    <p class="author-title">Любитель активного отдыха</p>
-                                </div>
-                                <div class="testimonial-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="testimonial-card h-100">
-                            <div class="testimonial-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="testimonial-content">
-                                <blockquote class="testimonial-quote">
-                                    "Заказывал квадроцикл для корпоратива. Все прошло на высшем уровне. Сотрудники остались довольны!"
-                                </blockquote>
-                                <div class="testimonial-author">
-                                    <h6 class="author-name">Дмитрий Козлов</h6>
-                                    <p class="author-title">Предприниматель</p>
-                                </div>
-                                <div class="testimonial-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{-- Отзывы --}}
+        @include('components.landing.testimonials', [
+            'title' => 'Отзывы наших клиентов',
+            'subtitle' => 'Что говорят о нас наши клиенты',
+            'testimonials' => [
+                [
+                    'name' => 'Алексей Петров',
+                    'position' => 'Владелец квадроцикла',
+                    'text' => 'Отличный сервис! Квадроцикл приехал в идеальном состоянии, доставка была быстрой. Рекомендую всем!',
+                    'rating' => 5,
+                    'avatar' => '/images/avatar1.jpg'
+                ],
+                [
+                    'name' => 'Мария Сидорова',
+                    'position' => 'Любитель активного отдыха',
+                    'text' => 'Первый раз каталась на квадроцикле. Инструктор был очень терпеливым и профессиональным. Осталась в восторге!',
+                    'rating' => 5,
+                    'avatar' => '/images/avatar2.jpg'
+                ],
+                [
+                    'name' => 'Дмитрий Козлов',
+                    'position' => 'Предприниматель',
+                    'text' => 'Заказывал квадроцикл для корпоратива. Все прошло на высшем уровне. Сотрудники остались довольны!',
+                    'rating' => 5,
+                    'avatar' => '/images/avatar3.jpg'
+                ]
+            ]
+        ])
 
         {{-- Call-to-Action в карточке --}}
         <div class="row mb-5">
