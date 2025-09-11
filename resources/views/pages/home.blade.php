@@ -33,6 +33,9 @@
         ]
     ])
 
+    {{-- Статьи --}}
+    <x-articles.articles-section :articles="$articles" />
+
     {{-- Галерея --}}
     @include('components.landing.gallery', [
         'title' => 'Наши квадроциклы',

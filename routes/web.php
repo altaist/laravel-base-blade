@@ -14,11 +14,10 @@ use App\Http\Controllers\Files\FileController;
 use App\Http\Controllers\Files\UserFilesController;
 use App\Http\Controllers\Content\ArticleController;
 use App\Http\Controllers\Content\StatusController;
+use App\Http\Controllers\Public\HomeController;
 
 // ===== PUBLIC ROUTES =====
-Route::get('/', function () { 
-    return view('pages.home'); 
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Public article routes
 Route::get('/article/{slug}', [ArticleController::class, 'showBySlug'])->name('article.show');
