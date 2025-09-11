@@ -31,8 +31,8 @@
     </style>
 </head>
 <body>
-    {{-- Header2 для всех страниц --}}
-    <x-headers.header2 />
+    {{-- Header для всех страниц --}}
+    <x-headers.header />
 
     @if(request()->routeIs('admin.*'))
         @include('components.admin.breadcrumbs')
