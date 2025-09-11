@@ -18,6 +18,15 @@ use Illuminate\Support\Collection;
 
 class Article extends Model
 {
+    public function getRouteName()
+    {
+        return 'article.show';
+    }
+
+    public function getImage()
+    {
+        return $this->imgFile?->url ?? asset('images/placeholder-card.svg');
+    }
     use HasFactory, Likeable, Favoritable, HasAttachments, Statusable, 
         HasContent, HasRichContent, HasSeo, HasMedia;
 
