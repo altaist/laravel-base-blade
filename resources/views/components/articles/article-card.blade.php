@@ -1,15 +1,8 @@
 @props(['article'])
 
 @php
-    // Используем разные сервисы для моковых изображений
-    $imageServices = [
-        'https://picsum.photos/400/250?random=' . $article->id,
-        'https://via.placeholder.com/400x250/007bff/ffffff?text=Quad+Bike',
-        'https://source.unsplash.com/400x250/?quadbike,atv,offroad',
-        'https://images.pexels.com/photos/1558618666/pexels-photo-1558618666.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&fit=crop',
-        'https://loremflickr.com/400/250/quadbike,atv'
-    ];
-    $imageUrl = $article->imgFile?->url ?? $imageServices[$article->id % count($imageServices)];
+    // Используем простой SVG placeholder для карточек
+    $imageUrl = $article->imgFile?->url ?? asset('images/placeholder-card.svg');
     $isLiked = auth()->check() && $article->isLikedBy(auth()->user());
     $isFavorited = auth()->check() && $article->isFavoritedBy(auth()->user());
     $likesCount = $article->likesCount();

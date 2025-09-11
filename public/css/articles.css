@@ -60,26 +60,6 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    background-size: cover;
-    background-position: center;
-}
-
-/* Fallback для недоступных изображений */
-.article-card-image img[src=""],
-.article-card-image img:not([src]) {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.article-card-image img[src=""]:before,
-.article-card-image img:not([src]):before {
-    content: "🏍️ Quad Bike";
 }
 
 .article-card:hover .article-card-image img {

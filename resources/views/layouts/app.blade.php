@@ -11,9 +11,10 @@
     @if(request()->routeIs('admin.*'))
         <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
     @endif
-    @if(request()->routeIs('home'))
+    @if(request()->routeIs('home') || request()->routeIs('article.show'))
         <link href="{{ asset('css/articles.css') }}" rel="stylesheet">
     @endif
+    @stack('styles')
 </head>
 <body>
     <div class="sticky-top">
@@ -72,7 +73,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{ asset('js/image-preview.js') }}"></script>
-    @if(request()->routeIs('home'))
+    @if(request()->routeIs('home') || request()->routeIs('article.show'))
         <script src="{{ asset('js/articles.js') }}"></script>
     @endif
     
