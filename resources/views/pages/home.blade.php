@@ -11,22 +11,25 @@
                         <div class="hero-content" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); position: relative; overflow: hidden;">
                             <div class="hero-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.2); z-index: 1;"></div>
                             <div class="container py-5" style="position: relative; z-index: 2;">
-                                <div class="row align-items-center min-vh-50">
-                                    <div class="col-lg-6">
-                                        <div class="text-white">
-                                            <h1 class="display-4 fw-bold mb-4">Добро пожаловать в Kvadro!</h1>
-                                            <p class="lead mb-4">Лучшие квадроциклы и аксессуары для ваших приключений. Качество, надежность и страсть к движению.</p>
-                                            <a href="#catalog" class="btn btn-light btn-lg">
-                                                Смотреть каталог
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 text-center">
-                                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop" 
-                                             alt="Квадроцикл" 
-                                             class="img-fluid rounded shadow">
-                                    </div>
-                                </div>
+            <div class="row align-items-center min-vh-50">
+                <div class="col-lg-6">
+                    <div class="text-white">
+                        <h1 class="display-4 fw-bold mb-4">Добро пожаловать в Kvadro!</h1>
+                        <p class="lead mb-4">Лучшие квадроциклы и аксессуары для ваших приключений. Качество, надежность и страсть к движению.</p>
+                        <a href="#catalog" class="btn btn-light btn-lg">
+                            Смотреть каталог
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="hero-image-container">
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop" 
+                             alt="Квадроцикл" 
+                             class="img-fluid rounded shadow hero-image">
+                        <div class="hero-image-overlay"></div>
+                    </div>
+                </div>
+            </div>
                             </div>
                         </div>
                     </div>
@@ -967,6 +970,95 @@
     
     .row[style*="margin-top: 1rem"] {
         margin-top: 0.25rem !important;
+    }
+    
+    /* Мобильная версия hero - красивая картинка с overlay */
+    .hero-content {
+        background: none !important;
+        padding: 0 !important;
+        position: relative;
+    }
+    
+    .hero-content .container {
+        padding: 0 !important;
+    }
+    
+    .hero-content .row {
+        position: relative;
+        margin: 0 !important;
+    }
+    
+    .hero-content .col-lg-6:last-child {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        position: relative;
+        padding: 0 !important;
+    }
+    
+    .hero-image-container {
+        position: relative;
+        width: 100%;
+        height: 500px;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .hero-image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 2;
+    }
+    
+    .hero-content .col-lg-6:first-child {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        z-index: 3;
+        width: 90%;
+        text-align: left;
+        padding: 1.5rem 1rem;
+        margin-left: 0.5rem;
+    }
+    
+    .hero-content .text-white h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+        color: white !important;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    .hero-content .text-white .lead {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        line-height: 1.4;
+        color: white !important;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    }
+    
+    .hero-content .text-white .btn {
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+        background: white !important;
+        color: #2c3e50 !important;
+        border: none;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
     }
 }
 
