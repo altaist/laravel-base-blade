@@ -4,6 +4,7 @@ namespace App\Services\Content;
 
 use App\Models\Article;
 use App\Models\User;
+use App\Enums\ArticleStatus;
 use Illuminate\Support\Collection;
 
 class ArticleService
@@ -38,7 +39,7 @@ class ArticleService
      */
     public function getPublished(): Collection
     {
-        return Article::where('status', 'published')
+        return Article::where('status', ArticleStatus::PUBLISHED)
             ->orderBy('created_at', 'desc')
             ->get();
     }
@@ -68,7 +69,9 @@ class ArticleService
      */
     public function findBySlug(string $slug): ?Article
     {
-        return Article::where('slug', $slug)->first();
+        return Article::where('slug', $slug)
+            ->where('status', ArticleStatus::PUBLISHED)
+            ->first();
     }
     
     /**
