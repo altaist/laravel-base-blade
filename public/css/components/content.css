@@ -1,0 +1,138 @@
+/* ===== CONTENT КОМПОНЕНТЫ ===== */
+
+/* Article List Item - элемент списка статей */
+.article-list-item {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.article-list-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.article-list-item__image-container {
+    height: 100%;
+    min-height: 250px;
+    overflow: hidden;
+}
+
+.article-list-item__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.article-list-item:hover .article-list-item__image {
+    transform: scale(1.05);
+}
+
+.article-list-item__content {
+    padding: 2rem;
+}
+
+.article-list-item__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.article-list-item__title a {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.article-list-item__title a:hover {
+    color: #007bff;
+}
+
+.article-list-item__meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.article-list-item__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.article-list-item__description {
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.article-list-item__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.article-list-item__stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.article-list-item__read-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.article-list-item__read-link .btn-text {
+    display: inline;
+}
+
+.article-list-item__read-link:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    color: white;
+}
+
+.article-list-item__read-link i {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.article-list-item__read-link:hover i {
+    transform: translateX(3px);
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .article-list-item__read-link .btn-text {
+        display: none;
+    }
+    
+    .article-list-item__read-link {
+        padding: 0.75rem;
+        border-radius: 6px;
+    }
+    
+    .article-list-item__content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .article-list-item__content {
+        padding: 1rem;
+    }
+}

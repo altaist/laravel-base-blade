@@ -11,8 +11,8 @@
     @if(request()->routeIs('admin.*'))
         <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
     @endif
-    @if(request()->routeIs('home') || request()->routeIs('article.show'))
-        <link href="{{ asset('css/articles.css') }}" rel="stylesheet">
+    @if(request()->routeIs('home') || request()->routeIs('article.show') || request()->routeIs('articles.index'))
+        <link href="{{ asset('css/components.css') }}" rel="stylesheet">
     @endif
     @stack('styles')
     <style>

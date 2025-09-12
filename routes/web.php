@@ -23,6 +23,7 @@ Route::get('/header1', function () {
     return view('pages.home1', ['header' => 'header1']);
 })->name('header1');
 
+
 // Public article routes
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/article/{slug}', [ArticleController::class, 'showBySlug'])->name('article.show');

@@ -83,7 +83,7 @@
                     <div class="row">
                         @foreach($articles as $article)
                             <div class="col-lg-4 col-md-6 mb-4">
-                                <x-ui.content-card :item="$article" type="article" />
+                                <x-articles.article-card :article="$article" />
                             </div>
                         @endforeach
                     </div>

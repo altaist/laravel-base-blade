@@ -15,16 +15,22 @@
         ];
     @endphp
 
-    <x-page.breadcrumbs :items="$breadcrumbs" />
+    <x-layout.breadcrumbs :items="$breadcrumbs" />
 
     <div class="row">
         <div class="col-lg-8">
-            <x-page.header :title="$article->name">
-                <x-page.meta-info :items="$metaInfo" />
+            <x-layout.page-header :title="$article->name">
+                <x-slot:meta>
+                    <div class="page-header__meta">
+                        @foreach($metaInfo as $meta)
+                            <span><i class="fas fa-{{ $meta['icon'] }}"></i> {{ $meta['text'] }}</span>
+                        @endforeach
+                    </div>
+                </x-slot:meta>
                 <x-slot:actions>
                     <x-page.reactions :item="$article" />
                 </x-slot:actions>
-            </x-page.header>
+            </x-layout.page-header>
 
             <x-page.image-block 
                 :image="$article->imgFile?->url ?? asset('images/placeholder-large.svg')"
@@ -66,5 +72,5 @@
 @endsection
 
 @push('page-styles')
-    <link rel="stylesheet" href="{{ asset('css/components/page.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components.css') }}">
 @endpush
