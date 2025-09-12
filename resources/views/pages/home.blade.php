@@ -33,33 +33,6 @@
             </div>
         </div>
 
-        {{-- Галерея --}}
-        @include('components.landing.gallery', [
-            'title' => 'Наши квадроциклы',
-            'images' => [
-                [
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-                        'alt' => 'Спортивный квадроцикл',
-                        'title' => 'Спортивная модель',
-                        'description' => 'Высокая скорость и маневренность'
-                    ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop',
-                        'alt' => 'Утилитарный квадроцикл',
-                        'title' => 'Утилитарная модель',
-                        'description' => 'Надежность для работы и отдыха'
-                    ],
-                    [
-                        'url' => 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f?w=400&h=300&fit=crop',
-                        'alt' => 'Детский квадроцикл',
-                        'title' => 'Детская модель',
-                        'description' => 'Безопасность для маленьких водителей'
-                    ]
-                ]
-            ]
-        ])
-
         {{-- Преимущества в карточках --}}
         <div class="row mb-5">
             <div class="col-12">

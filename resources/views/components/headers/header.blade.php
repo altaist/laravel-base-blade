@@ -30,13 +30,10 @@
             {{-- Кнопки действий --}}
             <div class="header2-actions d-none d-lg-block">
                 @guest
-                    <!-- Desktop: Кнопки в стиле хлебных крошек -->
+                    <!-- Desktop: Только кнопка входа -->
                     <div class="d-flex align-items-center gap-2">
-                        <a href="{{ route('login') }}" class="header2-nav-link">
+                        <a href="{{ route('login') }}" class="header2-nav-link active">
                             Вход
-                        </a>
-                        <a href="{{ route('register') }}" class="header2-nav-link active">
-                            Регистрация
                         </a>
                     </div>
                 @else
