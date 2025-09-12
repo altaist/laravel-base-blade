@@ -165,6 +165,9 @@
     .carousel-control-prev-icon,
     .carousel-control-next-icon {
         background-size: 15px 15px;
+        border-radius: 8px !important;
+        width: 40px !important;
+        height: 40px !important;
     }
 }
 
@@ -180,6 +183,14 @@
     
     .fas.fa-user {
         font-size: 1.5rem !important;
+    }
+    
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-size: 12px 12px;
+        border-radius: 6px !important;
+        width: 35px !important;
+        height: 35px !important;
     }
 }
 </style>

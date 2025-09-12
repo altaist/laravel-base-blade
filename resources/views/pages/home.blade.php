@@ -364,7 +364,7 @@
 </div>
 
 <style>
-/* Чистый современный дизайн для home2 */
+/* Чистый современный дизайн для главной страницы */
 .page {
     padding: 1rem 0;
 }
@@ -384,33 +384,7 @@
     margin: 0 auto;
 }
 
-/* Hero секция */
-.hero-card {
-    border-radius: 20px;
-    overflow: hidden;
-}
-
-/* Отступы для текста в hero */
-.hero-content .text-white {
-    padding-left: 2rem;
-}
-
-/* Мобильная адаптация для hero */
-@media (max-width: 768px) {
-    .hero-content .btn {
-        margin-bottom: 2rem;
-    }
-    
-    .hero-content .text-white {
-        padding-left: 1.5rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .hero-content .text-white {
-        padding-left: 1rem;
-    }
-}
+/* Hero секция - основные стили */
 
 /* Карточки преимуществ */
 .feature-card {
