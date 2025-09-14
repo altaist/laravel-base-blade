@@ -92,7 +92,7 @@
         });
     });
     </script>
-росто    <script src="{{ asset('js/reactions.js') }}"></script>
+    <script src="{{ asset('js/reactions.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

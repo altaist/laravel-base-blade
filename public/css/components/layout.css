@@ -37,6 +37,18 @@
     flex-wrap: wrap;
 }
 
+.page-header__meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.page-header__meta i {
+    font-size: 0.8rem;
+}
+
 .page-header__actions {
     display: flex;
     gap: 1rem;

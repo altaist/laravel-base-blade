@@ -666,184 +666,11 @@
     opacity: 0.9;
 }
 
-/* Стили для статей */
-.article-card {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: all 0.3s ease;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
+/* Стили для статей теперь в ui.css и content.css */
 
-.article-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-}
+/* Стили для реакций теперь в ui.css */
 
-.article-card-link-wrapper {
-    text-decoration: none;
-    color: inherit;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.article-card-link-wrapper:hover {
-    text-decoration: none;
-    color: inherit;
-}
-
-.article-card-image {
-    position: relative;
-    height: 200px;
-    overflow: hidden;
-}
-
-.article-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.article-card:hover .article-card-image img {
-    transform: scale(1.05);
-}
-
-.article-card-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-    padding: 20px 15px 15px;
-}
-
-.article-card-title {
-    color: white;
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin: 0;
-    line-height: 1.3;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.article-card-content {
-    padding: 20px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.article-card-description {
-    color: #6c757d;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 0;
-    flex-grow: 1;
-}
-
-.article-card-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
-    position: relative;
-    z-index: 10;
-}
-
-.article-card-reactions {
-    display: flex;
-    gap: 10px;
-}
-
-.reaction-btn {
-    background: none;
-    border: 2px solid #e9ecef;
-    border-radius: 25px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9rem;
-    color: #6c757d;
-    position: relative;
-    z-index: 20;
-}
-
-.reaction-btn:hover {
-    border-color: #007bff;
-    color: #007bff;
-    transform: translateY(-1px);
-}
-
-.reaction-btn.active {
-    border-color: #007bff;
-    background-color: #007bff;
-    color: white;
-}
-
-.reaction-btn.active.like-btn {
-    border-color: #dc3545;
-    background-color: #dc3545;
-}
-
-.reaction-btn.active.favorite-btn {
-    border-color: #ffc107;
-    background-color: #ffc107;
-    color: #212529;
-}
-
-.reaction-btn i {
-    font-size: 0.8rem;
-}
-
-.reaction-count {
-    font-weight: 600;
-    font-size: 0.8rem;
-}
-
-.article-card-read-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: #007bff;
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 20;
-}
-
-.article-card-read-link .btn-text {
-    display: inline;
-}
-
-.article-card-read-link:hover {
-    background: #0056b3;
-    transform: translateX(5px);
-    color: white;
-}
-
-.article-card-read-link i {
-    font-size: 0.8rem;
-    transition: transform 0.3s ease;
-}
-
-.article-card-read-link:hover i {
-    transform: translateX(3px);
-}
+/* Стили для кнопок теперь в ui.css */
 
 /* Мобильная адаптация */
 @media (max-width: 768px) {
@@ -864,22 +691,9 @@
         transform: translateY(-5px);
     }
     
-    .article-card-image {
-        height: 180px;
-    }
+    /* Мобильные стили для статей теперь в ui.css и content.css */
     
-    .article-card-title {
-        font-size: 1.1rem;
-    }
-    
-    .article-card-read-link .btn-text {
-        display: none;
-    }
-    
-    .article-card-read-link {
-        padding: 0.75rem;
-        border-radius: 6px;
-    }
+    /* Мобильные стили для кнопок теперь в ui.css */
     
     /* Меньший отступ между header и hero на мобильных */
     .page {
@@ -989,14 +803,9 @@
         font-size: 1.75rem;
     }
     
-    .article-card-content {
-        padding: 15px;
-    }
+    /* Стили для контента статей теперь в ui.css и content.css */
     
-    .reaction-btn {
-        padding: 6px 10px;
-        font-size: 0.8rem;
-    }
+    /* Мобильные стили для реакций теперь в ui.css */
 }
 </style>
 @endsection
