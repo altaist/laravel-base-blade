@@ -254,110 +254,103 @@
     to { transform: rotate(360deg); }
 }
 
-/* ===== ПАГИНАЦИЯ LARAVEL (BOOTSTRAP СТИЛИ) ===== */
-/* Контейнер пагинации */
+/* ===== ПАГИНАЦИЯ ===== */
 .pagination-container {
-    margin-top: 3rem;
+    margin-top: 2rem;
     display: flex;
-    justify-content: center;
-}
-
-/* Скрываем мобильную версию */
-.pagination-container .sm\\:hidden {
-    display: none !important;
-}
-
-/* Показываем десктопную версию */
-.pagination-container .hidden.sm\\:flex-1 {
-    display: flex !important;
-}
-
-/* Список пагинации */
-.pagination-container .flex {
-    display: flex;
-    gap: 0;
+    flex-direction: column;
     align-items: center;
-    padding: 0;
+    gap: 1rem;
+}
+
+.pagination-list {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
     margin: 0;
     list-style: none;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Контейнер кнопок пагинации */
-.pagination-container .relative.z-0 {
-    display: flex !important;
-    align-items: center;
-    gap: 0;
-    background: white !important;
-    border-radius: 10px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
-    padding: 0.5rem !important;
-}
-
-/* Элемент пагинации */
-.pagination-container .relative {
+.pagination-item {
     margin: 0;
 }
 
-/* Ссылка страницы (обычные номера) */
-.pagination-container .relative.inline-flex {
-    display: flex !important;
+.pagination-link {
+    display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px !important;
-    height: 40px !important;
-    padding: 0.5rem !important;
-    border: 2px solid #e9ecef !important;
-    background: white !important;
-    color: #495057 !important;
-    text-decoration: none !important;
-    font-weight: 500 !important;
-    transition: all 0.3s ease !important;
-    border-radius: 0 !important;
-    margin: 0 2px !important;
+    min-width: 40px;
+    height: 40px;
+    padding: 0.5rem;
+    border: 2px solid #e9ecef;
+    background: white;
+    color: #495057;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 8px;
 }
 
-/* Кнопка "Назад" (левая) */
-.pagination-container .relative.inline-flex.rounded-l-md {
-    border-radius: 8px 0 0 8px !important;
-    margin-left: 0 !important;
+.pagination-link:hover {
+    border-color: #007bff;
+    color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
 }
 
-/* Кнопка "Вперёд" (правая) */
-.pagination-container .relative.inline-flex.rounded-r-md {
-    border-radius: 0 8px 8px 0 !important;
-    margin-right: 0 !important;
+.pagination-item.active .pagination-link {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-color: #0056b3;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
 }
 
-/* Hover эффект */
-.pagination-container .relative.inline-flex:hover {
-    border-color: #007bff !important;
-    color: #007bff !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2) !important;
-    text-decoration: none !important;
+.pagination-item.disabled .pagination-link {
+    background: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
-/* Активная страница */
-.pagination-container .relative.inline-flex[aria-current="page"] {
-    background: linear-gradient(135deg, #007bff, #0056b3) !important;
-    border-color: #0056b3 !important;
-    color: white !important;
+.pagination-item.disabled .pagination-link:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: #e9ecef;
 }
 
-/* Отключенные кнопки */
-.pagination-container .relative.inline-flex[aria-disabled="true"] {
-    background: #f8f9fa !important;
-    color: #6c757d !important;
-    cursor: not-allowed !important;
+.pagination-info {
+    font-size: 0.875rem;
+    color: #6c757d;
 }
 
-/* Информация о страницах */
-.pagination-container .text-sm {
-    font-size: 0.875rem !important;
-    color: #6c757d !important;
-    margin-bottom: 0 !important;
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .pagination-link {
+        min-width: 35px;
+        height: 35px;
+        padding: 0.4rem;
+    }
+    
+    .pagination-list {
+        gap: 0.3rem;
+        padding: 0.4rem;
+    }
 }
 
-.pagination-container .font-medium {
-    font-weight: 600 !important;
+@media (max-width: 576px) {
+    .pagination-link {
+        min-width: 32px;
+        height: 32px;
+        padding: 0.3rem;
+        font-size: 0.9rem;
+    }
+    
+    .pagination-list {
+        gap: 0.25rem;
+        padding: 0.3rem;
+    }
 }
+
