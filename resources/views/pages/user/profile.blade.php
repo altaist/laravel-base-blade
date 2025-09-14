@@ -3,35 +3,52 @@
 @section('page-content')
         <div class="row">
             <div class="col-12">
-            <!-- Заголовок страницы -->
-            <x-layout.page-header title="Профиль">
-                <x-slot:meta>
-                    <div class="page-header__meta">
-                        <span><i class="fas fa-user-circle"></i> Управление вашим профилем</span>
+            <!-- Главный блок профиля -->
+            <div class="page-header mb-2 mb-md-4" style="display: block !important;">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h1 class="page-header__title mb-1 mb-md-2">{{ auth()->user()->name }}</h1>
+                        <div class="page-header__meta">
+                            <span><i class="fas fa-envelope"></i> {{ auth()->user()->email }}</span>
+                        </div>
                     </div>
-                </x-slot:meta>
-            </x-layout.page-header>
-            
-            <!-- Информация о пользователе -->
-            <div class="card shadow-lg border-0 rounded-lg mb-4">
-                <div class="card-body p-5">
-                    <h3 class="text-center mb-4">{{ auth()->user()->name }}!</h3>
-                    <p class="text-center text-muted mb-4">Email: {{ auth()->user()->email }}</p>
-                    
-                    <!-- Управление профилем -->
-                    <div class="d-flex flex-column flex-md-row gap-2 justify-content-center">
-                        <a href="{{ route('person.edit') }}" class="btn btn-outline-primary">
+                    <div class="col-auto d-none d-md-block">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="{{ route('person.edit') }}" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-edit me-2"></i>Редактировать профиль
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <a href="{{ route('user.files.index') }}" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-folder me-2"></i>Мои файлы
+                                </a>
+                            </div>
+                            @if(!(auth()->user()->telegram_id && isset($telegramLink)))
+                                <div class="col-12">
+                                    <a href="{{ $telegramLink ?? '#' }}" target="_blank" class="btn btn-outline-secondary w-100">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-2">
+                                            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                                        </svg>
+                                        Привязать Telegram
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Мобильные кнопки -->
+                <div class="d-md-none mt-3">
+                    <div class="d-flex flex-column gap-2 align-items-start">
+                        <a href="{{ route('person.edit') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-edit me-2"></i>Редактировать профиль
                         </a>
                         <a href="{{ route('user.files.index') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-folder me-2"></i>Мои файлы
                         </a>
-                        <a href="{{ route('dashboard') }}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Назад в кабинет
-                        </a>
-                        
                         @if(!(auth()->user()->telegram_id && isset($telegramLink)))
-                            <a href="{{ $telegramLink ?? '#' }}" target="_blank" class="btn btn-success">
+                            <a href="{{ $telegramLink ?? '#' }}" target="_blank" class="btn btn-outline-secondary">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-2">
                                     <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
                                 </svg>
@@ -42,27 +59,40 @@
                 </div>
             </div>
             
-            <!-- Пригласить друга -->
-            <div class="card shadow-lg border-0 rounded-lg mb-4">
-                <div class="card-body p-5">
-                    <h5 class="text-muted mb-3">
-                        <i class="fas fa-user-plus me-2"></i>
-                        Пригласить друга
-                    </h5>
-                    <div class="row">
-                        <div class="col-md-6" style="display: none;">
-                            <div class="card border-info">
-                                <div class="card-body">
-                                    <h6 class="card-title text-info">Ссылка для авторизации</h6>
-                                    <p class="card-text small text-muted">Создать ссылку для входа в систему</p>
-                                    <button type="button" class="btn btn-outline-info btn-sm" onclick="generateAuthLink()">
-                                        Создать ссылку
-                                    </button>
-                                    <div id="authLinkResult" class="mt-2"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
+            <style>
+            @media (max-width: 768px) {
+                .page-header {
+                    padding: 1rem !important;
+                    margin-bottom: 1rem !important;
+                }
+                .page-header__title {
+                    font-size: 1.5rem !important;
+                    margin-bottom: 0.5rem !important;
+                }
+                .page-header__meta {
+                    font-size: 0.9rem;
+                }
+                .page-header__meta span {
+                    font-size: 0.85rem;
+                }
+                .d-md-none .btn {
+                    padding: 0.5rem 1rem !important;
+                    font-size: 0.9rem !important;
+                }
+            }
+            </style>
+            
+            
+            <!-- Блоки в адаптивной сетке -->
+            <div class="row">
+                <!-- Пригласить друга -->
+                <div class="col-12 col-lg-6 mb-4">
+                    <div class="card shadow-lg border-0 rounded-lg h-100">
+                        <div class="card-body p-5">
+                            <h5 class="text-muted mb-3">
+                                <i class="fas fa-user-plus me-2"></i>
+                                Пригласить друга
+                            </h5>
                             <div class="card border-success">
                                 <div class="card-body">
                                     <h6 class="card-title text-success">Ссылка для регистрации</h6>
@@ -76,11 +106,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Реферальная ссылка -->
-            @if($referralLink)
-            <div class="card shadow-lg border-0 rounded-lg mb-4">
+                
+                <!-- Реферальная ссылка -->
+                @if($referralLink)
+                <div class="col-12 col-lg-6 mb-4">
+                    <div class="card shadow-lg border-0 rounded-lg h-100">
                 <div class="card-body p-5">
                     <h5 class="text-muted mb-3">
                         <i class="fas fa-gift me-2"></i>
@@ -131,9 +161,10 @@
                             Ссылка действует бессрочно
                         </small>
                     </div>
+                    </div>
                 </div>
+                @endif
             </div>
-            @endif
             </div>
         </div>
     </div>
