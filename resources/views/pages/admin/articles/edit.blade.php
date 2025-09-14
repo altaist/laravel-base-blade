@@ -1,5 +1,5 @@
 @extends('layouts.app', [
-    'header' => 'detail',
+    'header' => 'admin',
     'backUrl' => route('admin.articles.show', $article),
     'backText' => 'К просмотру статьи',
     'title' => 'Редактор',

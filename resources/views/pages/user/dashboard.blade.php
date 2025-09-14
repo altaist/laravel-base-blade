@@ -1,4 +1,6 @@
-@extends('layouts.app', ['header' => 'profile'])
+@extends('layouts.app', [
+    'header' => 'profile'
+])
 
 @section('content')
 <div class="page">

@@ -1,4 +1,5 @@
 @extends('layouts.app', [
+    'header' => 'profile',
     'showBackButton' => true,
     'backUrl' => route('dashboard'),
     'backText' => ''

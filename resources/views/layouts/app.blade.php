@@ -14,6 +14,7 @@
     @if(request()->routeIs('home') || request()->routeIs('article.show') || request()->routeIs('articles.index') || request()->routeIs('dashboard') || request()->routeIs('profile') || request()->routeIs('person.*') || request()->routeIs('user.*'))
         <link href="{{ asset('css/components.css') }}" rel="stylesheet">
     @endif
+    <link href="{{ asset('css/components/header.css') }}" rel="stylesheet">
     @stack('styles')
     <style>
         /* Серый фон для всей страницы */
@@ -33,9 +34,11 @@
 <body>
     {{-- Header для всех страниц --}}
     @if(isset($header) && $header === 'profile')
-        <x-layout.header.profile />
+        <x-layout.header.user />
+    @elseif(isset($header) && $header === 'admin')
+        <x-layout.header.admin />
     @else
-        <x-layout.header.main />
+        <x-layout.header.public />
     @endif
 
     @if(request()->routeIs('admin.*'))
