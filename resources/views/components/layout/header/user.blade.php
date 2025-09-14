@@ -4,6 +4,7 @@
     title="Личный кабинет"
     titleLink="{{ route('dashboard') }}"
     :mainMenu="[
+        ['title' => 'Главная', 'url' => route('home'), 'active' => 'home'],
         ['title' => 'Профиль', 'url' => route('dashboard'), 'active' => 'dashboard'],
         ['title' => 'Настройки', 'url' => route('profile'), 'active' => 'profile']
     ]"

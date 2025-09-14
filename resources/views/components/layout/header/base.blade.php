@@ -64,26 +64,37 @@
                             {{-- Выпадающее меню пользователя --}}
                             <div class="dropdown">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                    <div class="user-icon-square me-2">
+                                        <i class="fas fa-user"></i>
                                     </div>
-                                    <span>{{ Auth::user()->name }}</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
-                                        <h6 class="dropdown-header">
-                                            <i class="fas fa-user me-1"></i>
-                                            {{ Auth::user()->name }}
-                                        </h6>
+                                        <div class="dropdown-header">
+                                            <div class="user-name">{{ Auth::user()->name }}</div>
+                                            <div class="user-role">
+                                                @switch(Auth::user()->role->value)
+                                                    @case('admin')
+                                                        Администратор
+                                                        @break
+                                                    @case('manager')
+                                                        Менеджер
+                                                        @break
+                                                    @case('user')
+                                                        Пользователь
+                                                        @break
+                                                    @default
+                                                        Пользователь
+                                                @endswitch
+                                            </div>
+                                        </div>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
                                     @foreach($userMenu as $item)
                                         <li>
                                             @if(isset($item['type']) && $item['type'] === 'form')
                                                 <form method="POST" action="{{ route($item['route']) }}" class="d-inline w-100">
                                                     @csrf
                                                     <button type="submit" class="dropdown-item text-danger">
-                                                        <i class="{{ $item['icon'] ?? 'fas fa-sign-out-alt' }} me-2"></i>
                                                         {{ $item['title'] }}
                                                     </button>
                                                 </form>
@@ -91,13 +102,11 @@
                                                 @if(isset($item['class']) && $item['class'] === 'admin')
                                                     @can('admin')
                                                         <a class="dropdown-item" href="{{ route($item['route']) }}">
-                                                            <i class="{{ $item['icon'] ?? 'fas fa-user' }} me-2"></i>
                                                             {{ $item['title'] }}
                                                         </a>
                                                     @endcan
                                                 @else
                                                     <a class="dropdown-item" href="{{ route($item['route']) }}">
-                                                        <i class="{{ $item['icon'] ?? 'fas fa-user' }} me-2"></i>
                                                         {{ $item['title'] }}
                                                     </a>
                                                 @endif
@@ -144,7 +153,24 @@
                             <div class="avatar-circle">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </div>
-                            <span class="fw-bold">{{ Auth::user()->name }}</span>
+                            <div class="user-details">
+                                <div class="user-name">{{ Auth::user()->name }}</div>
+                                <div class="user-role">
+                                    @switch(Auth::user()->role->value)
+                                        @case('admin')
+                                            Администратор
+                                            @break
+                                        @case('manager')
+                                            Менеджер
+                                            @break
+                                        @case('user')
+                                            Пользователь
+                                            @break
+                                        @default
+                                            Пользователь
+                                    @endswitch
+                                </div>
+                            </div>
                         </div>
                         <div class="menu-actions">
                             @foreach($userMenu as $item)
@@ -157,10 +183,19 @@
                                         </button>
                                     </form>
                                 @else
-                                    <a href="{{ route($item['route']) }}" class="menu-item {{ $item['class'] ?? '' }}">
-                                        <i class="{{ $item['icon'] ?? 'fas fa-user' }}"></i>
-                                        <span>{{ $item['title'] }}</span>
-                                    </a>
+                                    @if(isset($item['class']) && $item['class'] === 'admin')
+                                        @can('admin')
+                                            <a href="{{ route($item['route']) }}" class="menu-item {{ $item['class'] ?? '' }}">
+                                                <i class="{{ $item['icon'] ?? 'fas fa-user' }}"></i>
+                                                <span>{{ $item['title'] }}</span>
+                                            </a>
+                                        @endcan
+                                    @else
+                                        <a href="{{ route($item['route']) }}" class="menu-item {{ $item['class'] ?? '' }}">
+                                            <i class="{{ $item['icon'] ?? 'fas fa-user' }}"></i>
+                                            <span>{{ $item['title'] }}</span>
+                                        </a>
+                                    @endif
                                 @endif
                             @endforeach
                         </div>

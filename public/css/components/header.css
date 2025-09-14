@@ -119,6 +119,9 @@
 
 .mobile-menu-section .user-info {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .mobile-menu-section .avatar-circle {
@@ -133,6 +136,26 @@
     font-size: 1.25rem;
     font-weight: 500;
     color: #495057;
+}
+
+.mobile-menu-section .user-details {
+    text-align: center;
+}
+
+.mobile-menu-section .user-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000000;
+    margin: 0;
+}
+
+.mobile-menu-section .user-role {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6c757d;
+    margin: 2px 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .mobile-menu-section .menu-actions {
@@ -264,7 +287,85 @@
     background-color: #f8f9fa;
 }
 
-/* Стили для аватара в выпадающем меню */
+/* Стили для квадратной иконки пользователя */
+.user-icon-square {
+    width: 32px;
+    height: 32px;
+    background: #6c757d;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.user-icon-square i {
+    color: white;
+    font-size: 14px;
+}
+
+.user-icon-square:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Стили для выпадающего меню пользователя */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border-radius: 12px;
+    padding: 12px;
+    min-width: 240px;
+    width: 240px;
+}
+
+.dropdown-header {
+    padding: 8px 16px 12px 16px;
+    margin: 0 0 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #000000;
+    margin: 0;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6c757d;
+    margin: 2px 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #495057;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    margin: 0;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.dropdown-item.text-danger {
+    color: #dc3545 !important;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #f8f9fa;
+    color: #c82333 !important;
+}
+
+/* Стили для аватара в выпадающем меню (старые, оставляем для совместимости) */
 .avatar-sm {
     width: 32px;
     height: 32px;
