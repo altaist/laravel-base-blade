@@ -8,8 +8,4 @@
         ['title' => 'Статьи', 'url' => route('articles.index'), 'active' => 'articles.*'],
         ['title' => 'Контакты', 'url' => '#contact']
     ]"
-    :userMenu="[
-        ['title' => 'Вход', 'route' => 'login', 'icon' => 'fas fa-sign-in-alt'],
-        ['title' => 'Регистрация', 'route' => 'register', 'icon' => 'fas fa-user-plus']
-    ]"
 />

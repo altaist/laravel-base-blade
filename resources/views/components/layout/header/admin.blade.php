@@ -9,10 +9,4 @@
         ['title' => 'Обратная связь', 'url' => route('admin.feedbacks.index'), 'active' => 'admin.feedbacks.*'],
         ['title' => 'Статьи', 'url' => route('admin.articles.index'), 'active' => 'admin.articles.*']
     ]"
-    :userMenu="[
-        ['title' => 'Личный кабинет', 'route' => 'dashboard', 'icon' => 'fas fa-tachometer-alt'],
-        ['title' => 'Профиль', 'route' => 'profile', 'icon' => 'fas fa-user'],
-        ['title' => 'Админка', 'route' => 'admin.dashboard', 'icon' => 'fas fa-cog', 'class' => 'admin'],
-        ['title' => 'Выйти', 'route' => 'logout', 'type' => 'form', 'icon' => 'fas fa-sign-out-alt']
-    ]"
 />

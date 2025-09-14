@@ -264,6 +264,14 @@
     background-color: #f8f9fa;
 }
 
+/* Стили для аватара в выпадающем меню */
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
     .header2-brand .header2-title {
