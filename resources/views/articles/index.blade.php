@@ -27,19 +27,19 @@
             </div>
 
             <div class="pagination-container">
-                <x-page.pagination :paginator="$articles" />
+                {{ $articles->links() }}
             </div>
         </div>
 
         <div class="col-lg-4">
-            <x-page.sidebar.wrapper>
+            <x-articles.sidebar.wrapper>
                 @if($popularArticles->isNotEmpty())
-                    <x-page.sidebar.similar-items 
+                    <x-articles.sidebar.similar-items 
                         :items="$popularArticles"
                         title="Популярные статьи"
                     />
                 @endif
-            </x-page.sidebar.wrapper>
+            </x-articles.sidebar.wrapper>
         </div>
     </div>
 @endsection

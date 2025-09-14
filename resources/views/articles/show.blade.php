@@ -28,24 +28,31 @@
                     </div>
                 </x-slot:meta>
                 <x-slot:actions>
-                    <x-page.reactions :item="$article" />
+                    <x-reactions.like-button :item="$article" class="reaction-btn-modern" />
+                    <x-reactions.favorite-button :item="$article" class="reaction-btn-modern" />
                 </x-slot:actions>
             </x-layout.page-header>
 
-            <x-page.image-block 
+            <x-articles.image-block 
                 :image="$article->imgFile?->url ?? asset('images/placeholder-large.svg')"
                 :alt="$article->name"
                 :zoom="true"
             />
 
             @if($article->description)
-                <x-page.description-card :description="$article->description" />
+                <x-articles.description-card :description="$article->description" />
             @endif
 
-            <x-page.content-block :content="$article->content" />
+            <div class="article-content-modern">
+                <div class="content-card">
+                    <div class="content-text">
+                        {!! nl2br(e($article->content)) !!}
+                    </div>
+                </div>
+            </div>
 
             @if($article->hasImages())
-                <x-page.gallery 
+                <x-landing.gallery 
                     :images="$article->getImageUrls()"
                     :zoom="true"
                 />
@@ -53,7 +60,7 @@
         </div>
 
         <div class="col-lg-4">
-            <x-page.sidebar.wrapper>
+            <x-articles.sidebar.wrapper>
                 @php
                     $similarArticles = \App\Models\Article::where('status', \App\Enums\ArticleStatus::PUBLISHED)
                         ->where('id', '!=', $article->id)
@@ -62,11 +69,11 @@
                         ->get();
                 @endphp
                 
-                <x-page.sidebar.similar-items 
+                <x-articles.sidebar.similar-items 
                     :items="$similarArticles"
                     title="Похожие статьи"
                 />
-            </x-page.sidebar.wrapper>
+            </x-articles.sidebar.wrapper>
         </div>
     </div>
 @endsection
