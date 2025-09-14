@@ -24,7 +24,7 @@ class HomeController extends Controller
             ->get();
 
         // Определяем, какую страницу показывать
-        $view = request()->is('home1') ? 'pages.public.home1' : 'pages.public.home';
+        $view = 'pages.public.home';
 
         return view($view, compact('articles'));
     }

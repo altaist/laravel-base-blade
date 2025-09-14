@@ -18,11 +18,6 @@ use App\Http\Controllers\Public\HomeController;
 
 // ===== PUBLIC ROUTES =====
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/home1', [HomeController::class, 'index'])->name('home1');
-Route::get('/header1', function () {
-    return view('pages.public.home1', ['header' => 'header1']);
-})->name('header1');
-
 
 // Public article routes
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
