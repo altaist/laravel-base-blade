@@ -1,8 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.user')
 
-@section('content')
-<div class="page">
-    <div class="container">
+@section('page-content')
         <div class="row">
             <div class="col-12">
             <!-- Заголовок страницы -->
@@ -136,7 +134,6 @@
             </div>
         </div>
     </div>
-</div>
 
 <script>
 function generateAuthLink() {

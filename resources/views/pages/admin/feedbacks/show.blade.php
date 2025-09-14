@@ -1,4 +1,4 @@
-@extends('layouts.app', [
+@extends('layouts.admin', [
     'header' => 'admin',
     'backUrl' => route('admin.feedbacks.index'),
     'backText' => 'К списку сообщений',
@@ -9,7 +9,7 @@
     ]
 ])
 
-@section('content')
+@section('page-content')
 <div class="container-fluid admin-container">
 
     <!-- Детали сообщения -->

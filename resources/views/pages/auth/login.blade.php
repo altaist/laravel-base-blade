@@ -1,9 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
-@section('content')
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
+@section('page-content')
+<div class="row justify-content-center">
+    <div class="col-md-6">
             <div class="card shadow-lg border-0 rounded-lg">
                 <div class="card-body p-5">
                     <h3 class="text-center mb-4">Вход</h3>
@@ -49,7 +48,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 

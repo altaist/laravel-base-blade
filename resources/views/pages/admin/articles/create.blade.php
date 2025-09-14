@@ -1,16 +1,16 @@
-@extends('layouts.app', [
-    'header' => 'admin',
-    'backUrl' => route('admin.articles.index'),
-    'backText' => 'К списку статей',
-    'title' => 'Создание статьи',
-    'breadcrumbs' => [
-        ['name' => 'Админка', 'url' => route('admin.dashboard')],
-        ['name' => 'Статьи', 'url' => route('admin.articles.index')],
-        ['name' => 'Создание', 'url' => '#']
-    ]
-])
+@extends('layouts.admin')
 
-@section('content')
+@section('breadcrumbs')
+    @php
+        $breadcrumbs = [
+            ['name' => 'Админка', 'url' => route('admin.dashboard')],
+            ['name' => 'Статьи', 'url' => route('admin.articles.index')],
+            ['name' => 'Создание', 'url' => '#']
+        ];
+    @endphp
+@endsection
+
+@section('page-content')
 <div class="container-fluid admin-container">
 
     <div class="row">

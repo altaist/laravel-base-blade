@@ -1,12 +1,14 @@
-@extends('layouts.app', [
-    'header' => 'admin',
-    'breadcrumbs' => [
-        ['name' => 'Админка', 'url' => route('admin.dashboard')]
-    ]
-])
+@extends('layouts.admin')
 
-@section('content')
-<div class="container-fluid admin-container">
+@section('breadcrumbs')
+    @php
+        $breadcrumbs = [
+            ['name' => 'Админка', 'url' => route('admin.dashboard')]
+        ];
+    @endphp
+@endsection
+
+@section('page-content')
 
 
 
@@ -117,5 +119,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection

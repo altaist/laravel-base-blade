@@ -1,13 +1,6 @@
-@extends('layouts.app', [
-    'header' => 'profile',
-    'showBackButton' => true,
-    'backUrl' => route('dashboard'),
-    'backText' => ''
-])
+@extends('layouts.user')
 
-@section('content')
-<div class="page">
-    <div class="container">
+@section('page-content')
         <div class="row">
             <div class="col-12">
             <!-- Заголовок страницы -->

@@ -1,4 +1,4 @@
-@extends('layouts.app', [
+@extends('layouts.admin', [
     'header' => 'admin',
     'breadcrumbs' => [
         ['name' => 'Админка', 'url' => route('admin.dashboard')],
@@ -6,7 +6,7 @@
     ]
 ])
 
-@section('content')
+@section('page-content')
 <div class="container-fluid admin-container">
     <!-- Заголовок -->
     <div class="row mb-3 mb-md-4">

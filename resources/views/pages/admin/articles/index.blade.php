@@ -1,12 +1,15 @@
-@extends('layouts.app', [
-    'header' => 'admin',
-    'breadcrumbs' => [
-        ['name' => 'Админка', 'url' => route('admin.dashboard')],
-        ['name' => 'Статьи', 'url' => route('admin.articles.index')]
-    ]
-])
+@extends('layouts.admin')
 
-@section('content')
+@section('breadcrumbs')
+    @php
+        $breadcrumbs = [
+            ['name' => 'Админка', 'url' => route('admin.dashboard')],
+            ['name' => 'Статьи', 'url' => route('admin.articles.index')]
+        ];
+    @endphp
+@endsection
+
+@section('page-content')
 <div class="container-fluid admin-container">
 
     <!-- Поиск и фильтры -->
@@ -233,7 +236,6 @@
             </div>
         </div>
     </div-->
-</div>
 
 <!-- Форма для удаления -->
 <form id="deleteForm" method="POST" action="{{ route('admin.articles.destroy', 0) }}" style="display: none;">

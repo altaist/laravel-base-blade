@@ -1,4 +1,4 @@
-@extends('layouts.app', [
+@extends('layouts.admin', [
     'header' => 'admin',
     'backUrl' => route('admin.users.index'),
     'backText' => 'К списку пользователей',
@@ -10,7 +10,7 @@
     ]
 ])
 
-@section('content')
+@section('page-content')
 <div class="container-fluid admin-container">
     <div class="row">
         <div class="col-12">

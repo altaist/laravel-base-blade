@@ -1,8 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
-@section('content')
-<div class="page">
-    <div class="container">
+@section('page-content')
         {{-- Hero секция в стиле page --}}
         <div class="row mb-5" style="margin-top: 1rem;">
             <div class="col-12">

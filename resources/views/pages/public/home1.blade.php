@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
-@section('content')
+@section('page-content')
     {{-- Hero секция --}}
     @include('components.landing.hero', [
         'title' => 'Добро пожаловать в Kvadro!',
