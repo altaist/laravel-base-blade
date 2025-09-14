@@ -672,6 +672,13 @@
 
 /* Стили для кнопок теперь в ui.css */
 
+/* Десктопная версия */
+@media (min-width: 992px) {
+    .hero-content .text-white {
+        padding-left: 3rem;
+    }
+}
+
 /* Мобильная адаптация */
 @media (max-width: 768px) {
     .section-title {

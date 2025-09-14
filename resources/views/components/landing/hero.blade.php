@@ -38,6 +38,15 @@
 .hero-section {
     position: relative;
     overflow: hidden;
+    padding-left: 3rem;
+    padding-right: 3rem;
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
 
 .hero-with-bg {
