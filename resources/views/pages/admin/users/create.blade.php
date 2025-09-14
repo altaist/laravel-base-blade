@@ -17,7 +17,7 @@
             <div class="card shadow-lg border-0">
                 <div class="card-body p-3">
                     <!-- Кнопки действий -->
-                    <x-admin.action-buttons 
+                    <x-admin.form-buttons 
                         formId="userCreateForm" 
                         saveText="Создать" 
                         cancelUrl="{{ route('admin.users.index') }}" 
@@ -25,7 +25,7 @@
                     
                     <!-- Мобильные кнопки -->
                     <div class="d-block d-md-none mb-3">
-                        <x-admin.action-buttons 
+                        <x-admin.form-buttons 
                             formId="userCreateForm" 
                             saveText="Создать" 
                             cancelUrl="{{ route('admin.users.index') }}" 

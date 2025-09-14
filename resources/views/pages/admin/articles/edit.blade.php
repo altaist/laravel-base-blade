@@ -20,7 +20,7 @@
             <div class="card shadow-lg border-0 d-none d-md-block">
                 <div class="card-body p-3">
                     <!-- Кнопки действий сверху -->
-                    <x-admin.action-buttons 
+                    <x-admin.form-buttons 
                         formId="articleEditForm" 
                         saveText="Сохранить" 
                         cancelUrl="{{ route('admin.articles.show', $article) }}" 
@@ -257,7 +257,7 @@
                     </div>
 
                     <!-- Кнопки действий -->
-                    <x-admin.action-buttons 
+                    <x-admin.form-buttons 
                         formId="articleEditForm" 
                         saveText="Сохранить" 
                         cancelUrl="{{ route('admin.articles.show', $article) }}" 

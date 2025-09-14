@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-12">
             <!-- Кнопки действий -->
-            <x-admin.action-buttons 
+            <x-admin.form-buttons 
                 formId="userEditForm" 
                 saveText="Сохранить" 
                 cancelUrl="{{ route('admin.users.show', $user) }}" 
@@ -24,7 +24,7 @@
             
             <!-- Мобильные кнопки -->
             <div class="d-block d-md-none mb-3">
-                <x-admin.action-buttons 
+                <x-admin.form-buttons 
                     formId="userEditForm" 
                     saveText="Сохранить" 
                     cancelUrl="{{ route('admin.users.show', $user) }}" 

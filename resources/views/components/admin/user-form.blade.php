@@ -135,7 +135,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Имя</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->first_name ?? 'Не указано' }}
+                                {{ $user->person ? $user->person->first_name : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Фамилия</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->last_name ?? 'Не указано' }}
+                                {{ $user->person ? $user->person->last_name : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -151,7 +151,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Отчество</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->middle_name ?? 'Не указано' }}
+                                {{ $user->person ? $user->person->middle_name : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -162,7 +162,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Email персоны</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->email ?? 'Не указано' }}
+                                {{ $user->person ? $user->person->email : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Телефон</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->phone ?? 'Не указано' }}
+                                {{ $user->person ? $user->person->phone : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -178,7 +178,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Регион</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->region ?? 'Не указано' }}
+                                {{ $user->person ? $user->person->region : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -189,7 +189,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Пол</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                @if($user->person->gender)
+                                @if($user->person && $user->person->gender)
                                     {{ $user->person->gender === 'male' ? 'Мужской' : 'Женский' }}
                                 @else
                                     Не указано
@@ -201,7 +201,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Дата рождения</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->birth_date ? $user->person->birth_date->format('d.m.Y') : 'Не указано' }}
+                                {{ $user->person && $user->person->birth_date ? $user->person->birth_date->format('d.m.Y') : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -209,7 +209,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Возраст</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->age ?? 'Не указано' }}
+                                {{ $user->person ? $user->person->age : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -313,7 +313,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Улица</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->address['street'] ?? 'Не указано' }}
+                                {{ $user->person && isset($user->person->address['street']) ? $user->person->address['street'] : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -321,7 +321,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Дом</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->address['house'] ?? 'Не указано' }}
+                                {{ $user->person && isset($user->person->address['house']) ? $user->person->address['house'] : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -329,7 +329,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Квартира</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->address['apartment'] ?? 'Не указано' }}
+                                {{ $user->person && isset($user->person->address['apartment']) ? $user->person->address['apartment'] : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -340,7 +340,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Город</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->address['city'] ?? 'Не указано' }}
+                                {{ $user->person && isset($user->person->address['city']) ? $user->person->address['city'] : 'Не указано' }}
                             </div>
                         </div>
                     </div>
@@ -348,7 +348,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Почтовый индекс</label>
                             <div class="form-control-plaintext bg-light p-2 rounded">
-                                {{ $user->person->address['postal_code'] ?? 'Не указано' }}
+                                {{ $user->person && isset($user->person->address['postal_code']) ? $user->person->address['postal_code'] : 'Не указано' }}
                             </div>
                         </div>
                     </div>
