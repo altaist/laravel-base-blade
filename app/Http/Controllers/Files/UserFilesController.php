@@ -238,7 +238,7 @@ class UserFilesController extends Controller
             ]);
         }
 
-        return view('user.files.images', compact('images'));
+        return view('pages.user.files.images', compact('images'));
     }
 
     /**
@@ -256,7 +256,7 @@ class UserFilesController extends Controller
             ]);
         }
 
-        return view('user.files.documents', compact('documents'));
+        return view('pages.user.files.documents', compact('documents'));
     }
 
     /**
@@ -274,6 +274,6 @@ class UserFilesController extends Controller
             ]);
         }
 
-        return view('user.files.stats', compact('stats'));
+        return view('pages.user.files.stats', compact('stats'));
     }
 }

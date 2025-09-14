@@ -41,7 +41,7 @@ class AdminController extends Controller
             'ready' => Article::where('status', ArticleStatus::READY_TO_PUBLISH)->count(),
         ];
 
-        return view('admin.dashboard', compact('userStats', 'feedbackStats', 'articleStats'));
+        return view('pages.admin.dashboard', compact('userStats', 'feedbackStats', 'articleStats'));
     }
 
 }

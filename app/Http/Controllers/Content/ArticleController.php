@@ -63,7 +63,7 @@ class ArticleController extends Controller
             ->limit(4)
             ->get();
 
-        return view('articles.index', compact('articles', 'popularArticles'));
+        return view('pages.public.articles.index', compact('articles', 'popularArticles'));
     }
 
     /**
@@ -71,7 +71,7 @@ class ArticleController extends Controller
      */
     public function create(): View
     {
-        return view('articles.create');
+        return view('pages.admin.articles.create');
     }
 
     /**
@@ -95,7 +95,7 @@ class ArticleController extends Controller
      */
     public function show(Article $article): View
     {
-        return view('articles.show', compact('article'));
+        return view('pages.public.articles.show', compact('article'));
     }
 
     /**
@@ -103,7 +103,7 @@ class ArticleController extends Controller
      */
     public function edit(Article $article): View
     {
-        return view('articles.edit', compact('article'));
+        return view('pages.admin.articles.edit', compact('article'));
     }
 
     /**
@@ -146,7 +146,7 @@ class ArticleController extends Controller
             abort(404);
         }
 
-        return view('articles.show', compact('article'));
+        return view('pages.public.articles.show', compact('article'));
     }
 
     /**

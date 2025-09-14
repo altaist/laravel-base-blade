@@ -27,7 +27,7 @@ class FeedbackController extends Controller
     {
         $feedbacks = Feedback::orderBy('created_at', 'desc')->paginate(20);
         
-        return view('admin.feedbacks.index', compact('feedbacks'));
+        return view('pages.admin.feedbacks.index', compact('feedbacks'));
     }
 
     /**
@@ -35,6 +35,6 @@ class FeedbackController extends Controller
      */
     public function show(Feedback $feedback): View
     {
-        return view('admin.feedbacks.show', compact('feedback'));
+        return view('pages.admin.feedbacks.show', compact('feedback'));
     }
 }

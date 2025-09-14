@@ -33,7 +33,7 @@ class ArticleController extends Controller
         
         $articleStats = $this->getArticleStats();
         
-        return view('admin.articles.index', compact('articles', 'search', 'articleStats'));
+        return view('pages.admin.articles.index', compact('articles', 'search', 'articleStats'));
     }
 
     /**
@@ -41,7 +41,7 @@ class ArticleController extends Controller
      */
     public function show(Article $article): View
     {
-        return view('admin.articles.show', compact('article'));
+        return view('pages.admin.articles.show', compact('article'));
     }
 
     /**
@@ -49,7 +49,7 @@ class ArticleController extends Controller
      */
     public function create(): View
     {
-        return view('admin.articles.create');
+        return view('pages.admin.articles.create');
     }
 
     /**
@@ -87,7 +87,7 @@ class ArticleController extends Controller
      */
     public function edit(Article $article): View
     {
-        return view('admin.articles.edit', compact('article'));
+        return view('pages.admin.articles.edit', compact('article'));
     }
 
     /**

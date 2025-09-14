@@ -18,7 +18,7 @@ class ArticleController extends Controller
             ->limit(4)
             ->get();
 
-        return view('articles.index', compact('articles', 'popularArticles'));
+        return view('pages.public.articles.index', compact('articles', 'popularArticles'));
     }
 
     public function show($slug)
@@ -27,6 +27,6 @@ class ArticleController extends Controller
             ->where('status', ArticleStatus::PUBLISHED)
             ->firstOrFail();
 
-        return view('articles.show', compact('article'));
+        return view('pages.public.articles.show', compact('article'));
     }
 }

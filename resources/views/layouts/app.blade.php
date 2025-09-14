@@ -33,9 +33,9 @@
 <body>
     {{-- Header для всех страниц --}}
     @if(isset($header) && $header === 'profile')
-        <x-headers.profile />
+        <x-layout.header.profile />
     @else
-        <x-headers.header />
+        <x-layout.header.main />
     @endif
 
     @if(request()->routeIs('admin.*'))
@@ -70,7 +70,7 @@
     @yield('content')
     
     {{-- Футер --}}
-    <x-footer />
+    <x-layout.footer />
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{ asset('js/image-preview.js') }}"></script>

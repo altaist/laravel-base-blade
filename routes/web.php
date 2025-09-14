@@ -20,7 +20,7 @@ use App\Http\Controllers\Public\HomeController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/home1', [HomeController::class, 'index'])->name('home1');
 Route::get('/header1', function () {
-    return view('pages.home1', ['header' => 'header1']);
+    return view('pages.public.home1', ['header' => 'header1']);
 })->name('header1');
 
 
@@ -84,7 +84,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
     
     Route::get('/forgot-password', function () { 
-        return view('auth.forgot-password'); 
+        return view('pages.auth.forgot-password'); 
     })->name('password.request');
 });
 

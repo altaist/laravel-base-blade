@@ -22,7 +22,7 @@ class PersonEditController extends Controller
         $user = Auth::user();
         $personData = $this->personService->getPersonDataForForm($user);
 
-        return view('pages.person-edit', [
+        return view('pages.user.person-edit', [
             'personData' => $personData,
             'user' => $user
         ]);

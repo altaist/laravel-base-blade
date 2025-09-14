@@ -61,7 +61,7 @@ class ProfileController extends Controller
             ]);
         }
         
-        return view('pages.profile', [
+        return view('pages.user.profile', [
             'person' => $person,
             'telegramLink' => $telegramLink,
             'referralLink' => $referralLink
@@ -111,7 +111,7 @@ class ProfileController extends Controller
             ]);
         }
         
-        return view('pages.dashboard', [
+        return view('pages.user.dashboard', [
             'person' => $person,
             'telegramLink' => $telegramLink,
             'referralLink' => $referralLink

@@ -36,7 +36,7 @@ class UserController extends Controller
         
         $userStats = $this->adminUserService->getUserStats();
         
-        return view('admin.users.index', compact('users', 'search', 'userStats'));
+        return view('pages.admin.users.index', compact('users', 'search', 'userStats'));
     }
 
     /**
@@ -44,7 +44,7 @@ class UserController extends Controller
      */
     public function show(User $user): View
     {
-        return view('admin.users.show', compact('user'));
+        return view('pages.admin.users.show', compact('user'));
     }
 
     /**
@@ -54,7 +54,7 @@ class UserController extends Controller
     {
         $personData = $this->personService->getPersonDataForForm($user);
         
-        return view('admin.users.edit', [
+        return view('pages.admin.users.edit', [
             'user' => $user,
             'personData' => $personData
         ]);
@@ -95,7 +95,7 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        return view('admin.users.create');
+        return view('pages.admin.users.create');
     }
 
     /**

@@ -128,7 +128,7 @@
         </div>
         <div class="card-body">
             @if($mode === 'edit')
-                <x-person-edit-form :personData="$personData" :user="$user" />
+                <x-forms.person-edit-form :personData="$personData" :user="$user" />
             @else
                 <div class="row">
                     <div class="col-md-4">

@@ -1,0 +1,119 @@
+/* ===== LAYOUT КОМПОНЕНТЫ ===== */
+
+/* Page Header - заголовок страницы */
+.page-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.page-header__content {
+    flex-grow: 1;
+}
+
+.page-header__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.page-header__subtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.page-header__meta {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.page-header__actions {
+    display: flex;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+/* Breadcrumbs - хлебные крошки */
+.breadcrumbs {
+    margin-bottom: 2rem;
+}
+
+.breadcrumbs__list {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.breadcrumbs__item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumbs__link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+}
+
+.breadcrumbs__link:hover {
+    color: #007bff;
+    background: #f8f9fa;
+    text-decoration: none;
+}
+
+.breadcrumbs__separator {
+    color: #dee2e6;
+    font-size: 0.8rem;
+}
+
+.breadcrumbs__item--active {
+    color: #495057;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background: #e9ecef;
+    border-radius: 10px;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .page-header__title {
+        font-size: 2rem;
+    }
+    
+    .page-header__meta {
+        gap: 1rem;
+    }
+    
+    .breadcrumbs__list {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+}
