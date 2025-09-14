@@ -201,33 +201,34 @@
 .reaction-btn:hover {
     border-color: #007bff;
     color: #007bff;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
 }
 
 .reaction-btn.active {
     border-color: #007bff;
-    background-color: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
 }
 
 .reaction-btn.active.like-btn {
     border-color: #dc3545;
-    background-color: #dc3545;
+    background: linear-gradient(135deg, #dc3545, #c82333);
 }
 
 .reaction-btn.active.favorite-btn {
     border-color: #ffc107;
-    background-color: #ffc107;
+    background: linear-gradient(135deg, #ffc107, #e0a800);
     color: #212529;
 }
 
 .reaction-btn i {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 }
 
 .reaction-count {
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 }
 
 .reaction-display {
@@ -251,4 +252,112 @@
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* ===== ПАГИНАЦИЯ LARAVEL (BOOTSTRAP СТИЛИ) ===== */
+/* Контейнер пагинации */
+.pagination-container {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* Скрываем мобильную версию */
+.pagination-container .sm\\:hidden {
+    display: none !important;
+}
+
+/* Показываем десктопную версию */
+.pagination-container .hidden.sm\\:flex-1 {
+    display: flex !important;
+}
+
+/* Список пагинации */
+.pagination-container .flex {
+    display: flex;
+    gap: 0;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+/* Контейнер кнопок пагинации */
+.pagination-container .relative.z-0 {
+    display: flex !important;
+    align-items: center;
+    gap: 0;
+    background: white !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    padding: 0.5rem !important;
+}
+
+/* Элемент пагинации */
+.pagination-container .relative {
+    margin: 0;
+}
+
+/* Ссылка страницы (обычные номера) */
+.pagination-container .relative.inline-flex {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px !important;
+    height: 40px !important;
+    padding: 0.5rem !important;
+    border: 2px solid #e9ecef !important;
+    background: white !important;
+    color: #495057 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    border-radius: 0 !important;
+    margin: 0 2px !important;
+}
+
+/* Кнопка "Назад" (левая) */
+.pagination-container .relative.inline-flex.rounded-l-md {
+    border-radius: 8px 0 0 8px !important;
+    margin-left: 0 !important;
+}
+
+/* Кнопка "Вперёд" (правая) */
+.pagination-container .relative.inline-flex.rounded-r-md {
+    border-radius: 0 8px 8px 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Hover эффект */
+.pagination-container .relative.inline-flex:hover {
+    border-color: #007bff !important;
+    color: #007bff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2) !important;
+    text-decoration: none !important;
+}
+
+/* Активная страница */
+.pagination-container .relative.inline-flex[aria-current="page"] {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+    border-color: #0056b3 !important;
+    color: white !important;
+}
+
+/* Отключенные кнопки */
+.pagination-container .relative.inline-flex[aria-disabled="true"] {
+    background: #f8f9fa !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+}
+
+/* Информация о страницах */
+.pagination-container .text-sm {
+    font-size: 0.875rem !important;
+    color: #6c757d !important;
+    margin-bottom: 0 !important;
+}
+
+.pagination-container .font-medium {
+    font-weight: 600 !important;
 }

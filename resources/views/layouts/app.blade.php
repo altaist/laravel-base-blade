@@ -92,8 +92,7 @@
         });
     });
     </script>
-    <link rel="stylesheet" href="{{ asset('css/components/like-button.css') }}">
-    <script src="{{ asset('js/reactions.js') }}"></script>
+росто    <script src="{{ asset('js/reactions.js') }}"></script>
     @stack('scripts')
 </body>
 </html>
