@@ -111,44 +111,6 @@
     flex-shrink: 0;
 }
 
-.reaction-btn-modern {
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 25px;
-    padding: 0.75rem 1.25rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: #6c757d;
-    font-weight: 600;
-}
-
-.reaction-btn-modern:hover {
-    border-color: #007bff;
-    color: #007bff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
-}
-
-.reaction-btn-modern.active {
-    border-color: #007bff;
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    color: white;
-}
-
-.reaction-btn-modern.active.like-btn {
-    border-color: #dc3545;
-    background: linear-gradient(135deg, #dc3545, #c82333);
-}
-
-.reaction-btn-modern.active.favorite-btn {
-    border-color: #ffc107;
-    background: linear-gradient(135deg, #ffc107, #e0a800);
-    color: #212529;
-}
 
 /* Изображение статьи */
 .article-image-modern {

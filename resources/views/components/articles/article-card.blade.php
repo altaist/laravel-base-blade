@@ -23,8 +23,8 @@
     
     <div class="article-card-actions">
         <div class="article-card-reactions">
-            <x-reactions.like-button :item="$article" />
-            <x-reactions.favorite-button :item="$article" />
+            <x-like-button :item="$article" :type="'article'" />
+            <x-favorite-button :item="$article" :type="'article'" />
         </div>
         
         <a href="{{ route('article.show', $article->slug) }}" class="article-card-read-link">

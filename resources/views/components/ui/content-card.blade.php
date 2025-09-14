@@ -36,8 +36,8 @@
     
     <div class="content-card__actions">
         <div class="content-card__reactions">
-            <x-reactions.like-button :item="$item" />
-            <x-reactions.favorite-button :item="$item" />
+            <x-like-button :item="$item" :type="'article'" />
+            <x-favorite-button :item="$item" :type="'article'" />
         </div>
         
         <a href="{{ $url }}" class="content-card__read-link">

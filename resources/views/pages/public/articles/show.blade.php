@@ -28,8 +28,8 @@
                     </div>
                 </x-slot:meta>
                 <x-slot:actions>
-                    <x-reactions.like-button :item="$article" class="reaction-btn-modern" />
-                    <x-reactions.favorite-button :item="$article" class="reaction-btn-modern" />
+                    <x-like-button :item="$article" :type="'article'" />
+                    <x-favorite-button :item="$article" :type="'article'" />
                 </x-slot:actions>
             </x-layout.page-header>
 

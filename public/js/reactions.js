@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const button = e.target.closest('.like-btn');
             const itemId = button.dataset.itemId;
+            const itemType = button.dataset.itemType || 'article'; // читаем тип из data-атрибута
             
             try {
                 const response = await fetch('/api/likes/toggle', {
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
                     body: JSON.stringify({
-                        likeable_type: 'article',
+                        likeable_type: itemType,
                         likeable_id: parseInt(itemId)
                     })
                 });
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const button = e.target.closest('.favorite-btn');
             const itemId = button.dataset.itemId;
+            const itemType = button.dataset.itemType || 'article'; // читаем тип из data-атрибута
             
             try {
                 const response = await fetch('/api/favorites/toggle', {
@@ -49,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
                     body: JSON.stringify({
-                        favoritable_type: 'article',
+                        favoritable_type: itemType,
                         favoritable_id: parseInt(itemId)
                     })
                 });
@@ -93,4 +95,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-

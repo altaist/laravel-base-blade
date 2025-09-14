@@ -34,8 +34,8 @@
 
                 <div class="article-list-item__footer">
                     <div class="article-list-item__stats">
-                        <x-reactions.like-button :item="$article" />
-                        <x-reactions.favorite-button :item="$article" />
+                        <x-like-button :item="$article" :type="'article'" />
+                        <x-favorite-button :item="$article" :type="'article'" />
                     </div>
                     <a href="{{ route('article.show', $article->slug) }}" 
                        class="article-list-item__read-link">
