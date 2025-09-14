@@ -23,6 +23,9 @@
                         <a href="{{ route('person.edit') }}" class="btn btn-outline-primary">
                             <i class="fas fa-edit me-2"></i>Редактировать профиль
                         </a>
+                        <a href="{{ route('user.files.index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-folder me-2"></i>Мои файлы
+                        </a>
                         <a href="{{ route('dashboard') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Назад в кабинет
                         </a>

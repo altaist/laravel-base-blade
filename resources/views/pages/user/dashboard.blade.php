@@ -3,44 +3,45 @@
 @section('page-content')
         <div class="row">
             <div class="col-12">
-            <!-- Заголовок страницы -->
-            <x-layout.page-header title="Личный кабинет">
-                <x-slot:meta>
-                    <div class="page-header__meta">
-                        <span><i class="fas fa-user"></i> Добро пожаловать в ваш личный кабинет</span>
+            <!-- Главный блок профиля -->
+            <div class="page-header mb-2 mb-md-4" style="display: block !important;">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h1 class="page-header__title mb-1 mb-md-2">{{ auth()->user()->name }}</h1>
+                        <div class="page-header__meta">
+                            <span><i class="fas fa-envelope"></i> {{ auth()->user()->email }}</span>
+                        </div>
                     </div>
-                </x-slot:meta>
-            </x-layout.page-header>
-            
-            <!-- Информация о пользователе -->
-            <div class="card shadow-lg border-0 rounded-lg mb-4">
-                <div class="card-body p-5">
-                    <h3 class="text-center mb-4">Привет, {{ auth()->user()->name }}!</h3>
-                    <p class="text-center text-muted mb-4">Email: {{ auth()->user()->email }}</p>
-                    
-                    <!-- Управление профилем -->
-                    <div class="d-flex flex-column flex-md-row gap-2 justify-content-center">
-                        <a href="{{ route('profile') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-user me-2"></i>Профиль
+                    <div class="col-auto">
+                        <a href="{{ route('profile') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-cog"></i>
                         </a>
-                        <a href="{{ route('person.edit') }}" class="btn btn-primary">
-                            <i class="fas fa-edit me-2"></i>Редактировать
-                        </a>
-                        <a href="{{ route('user.files.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-folder me-2"></i>Мои файлы
-                        </a>
-                        
-                        @if(!auth()->user()->telegram_id && isset($telegramLink))
-                            <a href="{{ $telegramLink }}" target="_blank" class="btn btn-success">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-2">
-                                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                                </svg>
-                                Привязать через Telegram
-                            </a>
-                        @endif
                     </div>
                 </div>
             </div>
+            
+            <style>
+            @media (max-width: 768px) {
+                .page-header {
+                    padding: 1rem !important;
+                    margin-bottom: 1rem !important;
+                }
+                .page-header__title {
+                    font-size: 1.5rem !important;
+                    margin-bottom: 0.5rem !important;
+                }
+                .page-header__meta {
+                    font-size: 0.9rem;
+                }
+                .page-header__meta span {
+                    font-size: 0.85rem;
+                }
+                .btn-lg {
+                    padding: 0.5rem 0.75rem !important;
+                    font-size: 1rem !important;
+                }
+            }
+            </style>
             </div>
         </div>
     </div>
