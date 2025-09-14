@@ -1,22 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg border-0 rounded-lg">
+<div class="page">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+            <!-- Заголовок страницы -->
+            <x-layout.page-header title="Профиль">
+                <x-slot:meta>
+                    <div class="page-header__meta">
+                        <span><i class="fas fa-user-circle"></i> Управление вашим профилем</span>
+                    </div>
+                </x-slot:meta>
+            </x-layout.page-header>
+            
+            <!-- Информация о пользователе -->
+            <div class="card shadow-lg border-0 rounded-lg mb-4">
                 <div class="card-body p-5">
-                    <h3 class="text-center mb-4">Профиль</h3>
-                    <p>{{ auth()->user()->name }}!</p>
-                    <p>Email: {{ auth()->user()->email }}</p>
+                    <h3 class="text-center mb-4">{{ auth()->user()->name }}!</h3>
+                    <p class="text-center text-muted mb-4">Email: {{ auth()->user()->email }}</p>
                     
                     <!-- Управление профилем -->
-                    <div class="mt-3 d-flex flex-column flex-md-row gap-2">
+                    <div class="d-flex flex-column flex-md-row gap-2 justify-content-center">
                         <a href="{{ route('person.edit') }}" class="btn btn-outline-primary">
-                            Редактировать профиль
-                        </a> 
-                        @if(!(auth()->user()->telegram_id && $telegramLink))
-                            <a href="{{ $telegramLink }}" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Редактировать профиль
+                        </a>
+                        <a href="{{ route('dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Назад в кабинет
+                        </a>
+                        
+                        @if(!(auth()->user()->telegram_id && isset($telegramLink)))
+                            <a href="{{ $telegramLink ?? '#' }}" target="_blank" class="btn btn-success">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-2">
                                     <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
                                 </svg>
@@ -24,122 +38,101 @@
                             </a>
                         @endif
                     </div>
-                    
-                    <!-- Пригласить друга -->
-                    <div class="mt-4 pt-3 border-top">
-                        <h5 class="text-muted mb-3">Пригласить друга</h5>
-                        <div class="row">
-                            <div class="col-md-6" style="display: none;">
-                                <div class="card border-info">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-info">Ссылка для авторизации</h6>
-                                        <p class="card-text small text-muted">Создать ссылку для входа в систему</p>
-                                        <button type="button" class="btn btn-outline-info btn-sm" onclick="generateAuthLink()">
-                                            Создать ссылку
-                                        </button>
-                                        <div id="authLinkResult" class="mt-2"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card border-success">
-                                    <div class="card-body">
-                                        <h6 class="card-title text-success">Ссылка для регистрации</h6>
-                                        <p class="card-text small text-muted">Создать ссылку для регистрации нового пользователя</p>
-                                        <button type="button" class="btn btn-outline-success btn-sm" onclick="generateRegistrationLink()">
-                                            Создать ссылку
-                                        </button>
-                                        <div id="registrationLinkResult" class="mt-2"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Реферальная ссылка -->
-                    @if($referralLink)
-                    <div class="mt-4 pt-3 border-top">
-                        <h5 class="text-muted mb-3">Реферальная ссылка</h5>
-                        <div class="card border-warning">
-                            <div class="card-body">
-                                <h6 class="card-title text-warning">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-2">
-                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                    </svg>
-                                    Пригласите друзей
-                                </h6>
-                                <p class="card-text small text-muted mb-3">
-                                    Поделитесь этой ссылкой с друзьями. Когда они зарегистрируются по вашей ссылке, вы получите бонус!
-                                </p>
-                                
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" id="referralLink" 
-                                           value="{{ $referralLink->full_url }}" readonly>
-                                    <button class="btn btn-outline-secondary" type="button" onclick="copyReferralLink()">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-1">
-                                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                                        </svg>
-                                        Копировать
-                                    </button>
-                                </div>
-                                
-                                <div class="row text-center" id="referralStats">
-                                    <div class="col-4">
-                                        <div class="border-end">
-                                            <div class="h5 mb-0 text-primary" id="totalClicks">{{ $referralLink->stats['total_clicks'] }}</div>
-                                            <small class="text-muted">Переходов</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="border-end">
-                                            <div class="h5 mb-0 text-success" id="completedRegistrations">{{ $referralLink->stats['completed_registrations'] }}</div>
-                                            <small class="text-muted">Регистраций</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="h5 mb-0 text-info" id="conversionRate">{{ $referralLink->stats['conversion_rate'] }}%</div>
-                                        <small class="text-muted">Конверсия</small>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-2 text-center">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="refreshReferralStats()">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
-                                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                                        </svg>
-                                        Обновить статистику
-                                    </button>
-                                </div>
-                                
-                                <div class="mt-3">
-                                    <small class="text-muted">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
-                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                        </svg>
-                                        Ссылка действует бессрочно
-                                    </small>
-                                </div>
-                                
-                                <div class="mt-3 p-3 bg-light rounded">
-                                    <h6 class="text-muted mb-2">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="me-1">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                        </svg>
-                                        Как это работает?
-                                    </h6>
-                                    <ul class="small text-muted mb-0">
-                                        <li>Поделитесь ссылкой с друзьями в соцсетях, мессенджерах или лично</li>
-                                        <li>Когда друг перейдет по ссылке и зарегистрируется, вы получите бонус</li>
-                                        <li>Статистика обновляется в реальном времени</li>
-                                        <li>Каждый переход отслеживается в течение месяца</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                    
                 </div>
+            </div>
+            
+            <!-- Пригласить друга -->
+            <div class="card shadow-lg border-0 rounded-lg mb-4">
+                <div class="card-body p-5">
+                    <h5 class="text-muted mb-3">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Пригласить друга
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6" style="display: none;">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <h6 class="card-title text-info">Ссылка для авторизации</h6>
+                                    <p class="card-text small text-muted">Создать ссылку для входа в систему</p>
+                                    <button type="button" class="btn btn-outline-info btn-sm" onclick="generateAuthLink()">
+                                        Создать ссылку
+                                    </button>
+                                    <div id="authLinkResult" class="mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h6 class="card-title text-success">Ссылка для регистрации</h6>
+                                    <p class="card-text small text-muted">Создать ссылку для регистрации нового пользователя</p>
+                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="generateRegistrationLink()">
+                                        Создать ссылку
+                                    </button>
+                                    <div id="registrationLinkResult" class="mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Реферальная ссылка -->
+            @if($referralLink)
+            <div class="card shadow-lg border-0 rounded-lg mb-4">
+                <div class="card-body p-5">
+                    <h5 class="text-muted mb-3">
+                        <i class="fas fa-gift me-2"></i>
+                        Реферальная ссылка
+                    </h5>
+                    <p class="text-muted mb-4">
+                        Поделитесь этой ссылкой с друзьями. Когда они зарегистрируются по вашей ссылке, вы получите бонус!
+                    </p>
+                    
+                    <div class="input-group mb-4">
+                        <input type="text" class="form-control" id="referralLink" 
+                               value="{{ $referralLink->full_url }}" readonly>
+                        <button class="btn btn-outline-secondary" type="button" onclick="copyReferralLink()">
+                            <i class="fas fa-copy me-1"></i>
+                            Копировать
+                        </button>
+                    </div>
+                    
+                    <div class="row text-center mb-4">
+                        <div class="col-4">
+                            <div class="border-end">
+                                <div class="h5 mb-0 text-primary" id="totalClicks">{{ $referralLink->stats['total_clicks'] }}</div>
+                                <small class="text-muted">Переходов</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border-end">
+                                <div class="h5 mb-0 text-success" id="completedRegistrations">{{ $referralLink->stats['completed_registrations'] }}</div>
+                                <small class="text-muted">Регистраций</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="h5 mb-0 text-info" id="conversionRate">{{ $referralLink->stats['conversion_rate'] }}%</div>
+                            <small class="text-muted">Конверсия</small>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button class="btn btn-sm btn-outline-primary" onclick="refreshReferralStats()">
+                            <i class="fas fa-sync-alt me-1"></i>
+                            Обновить статистику
+                        </button>
+                    </div>
+                    
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Ссылка действует бессрочно
+                        </small>
+                    </div>
+                </div>
+            </div>
+            @endif
             </div>
         </div>
     </div>

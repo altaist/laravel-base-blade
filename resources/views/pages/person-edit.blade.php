@@ -5,24 +5,21 @@
 ])
 
 @section('content')
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                        <h4 class="mb-2 mb-md-0">
-                            Редактирование профиля
-                        </h4>
-                        <small class="text-light text-break d-none d-md-block">
-                            <span class="d-block d-md-inline">Пользователь:</span>
-                            <span class="d-block d-md-inline">{{ $user->name }}</span>
-                            <span class="d-block d-md-inline">({{ $user->email }})</span>
-                        </small>
+<div class="page">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+            <!-- Заголовок страницы -->
+            <x-layout.page-header title="Редактирование профиля">
+                <x-slot:meta>
+                    <div class="page-header__meta">
+                        <span><i class="fas fa-user-edit"></i> Пользователь: {{ $user->name }} ({{ $user->email }})</span>
                     </div>
-                </div>
-                
-                <div class="card-body p-4">
+                </x-slot:meta>
+            </x-layout.page-header>
+            
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-body p-5">
                     <form method="POST" action="{{ route('person.update') }}" id="personEditForm">
                         @csrf
                         @method('PUT')
@@ -31,7 +28,7 @@
                     </form>
                     
                     <!-- Кнопки действий -->
-                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mt-3">
+                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mt-4">
                         <div class="d-flex flex-column flex-md-row gap-2">
                             <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-2"></i>Назад к профилю
@@ -48,6 +45,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     </div>

@@ -11,7 +11,7 @@
     @if(request()->routeIs('admin.*'))
         <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
     @endif
-    @if(request()->routeIs('home') || request()->routeIs('article.show') || request()->routeIs('articles.index'))
+    @if(request()->routeIs('home') || request()->routeIs('article.show') || request()->routeIs('articles.index') || request()->routeIs('dashboard') || request()->routeIs('profile') || request()->routeIs('person.*') || request()->routeIs('user.*'))
         <link href="{{ asset('css/components.css') }}" rel="stylesheet">
     @endif
     @stack('styles')
@@ -32,7 +32,11 @@
 </head>
 <body>
     {{-- Header для всех страниц --}}
-    <x-headers.header />
+    @if(isset($header) && $header === 'profile')
+        <x-headers.profile />
+    @else
+        <x-headers.header />
+    @endif
 
     @if(request()->routeIs('admin.*'))
         @include('components.admin.breadcrumbs')

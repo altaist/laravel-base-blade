@@ -1,24 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-12">
-            <!-- Заголовок -->
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-                <div>
-                    <h2 class="display-6 fw-bold text-dark mb-2">Мои файлы</h2>
-                    <p class="text-muted">Управление вашими файлами</p>
-                </div>
-                <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2">
-                    <div class="text-muted">
-                        <small>Всего файлов: {{ $files->total() }}</small>
+<div class="page">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+            <!-- Заголовок страницы -->
+            <x-layout.page-header title="Мои файлы">
+                <x-slot:meta>
+                    <div class="page-header__meta">
+                        <span><i class="fas fa-folder"></i> Всего файлов: {{ $files->total() }}</span>
                     </div>
+                </x-slot:meta>
+                <x-slot:actions>
                     <button id="uploadBtn" class="btn btn-primary">
                         <i class="fas fa-plus"></i> <span class="d-none d-sm-inline">Добавить файлы</span>
                     </button>
-                </div>
-            </div>
+                </x-slot:actions>
+            </x-layout.page-header>
 
             <!-- Upload Form (Hidden) -->
             <div id="uploadForm" class="card shadow-sm border-0 mb-4" style="display: none;">
@@ -249,6 +248,7 @@
                     {{ $files->links() }}
                 </div>
             @endif
+            </div>
         </div>
     </div>
 </div>
