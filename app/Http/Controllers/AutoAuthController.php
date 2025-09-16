@@ -19,6 +19,11 @@ class AutoAuthController extends Controller
      */
     public function check(Request $request)
     {
+        // Проверяем, включена ли фича автологина
+        if (!config('features.auto_auth.enabled')) {
+            return response()->json(['error' => 'Автологин отключен'], 403);
+        }
+
         $token = $request->input('token');
         
         if (!$token) {
@@ -76,6 +81,11 @@ class AutoAuthController extends Controller
      */
     public function confirm(Request $request)
     {
+        // Проверяем, включена ли фича автологина
+        if (!config('features.auto_auth.enabled')) {
+            return response()->json(['error' => 'Автологин отключен'], 403);
+        }
+
         $token = $request->input('token');
         
         if (!$token) {
@@ -126,6 +136,11 @@ class AutoAuthController extends Controller
      */
     public function reject(Request $request)
     {
+        // Проверяем, включена ли фича автологина
+        if (!config('features.auto_auth.enabled')) {
+            return response()->json(['error' => 'Автологин отключен'], 403);
+        }
+
         $token = $request->input('token');
         
         Log::channel('security')->info('Автологин отклонен пользователем', [
@@ -149,6 +164,11 @@ class AutoAuthController extends Controller
      */
     public function generate(Request $request)
     {
+        // Проверяем, включена ли фича автологина
+        if (!config('features.auto_auth.enabled')) {
+            return response()->json(['error' => 'Автологин отключен'], 403);
+        }
+
         $user = Auth::user();
         if (!$user) {
             return response()->json(['error' => 'Необходима авторизация'], 401);

@@ -15,7 +15,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 // Auto Auth routes with rate limiting
-Route::prefix('auto-auth')->middleware(['throttle:10,1'])->group(function () {
+Route::prefix('auto-auth')->middleware(['throttle:'.config('features.auto_auth.rate_limit', 10).',1'])->group(function () {
     Route::post('/check', [AutoAuthController::class, 'check'])->name('api.auto-auth.check');
     Route::post('/confirm', [AutoAuthController::class, 'confirm'])->name('api.auto-auth.confirm');
     Route::post('/reject', [AutoAuthController::class, 'reject'])->name('api.auto-auth.reject');

@@ -290,7 +290,13 @@ class AuthLinkService
      */
     public function generateAutoAuthToken(User $user, array $options = []): AuthLink
     {
-        $defaultOptions = $this->getDefaultOptions(30 * 24 * 60); // 30 дней
+        // Проверяем, включена ли фича автологина
+        if (!config('features.auto_auth.enabled')) {
+            throw new \Exception('Автологин отключен в настройках');
+        }
+
+        $expiresDays = config('features.auto_auth.expires_days', 30);
+        $defaultOptions = $this->getDefaultOptions($expiresDays * 24 * 60);
         $options = array_merge($defaultOptions, $options);
 
         // Удаляем старые токены автологина пользователя

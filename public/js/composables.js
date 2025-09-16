@@ -393,6 +393,13 @@ const useAuth = () => {
      * Инициализация автологина
      */
     const initAutoAuth = async () => {
+        // Проверяем, включена ли фича автологина
+        const autoAuthEnabled = document.querySelector('meta[name="auto-auth-enabled"]');
+        if (!autoAuthEnabled || autoAuthEnabled.content !== 'true') {
+            console.log('Автологин отключен в настройках');
+            return;
+        }
+
         // Оптимизированная проверка авторизации
         if (isUserAuthenticated()) {
             console.log('Пользователь уже авторизован, автологин не нужен');
