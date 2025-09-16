@@ -19,6 +19,7 @@ Route::prefix('auto-auth')->middleware(['throttle:'.config('features.auto_auth.r
     Route::post('/check', [AutoAuthController::class, 'check'])->name('api.auto-auth.check');
     Route::post('/confirm', [AutoAuthController::class, 'confirm'])->name('api.auto-auth.confirm');
     Route::post('/reject', [AutoAuthController::class, 'reject'])->name('api.auto-auth.reject');
+    Route::post('/create-user', [AutoAuthController::class, 'createUser'])->name('api.auto-auth.create-user');
     Route::post('/generate', [AutoAuthController::class, 'generate'])
         ->middleware('auth:sanctum')
         ->name('api.auto-auth.generate');

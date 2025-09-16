@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="auth-status" content="{{ auth()->check() ? 'authenticated' : 'guest' }}">
+    <meta name="auto-auth-enabled" content="{{ config('features.auto_auth.enabled') ? 'true' : 'false' }}">
     <title>Kvadro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -60,6 +61,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{ asset('js/image-preview.js') }}"></script>
     
+    {{-- Подключаем автологин только для неавторизованных пользователей и если фича включена --}}
+    @if(!auth()->check() && config('features.auto_auth.enabled'))
+        <link href="{{ asset('css/auto-auth.css') }}" rel="stylesheet">
+        <script src="{{ asset('js/composables.js') }}"></script>
+        <x-auto-auth-popup />
+    @endif
+    
+    {{-- Токен автологина передается в JavaScript через data-атрибут --}}
+    @if(session('auto_auth_token'))
+        <div id="auto-auth-token-data" 
+             data-token="{{ session('auto_auth_token') }}" 
+             style="display: none;">
+        </div>
+        @php session()->forget('auto_auth_token') @endphp
+    @endif
+    
     <script>
     // Автоматическое закрытие уведомлений через 5 секунд
     document.addEventListener('DOMContentLoaded', function() {
@@ -73,6 +90,29 @@
                 bsAlert.close();
             }, 5000);
         });
+    });
+
+    // Очистка localStorage при выходе из системы
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('a[href*="logout"], button[data-action="logout"], .logout-btn')) {
+            console.log('Обнаружен клик по кнопке выхода, очищаем токены...');
+            
+            // Очищаем токен автологина при выходе через composable
+            if (window.useAuth) {
+                const auth = window.useAuth();
+                auth.clearAutoAuthToken();
+            } else {
+                // Fallback если composable не загружен
+                try {
+                    localStorage.removeItem('auto_auth_token');
+                    // Также очищаем cookies
+                    document.cookie = 'auto_auth_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
+                    console.log('Токен автологина очищен при выходе (fallback)');
+                } catch (error) {
+                    console.warn('Не удалось очистить токен автологина:', error);
+                }
+            }
+        }
     });
     </script>
     <script src="{{ asset('js/reactions.js') }}"></script>

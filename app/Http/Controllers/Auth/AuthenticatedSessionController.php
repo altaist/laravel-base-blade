@@ -61,11 +61,11 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request)
     {
         try {
-            // Очищаем токены автологина перед выходом
+            // Очищаем токены автологина при ручном выходе
             $user = Auth::user();
             if ($user) {
                 $this->authLinkService->deleteAutoAuthTokens($user);
-                Log::info('Токены автологина очищены при выходе', [
+                Log::info('Токены автологина очищены при ручном выходе', [
                     'user_id' => $user->id,
                     'user_email' => $user->email
                 ]);
