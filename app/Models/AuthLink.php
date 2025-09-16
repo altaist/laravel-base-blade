@@ -25,6 +25,7 @@ class AuthLink extends Model
         'telegram_id',
         'telegram_username',
         'author_id',
+        'auto_auth',
     ];
 
     protected $casts = [
@@ -77,26 +78,10 @@ class AuthLink extends Model
     public function isActive(): bool
     {
         if (!$this->expires_at) {
-            Log::channel('telegram')->warning('AuthLink isActive: expires_at is null', [
-                'link_id' => $this->id,
-                'token' => $this->token
-            ]);
             return false;
         }
         
-        $now = now('UTC');
-        $isActive = $this->expires_at->gt($now);
-        
-        Log::channel('telegram')->info('AuthLink isActive check', [
-            'link_id' => $this->id,
-            'token' => $this->token,
-            'expires_at' => $this->expires_at->toISOString(),
-            'now_utc' => $now->toISOString(),
-            'is_active' => $isActive,
-            'diff_minutes' => $this->expires_at->diffInMinutes($now, false)
-        ]);
-        
-        return $isActive;
+        return $this->expires_at->gt(now('UTC'));
     }
 
     /**
@@ -105,26 +90,10 @@ class AuthLink extends Model
     public function isExpired(): bool
     {
         if (!$this->expires_at) {
-            Log::channel('telegram')->warning('AuthLink isExpired: expires_at is null', [
-                'link_id' => $this->id,
-                'token' => $this->token
-            ]);
             return true;
         }
         
-        $now = now('UTC');
-        $isExpired = $this->expires_at->lte($now);
-        
-        Log::channel('telegram')->info('AuthLink isExpired check', [
-            'link_id' => $this->id,
-            'token' => $this->token,
-            'expires_at' => $this->expires_at->toISOString(),
-            'now_utc' => $now->toISOString(),
-            'is_expired' => $isExpired,
-            'diff_minutes' => $this->expires_at->diffInMinutes($now, false)
-        ]);
-        
-        return $isExpired;
+        return $this->expires_at->lte(now('UTC'));
     }
 
     /**

@@ -10,100 +10,222 @@ const useAuth = () => {
     const STORAGE_EXPIRES = 30; // дней
 
     /**
-     * Утилиты для работы с localStorage
+     * Проверка поддержки localStorage
      */
-    const storageUtils = {
+    const isLocalStorageSupported = () => {
+        try {
+            if (typeof(Storage) === "undefined") return false;
+            const test = '__localStorage_test__';
+            localStorage.setItem(test, test);
+            localStorage.removeItem(test);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
+
+    /**
+     * Fallback на cookies если localStorage недоступен
+     */
+    const cookieFallback = {
         set(name, value, days) {
             try {
-                const data = {
-                    value: value,
-                    expires: new Date().getTime() + (days * 24 * 60 * 60 * 1000)
-                };
-                localStorage.setItem(name, JSON.stringify(data));
+                const expires = new Date();
+                expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+                document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
                 return true;
             } catch (error) {
-                console.error('Ошибка сохранения в localStorage:', error);
+                console.error('Ошибка сохранения в cookies:', error);
                 return false;
             }
         },
         
         get(name) {
             try {
-                const item = localStorage.getItem(name);
-                if (!item) return null;
-                
-                const data = JSON.parse(item);
-                if (new Date().getTime() > data.expires) {
-                    localStorage.removeItem(name);
-                    return null;
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
                 }
-                return data.value;
+                return null;
             } catch (error) {
-                console.error('Ошибка чтения из localStorage:', error);
+                console.error('Ошибка чтения из cookies:', error);
                 return null;
             }
         },
         
         remove(name) {
             try {
-                localStorage.removeItem(name);
+                document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
                 return true;
             } catch (error) {
-                console.error('Ошибка удаления из localStorage:', error);
+                console.error('Ошибка удаления из cookies:', error);
                 return false;
             }
         }
     };
 
     /**
-     * API запросы
+     * Универсальные утилиты для работы с хранилищем
+     */
+    const storageUtils = {
+        set(name, value, days) {
+            if (isLocalStorageSupported()) {
+                try {
+                    const data = {
+                        value: value,
+                        expires: new Date().getTime() + (days * 24 * 60 * 60 * 1000)
+                    };
+                    localStorage.setItem(name, JSON.stringify(data));
+                    return true;
+                } catch (error) {
+                    console.warn('localStorage недоступен, используем cookies:', error);
+                    return cookieFallback.set(name, value, days);
+                }
+            } else {
+                console.warn('localStorage не поддерживается, используем cookies');
+                return cookieFallback.set(name, value, days);
+            }
+        },
+        
+        get(name) {
+            if (isLocalStorageSupported()) {
+                try {
+                    const item = localStorage.getItem(name);
+                    if (!item) return null;
+                    
+                    const data = JSON.parse(item);
+                    if (!data || typeof data !== 'object' || !data.value || !data.expires) {
+                        console.warn('Поврежденные данные в localStorage, очищаем');
+                        localStorage.removeItem(name);
+                        return null;
+                    }
+                    
+                    if (new Date().getTime() > data.expires) {
+                        const removed = localStorage.removeItem(name);
+                        if (!removed) {
+                            console.warn('Не удалось удалить истекший токен из localStorage');
+                        }
+                        return null;
+                    }
+                    return data.value;
+                } catch (error) {
+                    console.warn('Ошибка чтения из localStorage, пробуем cookies:', error);
+                    return cookieFallback.get(name);
+                }
+            } else {
+                return cookieFallback.get(name);
+            }
+        },
+        
+        remove(name) {
+            let success = false;
+            
+            if (isLocalStorageSupported()) {
+                try {
+                    success = localStorage.removeItem(name) !== undefined;
+                } catch (error) {
+                    console.warn('Ошибка удаления из localStorage:', error);
+                }
+            }
+            
+            // Всегда пробуем удалить из cookies как fallback
+            const cookieSuccess = cookieFallback.remove(name);
+            
+            return success || cookieSuccess;
+        }
+    };
+
+    /**
+     * Обработка ошибок API
+     */
+    const handleApiError = (error, url) => {
+        if (error.message.includes('Failed to fetch')) {
+            return {
+                success: false,
+                error: 'Проблемы с подключением к серверу. Проверьте интернет-соединение.',
+                type: 'network'
+            };
+        }
+        
+        if (error.message.includes('HTTP 429')) {
+            return {
+                success: false,
+                error: 'Слишком много запросов. Попробуйте позже.',
+                type: 'rate_limit'
+            };
+        }
+        
+        if (error.message.includes('HTTP 500')) {
+            return {
+                success: false,
+                error: 'Внутренняя ошибка сервера. Попробуйте позже.',
+                type: 'server_error'
+            };
+        }
+        
+        console.error(`API запрос к ${url} failed:`, error);
+        return {
+            success: false,
+            error: 'Произошла ошибка при авторизации',
+            type: 'unknown'
+        };
+    };
+
+    /**
+     * Универсальный метод для API запросов с улучшенной обработкой ошибок
+     */
+    const makeApiRequest = async (url, options = {}) => {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    ...options.headers
+                },
+                ...options
+            });
+
+            if (!response.ok) {
+                const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
+                error.status = response.status;
+                throw error;
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            return handleApiError(error, url);
+        }
+    };
+
+    /**
+     * API запросы с улучшенной обработкой ошибок
      */
     const api = {
         async checkToken(token) {
-            const response = await fetch('/api/auto-auth/check', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
+            return await makeApiRequest('/api/auto-auth/check', {
                 body: JSON.stringify({ token })
             });
-            return response.json();
         },
 
         async confirmAuth(token) {
-            const response = await fetch('/api/auto-auth/confirm', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
+            return await makeApiRequest('/api/auto-auth/confirm', {
                 body: JSON.stringify({ token })
             });
-            return response.json();
         },
 
         async rejectAuth(token) {
-            const response = await fetch('/api/auto-auth/reject', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
+            return await makeApiRequest('/api/auto-auth/reject', {
                 body: JSON.stringify({ token })
             });
-            return response.json();
         },
 
         async generateToken() {
-            const response = await fetch('/api/auto-auth/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            });
-            return response.json();
+            return await makeApiRequest('/api/auto-auth/generate');
         }
     };
 
@@ -260,20 +382,20 @@ const useAuth = () => {
     };
 
     /**
+     * Проверка авторизации пользователя
+     */
+    const isUserAuthenticated = () => {
+        const authStatus = document.querySelector('meta[name="auth-status"]');
+        return authStatus && authStatus.content === 'authenticated';
+    };
+
+    /**
      * Инициализация автологина
      */
     const initAutoAuth = async () => {
-        // Двойная проверка: сначала meta тег, потом дополнительная проверка
-        const authStatus = document.querySelector('meta[name="auth-status"]');
-        if (authStatus && authStatus.content === 'authenticated') {
+        // Оптимизированная проверка авторизации
+        if (isUserAuthenticated()) {
             console.log('Пользователь уже авторизован, автологин не нужен');
-            return; // Пользователь уже авторизован
-        }
-
-        // Дополнительная проверка: если есть элементы, указывающие на авторизацию
-        const authElements = document.querySelectorAll('[data-auth="true"], .user-menu, .logout-btn');
-        if (authElements.length > 0) {
-            console.log('Найдены элементы авторизованного пользователя, автологин не нужен');
             return;
         }
 
@@ -299,6 +421,55 @@ const useAuth = () => {
         }
     };
 
+    /**
+     * Очистить токен автологина (для выхода из системы)
+     */
+    const clearAutoAuthToken = () => {
+        const removed = storageUtils.remove(STORAGE_NAME);
+        if (removed) {
+            console.log('Токен автологина очищен');
+        } else {
+            console.warn('Не удалось очистить токен автологина');
+        }
+        return removed;
+    };
+
+    /**
+     * Синхронизация между вкладками
+     */
+    const initStorageSync = () => {
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_NAME) {
+                console.log('Токен автологина изменен в другой вкладке');
+                // Можно добавить логику для обновления UI
+            }
+        });
+    };
+
+    /**
+     * Обработать токен из сессии (после успешной авторизации)
+     */
+    const handleSessionToken = () => {
+        const tokenElement = document.getElementById('auto-auth-token-data');
+        if (tokenElement) {
+            const token = tokenElement.getAttribute('data-token');
+            if (token && token !== '') {
+                console.log('Обрабатываем токен из сессии...');
+                
+                // Сохраняем токен в localStorage
+                const saved = storageUtils.set(STORAGE_NAME, token, STORAGE_EXPIRES);
+                if (saved) {
+                    console.log('Токен автологина сохранен в localStorage');
+                } else {
+                    console.warn('Не удалось сохранить токен в localStorage');
+                }
+                
+                // Удаляем элемент после обработки
+                tokenElement.remove();
+            }
+        }
+    };
+
     // Публичный API
     return {
         checkAutoAuth,
@@ -307,6 +478,9 @@ const useAuth = () => {
         generateAutoAuthToken,
         showConfirmPopup,
         initAutoAuth,
+        clearAutoAuthToken,
+        initStorageSync,
+        handleSessionToken,
         storageUtils
     };
 };
@@ -322,6 +496,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log('Загружаем скрипт автологина...');
     const auth = useAuth();
+    
+    // Инициализируем синхронизацию между вкладками
+    auth.initStorageSync();
+    
+    // Обрабатываем токен из сессии (если есть)
+    auth.handleSessionToken();
+    
     await auth.initAutoAuth();
 });
 

@@ -90,32 +90,12 @@
         </script>
     @endif
     
-    {{-- Устанавливаем токен автологина в localStorage после успешной авторизации --}}
+    {{-- Токен автологина передается в JavaScript через data-атрибут --}}
     @if(session('auto_auth_token'))
-        <script>
-            // Устанавливаем токен в localStorage через API
-            fetch('/api/auto-auth/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            }).then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const tokenData = {
-                        value: data.token,
-                        expires: new Date().getTime() + (30 * 24 * 60 * 60 * 1000)
-                    };
-                    localStorage.setItem('auto_auth_token', JSON.stringify(tokenData));
-                    console.log('Токен автологина сохранен в localStorage');
-                } else {
-                    console.error('Ошибка генерации токена автологина:', data.message);
-                }
-            }).catch(error => {
-                console.error('Ошибка API запроса:', error);
-            });
-        </script>
+        <div id="auto-auth-token-data" 
+             data-token="{{ session('auto_auth_token') }}" 
+             style="display: none;">
+        </div>
         @php session()->forget('auto_auth_token') @endphp
     @endif
     @if(request()->routeIs('home') || request()->routeIs('article.show'))
@@ -134,6 +114,25 @@
                 bsAlert.close();
             }, 5000);
         });
+    });
+
+    // Очистка localStorage при выходе из системы
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('a[href*="logout"], button[data-action="logout"], .logout-btn')) {
+            // Очищаем токен автологина при выходе через composable
+            if (window.useAuth) {
+                const auth = window.useAuth();
+                auth.clearAutoAuthToken();
+            } else {
+                // Fallback если composable не загружен
+                try {
+                    localStorage.removeItem('auto_auth_token');
+                    console.log('Токен автологина очищен при выходе (fallback)');
+                } catch (error) {
+                    console.warn('Не удалось очистить токен автологина:', error);
+                }
+            }
+        }
     });
     </script>
     <script src="{{ asset('js/reactions.js') }}"></script>

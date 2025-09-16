@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Services\AuthLinkService;
 
 class AutoAuthController extends Controller
@@ -21,18 +22,47 @@ class AutoAuthController extends Controller
         $token = $request->input('token');
         
         if (!$token) {
+            Log::channel('security')->warning('Попытка проверки автологина без токена', [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
             return response()->json(['error' => 'Токен не предоставлен'], 400);
         }
+
+        // Валидация формата токена
+        if (!preg_match('/^auto_[a-zA-Z0-9]{20}$/', $token)) {
+            Log::channel('security')->warning('Неверный формат токена автологина', [
+                'ip' => $request->ip(),
+                'token_preview' => substr($token, 0, 8) . '...'
+            ]);
+            return response()->json(['error' => 'Неверный формат токена'], 400);
+        }
+
+        Log::channel('security')->info('Попытка проверки токена автологина', [
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'token_preview' => substr($token, 0, 8) . '...'
+        ]);
 
         $userData = $this->authLinkService->getUserByAutoAuthToken($token);
         
         if ($userData) {
+            Log::channel('security')->info('Токен автологина валиден', [
+                'ip' => $request->ip(),
+                'user_id' => $userData['id'],
+                'user_email' => $userData['email']
+            ]);
             return response()->json([
                 'success' => true,
                 'user' => $userData,
                 'message' => 'Токен действителен'
             ]);
         }
+
+        Log::channel('security')->warning('Недействительный токен автологина', [
+            'ip' => $request->ip(),
+            'token_preview' => substr($token, 0, 8) . '...'
+        ]);
 
         return response()->json([
             'success' => false,
@@ -49,17 +79,32 @@ class AutoAuthController extends Controller
         $token = $request->input('token');
         
         if (!$token) {
+            Log::channel('security')->warning('Попытка подтверждения автологина без токена', [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
             return response()->json(['error' => 'Токен не предоставлен'], 400);
         }
 
         $user = $this->authLinkService->validateAutoAuthToken($token);
         
         if (!$user) {
+            Log::channel('security')->warning('Попытка подтверждения с недействительным токеном', [
+                'ip' => $request->ip(),
+                'token_preview' => substr($token, 0, 8) . '...'
+            ]);
             return response()->json(['error' => 'Токен недействителен'], 400);
         }
 
         // Авторизуем пользователя
         Auth::login($user);
+        
+        Log::channel('security')->info('Успешный автологин', [
+            'ip' => $request->ip(),
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'token_preview' => substr($token, 0, 8) . '...'
+        ]);
         
         // Удаляем использованный токен
         $this->authLinkService->deleteAfterUse($token);
@@ -82,6 +127,11 @@ class AutoAuthController extends Controller
     public function reject(Request $request)
     {
         $token = $request->input('token');
+        
+        Log::channel('security')->info('Автологин отклонен пользователем', [
+            'ip' => $request->ip(),
+            'token_preview' => $token ? substr($token, 0, 8) . '...' : 'none'
+        ]);
         
         if ($token) {
             $this->authLinkService->deleteAfterUse($token);
