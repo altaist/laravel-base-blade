@@ -6,11 +6,22 @@ use App\Http\Controllers\Files\AttachmentController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Controllers\Content\ArticleController;
 use App\Http\Controllers\Content\StatusController;
+use App\Http\Controllers\AutoAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// Auto Auth routes
+Route::prefix('auto-auth')->group(function () {
+    Route::post('/check', [AutoAuthController::class, 'check'])->name('api.auto-auth.check');
+    Route::post('/confirm', [AutoAuthController::class, 'confirm'])->name('api.auto-auth.confirm');
+    Route::post('/reject', [AutoAuthController::class, 'reject'])->name('api.auto-auth.reject');
+    Route::post('/generate', [AutoAuthController::class, 'generate'])
+        ->middleware('auth:sanctum')
+        ->name('api.auto-auth.generate');
 });
 
 Route::prefix('telegram')->group(function () {

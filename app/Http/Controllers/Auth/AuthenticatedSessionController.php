@@ -8,9 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use App\Services\AuthLinkService;
 
 class AuthenticatedSessionController extends Controller
 {
+    public function __construct(
+        private AuthLinkService $authLinkService
+    ) {}
     /**
      * Display the login view.
      */
@@ -28,6 +32,9 @@ class AuthenticatedSessionController extends Controller
             $request->authenticate();
 
             $request->session()->regenerate();
+
+            // Генерируем токен автологина после успешной авторизации
+            $this->generateAutoAuthToken($request);
 
             return redirect()->route('dashboard')
                 ->with('success', 'Добро пожаловать, ' . Auth::user()->name . '!');
@@ -67,6 +74,38 @@ class AuthenticatedSessionController extends Controller
             return back()->withErrors([
                 'error' => 'Произошла ошибка при выходе из системы. Пожалуйста, попробуйте еще раз.'
             ]);
+        }
+    }
+
+    /**
+     * Генерировать токен автологина после успешной авторизации
+     */
+    private function generateAutoAuthToken(Request $request): void
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return;
+            }
+
+            $options = [
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'author_id' => $user->id,
+            ];
+
+            $authLink = $this->authLinkService->generateAutoAuthToken($user, $options);
+            
+            // Устанавливаем куки на 30 дней через JavaScript
+            $request->session()->put('auto_auth_token', $authLink->token);
+
+            Log::info('Токен автологина создан после входа', [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'ip' => $request->ip()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Ошибка создания токена автологина: ' . $e->getMessage());
         }
     }
 }

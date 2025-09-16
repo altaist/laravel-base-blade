@@ -286,6 +286,72 @@ class AuthLinkService
     }
 
     /**
+     * Генерировать токен для автоматической авторизации
+     */
+    public function generateAutoAuthToken(User $user, array $options = []): AuthLink
+    {
+        $defaultOptions = $this->getDefaultOptions(30 * 24 * 60); // 30 дней
+        $options = array_merge($defaultOptions, $options);
+
+        // Удаляем старые токены автологина пользователя
+        $this->deleteAutoAuthTokens($user);
+
+        return $user->authLinks()->create([
+            'token' => 'auto_' . Str::random(20),
+            'expires_at' => $this->calculateExpiryTime($options['expires_in_minutes']),
+            'ip_address' => $options['ip_address'],
+            'user_agent' => $options['user_agent'],
+            'author_id' => $options['author_id'],
+            'auto_auth' => true,
+        ]);
+    }
+
+    /**
+     * Валидировать токен автологина
+     */
+    public function validateAutoAuthToken(string $token): ?User
+    {
+        $authLink = AuthLink::where('token', $token)
+            ->where('auto_auth', true)
+            ->active()
+            ->first();
+
+        return $authLink ? $authLink->user : null;
+    }
+
+    /**
+     * Удалить все токены автологина пользователя
+     */
+    public function deleteAutoAuthTokens(User $user): int
+    {
+        return $user->authLinks()
+            ->where('auto_auth', true)
+            ->delete();
+    }
+
+    /**
+     * Получить пользователя по токену автологина (без авторизации)
+     */
+    public function getUserByAutoAuthToken(string $token): ?array
+    {
+        $authLink = AuthLink::where('token', $token)
+            ->where('auto_auth', true)
+            ->active()
+            ->with('user')
+            ->first();
+
+        if (!$authLink || !$authLink->user) {
+            return null;
+        }
+
+        return [
+            'id' => $authLink->user->id,
+            'name' => $authLink->user->name,
+            'email' => $authLink->user->email,
+        ];
+    }
+
+    /**
      * Рассчитать время истечения ссылки
      */
     private function calculateExpiryTime(int $minutes): Carbon

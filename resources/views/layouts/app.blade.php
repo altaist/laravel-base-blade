@@ -76,8 +76,27 @@
     <x-layout.footer />
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="{{ asset('js/composables.js') }}"></script>
     <script src="{{ asset('js/image-preview.js') }}"></script>
+    
+    {{-- Подключаем автологин только для неавторизованных пользователей --}}
+    @if(!auth()->check())
+        <link href="{{ asset('css/auto-auth.css') }}" rel="stylesheet">
+        <script src="{{ asset('js/composables.js') }}"></script>
+        <x-auto-auth-popup />
+    @else
+        {{-- Для авторизованных пользователей загружаем только базовый composables --}}
+        <script>
+            console.log('Composables загружены (авторизованный пользователь)');
+        </script>
+    @endif
+    
+    {{-- Устанавливаем токен автологина в куки после успешной авторизации --}}
+    @if(session('auto_auth_token'))
+        <script>
+            document.cookie = 'auto_auth_token={{ session('auto_auth_token') }};expires=' + new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString() + ';path=/;SameSite=Lax';
+        </script>
+        @php session()->forget('auto_auth_token') @endphp
+    @endif
     @if(request()->routeIs('home') || request()->routeIs('article.show'))
     @endif
     
