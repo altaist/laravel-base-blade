@@ -6,32 +6,52 @@
  * useAuth - composable для управления авторизацией
  */
 const useAuth = () => {
-    const COOKIE_NAME = 'auto_auth_token';
-    const COOKIE_EXPIRES = 30; // дней
+    const STORAGE_NAME = 'auto_auth_token';
+    const STORAGE_EXPIRES = 30; // дней
 
     /**
-     * Утилиты для работы с куками
+     * Утилиты для работы с localStorage
      */
-    const cookieUtils = {
+    const storageUtils = {
         set(name, value, days) {
-            const expires = new Date();
-            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+            try {
+                const data = {
+                    value: value,
+                    expires: new Date().getTime() + (days * 24 * 60 * 60 * 1000)
+                };
+                localStorage.setItem(name, JSON.stringify(data));
+                return true;
+            } catch (error) {
+                console.error('Ошибка сохранения в localStorage:', error);
+                return false;
+            }
         },
         
         get(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            try {
+                const item = localStorage.getItem(name);
+                if (!item) return null;
+                
+                const data = JSON.parse(item);
+                if (new Date().getTime() > data.expires) {
+                    localStorage.removeItem(name);
+                    return null;
+                }
+                return data.value;
+            } catch (error) {
+                console.error('Ошибка чтения из localStorage:', error);
+                return null;
             }
-            return null;
         },
         
         remove(name) {
-            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+            try {
+                localStorage.removeItem(name);
+                return true;
+            } catch (error) {
+                console.error('Ошибка удаления из localStorage:', error);
+                return false;
+            }
         }
     };
 
@@ -91,7 +111,7 @@ const useAuth = () => {
      * Проверить автологин при загрузке страницы
      */
     const checkAutoAuth = async () => {
-        const token = cookieUtils.get(COOKIE_NAME);
+        const token = storageUtils.get(STORAGE_NAME);
         
         if (!token) {
             return { hasToken: false };
@@ -109,7 +129,7 @@ const useAuth = () => {
                 };
             } else {
                 // Токен недействителен - удаляем
-                cookieUtils.remove(COOKIE_NAME);
+                storageUtils.remove(STORAGE_NAME);
                 return {
                     hasToken: true,
                     isValid: false
@@ -133,8 +153,8 @@ const useAuth = () => {
             const result = await api.confirmAuth(token);
             
             if (result.success) {
-                // Удаляем токен из куков после успешной авторизации
-                cookieUtils.remove(COOKIE_NAME);
+                // Удаляем токен из localStorage после успешной авторизации
+                storageUtils.remove(STORAGE_NAME);
                 
                 // Перезагружаем страницу для обновления состояния
                 window.location.reload();
@@ -155,7 +175,7 @@ const useAuth = () => {
     const rejectAutoAuth = async (token) => {
         try {
             await api.rejectAuth(token);
-            cookieUtils.remove(COOKIE_NAME);
+            storageUtils.remove(STORAGE_NAME);
             return { success: true };
         } catch (error) {
             console.error('Ошибка отклонения автологина:', error);
@@ -171,8 +191,11 @@ const useAuth = () => {
             const result = await api.generateToken();
             
             if (result.success) {
-                // Сохраняем токен в куки
-                cookieUtils.set(COOKIE_NAME, result.token, COOKIE_EXPIRES);
+                // Сохраняем токен в localStorage
+                const saved = storageUtils.set(STORAGE_NAME, result.token, STORAGE_EXPIRES);
+                if (!saved) {
+                    console.warn('Не удалось сохранить токен в localStorage');
+                }
                 return { success: true, token: result.token };
             } else {
                 return { success: false, error: result.message };
@@ -284,7 +307,7 @@ const useAuth = () => {
         generateAutoAuthToken,
         showConfirmPopup,
         initAutoAuth,
-        cookieUtils
+        storageUtils
     };
 };
 
