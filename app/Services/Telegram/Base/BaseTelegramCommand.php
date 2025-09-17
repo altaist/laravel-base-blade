@@ -20,6 +20,7 @@ abstract class BaseTelegramCommand implements TelegramBotCommandInterface
     public function canProcess(TelegramMessageDto $message): bool
     {
         // Проверяем, что это команда и она соответствует текущей
+        // Также проверяем callback_query с командой
         return $message->command === $this->getName();
     }
 
@@ -29,6 +30,7 @@ abstract class BaseTelegramCommand implements TelegramBotCommandInterface
     protected function reply(TelegramMessageDto $message, string $text, ?string $parseMode = TelegramService::FORMAT_NONE): void
     {
         $this->telegram->sendMessageToUser($message->userId, $text, $parseMode);
+        $this->answerCallbackQuery($message);
     }
 
     /**
@@ -50,6 +52,7 @@ abstract class BaseTelegramCommand implements TelegramBotCommandInterface
             $oneTime,
             $resize
         );
+        $this->answerCallbackQuery($message);
     }
 
     /**
@@ -68,5 +71,33 @@ abstract class BaseTelegramCommand implements TelegramBotCommandInterface
             $keyboard,
             $parseMode
         );
+        $this->answerCallbackQuery($message);
+    }
+
+    /**
+     * Ответить на callback_query (убрать "часики" с кнопки)
+     */
+    protected function answerCallbackQuery(
+        TelegramMessageDto $message,
+        ?string $text = null,
+        bool $showAlert = false
+    ): void {
+        if ($message->messageType->value !== 'callback_query') {
+            return;
+        }
+
+        $additionalData = json_decode($message->additionalData ?? '{}', true);
+        $callbackQueryId = $additionalData['callback_query']['id'] ?? null;
+
+        if ($callbackQueryId) {
+            $this->telegram->answerCallbackQuery(
+                $callbackQueryId,
+                $text,
+                $showAlert,
+                null,
+                0,
+                $message->botId
+            );
+        }
     }
 }

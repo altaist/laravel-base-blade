@@ -17,8 +17,13 @@ class TelegramMessageDto implements Arrayable
         public readonly ?string $additionalData = null,
         public readonly string $botId = 'bot',
     ) {
-        // Парсинг команды и аргументов для командных сообщений
+        // Парсинг команды и аргументов для командных сообщений и callback_query
         if ($messageType === TelegramMessageType::COMMAND) {
+            $parts = array_values(array_filter(explode(' ', $text)));
+            $this->command = ltrim($parts[0] ?? '', '/');
+            $this->arguments = array_slice($parts, 1);
+        } elseif ($messageType === TelegramMessageType::CALLBACK_QUERY && str_starts_with($text, '/')) {
+            // Обрабатываем callback_query с командами
             $parts = array_values(array_filter(explode(' ', $text)));
             $this->command = ltrim($parts[0] ?? '', '/');
             $this->arguments = array_slice($parts, 1);

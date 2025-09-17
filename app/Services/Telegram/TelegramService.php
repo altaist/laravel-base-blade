@@ -303,4 +303,66 @@ class TelegramService
 
         return $text;
     }
+
+    /**
+     * Ответить на callback_query (убрать "часики" с кнопки)
+     */
+    public function answerCallbackQuery(
+        string $callbackQueryId,
+        ?string $text = null,
+        bool $showAlert = false,
+        ?string $url = null,
+        int $cacheTime = 0,
+        string $botId = 'bot'
+    ): bool {
+        try {
+            $http = $botId === 'admin_bot' ? $this->adminHttp : $this->http;
+            
+            $params = [
+                'callback_query_id' => $callbackQueryId,
+            ];
+
+            if ($text !== null) {
+                $params['text'] = $text;
+            }
+
+            if ($showAlert) {
+                $params['show_alert'] = $showAlert;
+            }
+
+            if ($url !== null) {
+                $params['url'] = $url;
+            }
+
+            if ($cacheTime > 0) {
+                $params['cache_time'] = $cacheTime;
+            }
+
+            $response = $http->post('/answerCallbackQuery', $params);
+
+            if ($response->successful()) {
+                Log::channel('telegram')->info('Callback query answered', [
+                    'callback_query_id' => $callbackQueryId,
+                    'bot_id' => $botId,
+                ]);
+                return true;
+            }
+
+            Log::channel('telegram')->error('Failed to answer callback query', [
+                'callback_query_id' => $callbackQueryId,
+                'response' => $response->body(),
+                'bot_id' => $botId,
+            ]);
+
+            return false;
+        } catch (RequestException $e) {
+            Log::channel('telegram')->error('Failed to answer callback query', [
+                'callback_query_id' => $callbackQueryId,
+                'error' => $e->getMessage(),
+                'bot_id' => $botId,
+            ]);
+
+            return false;
+        }
+    }
 }
