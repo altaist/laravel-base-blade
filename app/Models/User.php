@@ -97,6 +97,49 @@ class User extends Authenticatable
     }
 
     /**
+     * Связь с Telegram ботами
+     */
+    public function telegramBots(): HasMany
+    {
+        return $this->hasMany(UserTelegramBot::class);
+    }
+
+    /**
+     * Получить Telegram ID для конкретного бота
+     */
+    public function getTelegramIdForBot(string $botName): ?string
+    {
+        return $this->telegramBots()
+            ->where('bot_name', $botName)
+            ->value('telegram_id');
+    }
+
+    /**
+     * Проверить, привязан ли пользователь к боту
+     */
+    public function hasTelegramBot(string $botName): bool
+    {
+        return $this->telegramBots()
+            ->where('bot_name', $botName)
+            ->exists();
+    }
+
+    /**
+     * Получить Telegram ID для основного бота (обратная совместимость)
+     */
+    public function getMainTelegramId(): ?string
+    {
+        // Сначала пробуем новую систему
+        $newId = $this->getTelegramIdForBot('main');
+        if ($newId) {
+            return $newId;
+        }
+
+        // Fallback на старую систему
+        return $this->telegram_id;
+    }
+
+    /**
      * Связь с файлами
      */
     public function files(): HasMany

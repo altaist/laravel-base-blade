@@ -3,25 +3,47 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Основной бот
+    | Конфигурация ботов
     |--------------------------------------------------------------------------
     |
-    | Настройки основного бота для взаимодействия с пользователями
+    | Настройки всех Telegram ботов в системе
+    |
+    */
+    'bots' => [
+        'main' => [
+            'name' => env('TELEGRAM_BOT_NAME'),
+            'token' => env('TELEGRAM_BOT_TOKEN'),
+            'commands' => [
+                'start' => \App\Services\Telegram\Commands\StartCommand::class,
+                'auth' => \App\Services\Telegram\Commands\AuthLinkCommand::class,
+                'profile' => \App\Services\Telegram\Commands\ProfileCommand::class,
+                'about' => \App\Services\Telegram\Commands\AboutCommand::class,
+                'default' => \App\Services\Telegram\Commands\DefaultCommand::class,
+            ],
+        ],
+        'admin' => [
+            'name' => env('TELEGRAM_ADMIN_BOT_NAME'),
+            'token' => env('TELEGRAM_ADMIN_BOT_TOKEN'),
+            'chat_id' => env('TELEGRAM_ADMIN_CHAT_ID'),
+            'commands' => [
+                'start' => \App\Services\Telegram\Commands\AdminUsersCommand::class,
+                'users' => \App\Services\Telegram\Commands\AdminUsersCommand::class,
+                'about' => \App\Services\Telegram\Commands\AdminAboutCommand::class,
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Обратная совместимость
+    |--------------------------------------------------------------------------
+    |
+    | Старые ключи для обратной совместимости
     |
     */
     'bot' => [
         'name' => env('TELEGRAM_BOT_NAME'),
         'token' => env('TELEGRAM_BOT_TOKEN'),
-        
-        /*
-        |--------------------------------------------------------------------------
-        | Команды основного бота
-        |--------------------------------------------------------------------------
-        |
-        | Список команд, доступных пользователям через основного бота.
-        | Ключ массива - это команда (без слеша), значение - класс команды.
-        |
-        */
         'commands' => [
             'start' => \App\Services\Telegram\Commands\StartCommand::class,
             'auth' => \App\Services\Telegram\Commands\AuthLinkCommand::class,
@@ -30,33 +52,14 @@ return [
             'default' => \App\Services\Telegram\Commands\DefaultCommand::class,
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Админский бот
-    |--------------------------------------------------------------------------
-    |
-    | Настройки бота для административных уведомлений и управления
-    |
-    */
     'admin_bot' => [
         'name' => env('TELEGRAM_ADMIN_BOT_NAME'),
         'token' => env('TELEGRAM_ADMIN_BOT_TOKEN'),
-        'chat_id' => env('TELEGRAM_ADMIN_CHAT_ID'), // ID чата для админских уведомлений
-
-        /*
-        |--------------------------------------------------------------------------
-        | Команды админского бота
-        |--------------------------------------------------------------------------
-        |
-        | Список команд, доступных через админского бота.
-        | Эти команды обычно требуют прав администратора.
-        |
-        */
-                    'commands' => [
-                'start' => \App\Services\Telegram\Commands\AdminUsersCommand::class,
-                'users' => \App\Services\Telegram\Commands\AdminUsersCommand::class,
-                'about' => \App\Services\Telegram\Commands\AdminAboutCommand::class,
-            ],
+        'chat_id' => env('TELEGRAM_ADMIN_CHAT_ID'),
+        'commands' => [
+            'start' => \App\Services\Telegram\Commands\AdminUsersCommand::class,
+            'users' => \App\Services\Telegram\Commands\AdminUsersCommand::class,
+            'about' => \App\Services\Telegram\Commands\AdminAboutCommand::class,
+        ],
     ],
 ];

@@ -6,36 +6,20 @@ use App\DTOs\TelegramKeyboardDto;
 use App\DTOs\TelegramMessageDto;
 use App\Enums\TelegramMessageType;
 use App\Events\TelegramMessageReceived;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class TelegramService
 {
-    private PendingRequest $http;
-    private string $baseUrl;
-    private PendingRequest $adminHttp;
-    private string $adminBaseUrl;
-    private ?string $adminChatId;
+    private TelegramBotManager $botManager;
 
     // Поддерживаемые форматы текста
     public const FORMAT_HTML = 'HTML';
     public const FORMAT_MARKDOWN = 'MarkdownV2';
     public const FORMAT_NONE = null;
 
-    public function __construct()
+    public function __construct(TelegramBotManager $botManager)
     {
-        // Основной бот
-        $token = config('telegram.bot.token');
-        $this->baseUrl = "https://api.telegram.org/bot{$token}";
-        $this->http = Http::baseUrl($this->baseUrl)->throw();
-
-        // Админский бот
-        $adminToken = config('telegram.admin_bot.token');
-        $this->adminBaseUrl = "https://api.telegram.org/bot{$adminToken}";
-        $this->adminHttp = Http::baseUrl($this->adminBaseUrl)->throw();
-        $this->adminChatId = config('telegram.admin_bot.chat_id');
+        $this->botManager = $botManager;
     }
 
     /**
@@ -47,32 +31,13 @@ class TelegramService
         ?string $parseMode = self::FORMAT_NONE
     ): bool {
         try {
-            $params = [
-                'chat_id' => $userId,
-                'text' => $this->prepareText($text, $parseMode),
-            ];
-
-            if ($parseMode) {
-                $params['parse_mode'] = $parseMode;
-            }
-
-            $response = $this->http->post('/sendMessage', $params);
-
-            Log::channel('telegram')->info('Telegram message sent', [
-                'user_id' => $userId,
-                'text' => $text,
-                'parse_mode' => $parseMode,
-            ]);
-
-            return true;
-        } catch (RequestException $e) {
+            $bot = $this->botManager->getBot('main');
+            return $bot->sendMessage($userId, $text, $parseMode);
+        } catch (\Exception $e) {
             Log::channel('telegram')->error('Failed to send Telegram message', [
                 'user_id' => $userId,
-                'text' => $text,
-                'parse_mode' => $parseMode,
                 'error' => $e->getMessage(),
             ]);
-
             return false;
         }
     }
@@ -86,32 +51,49 @@ class TelegramService
         ?string $chatId = null
     ): bool {
         try {
-            $params = [
-                'chat_id' => $chatId ?? $this->adminChatId,
-                'text' => $this->prepareText($text, $parseMode),
-            ];
-
-            if ($parseMode) {
-                $params['parse_mode'] = $parseMode;
+            $bot = $this->botManager->getBot('admin');
+            
+            if ($chatId) {
+                return $bot->sendMessage($chatId, $text, $parseMode);
             }
-
-            $response = $this->adminHttp->post('/sendMessage', $params);
-
-            Log::channel('telegram')->info('Admin Telegram message sent', [
-                'chat_id' => $params['chat_id'],
-                'text' => $text,
-                'parse_mode' => $parseMode,
-            ]);
-
-            return true;
-        } catch (RequestException $e) {
+            
+            // Если chatId не указан, используем chatId из конфига бота
+            $botChatId = $bot->getChatId();
+            if (!$botChatId) {
+                Log::channel('telegram')->error('Admin chat ID not configured', [
+                    'bot_name' => 'admin',
+                ]);
+                return false;
+            }
+            
+            return $bot->sendMessage($botChatId, $text, $parseMode);
+        } catch (\Exception $e) {
             Log::channel('telegram')->error('Failed to send admin Telegram message', [
-                'chat_id' => $chatId ?? $this->adminChatId,
-                'text' => $text,
-                'parse_mode' => $parseMode,
                 'error' => $e->getMessage(),
             ]);
+            return false;
+        }
+    }
 
+    /**
+     * Отправить сообщение с клавиатурой через основного бота
+     */
+    public function sendMessageWithKeyboard(
+        string|int $userId,
+        string $text,
+        array $buttons,
+        ?string $parseMode = self::FORMAT_NONE,
+        bool $oneTime = false,
+        bool $resize = true
+    ): bool {
+        try {
+            $bot = $this->botManager->getBot('main');
+            return $bot->sendMessageWithKeyboard($userId, $text, $buttons, $parseMode, $oneTime, $resize);
+        } catch (\Exception $e) {
+            Log::channel('telegram')->error('Failed to send Telegram message with keyboard', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
             return false;
         }
     }
@@ -126,98 +108,50 @@ class TelegramService
         ?string $parseMode = self::FORMAT_NONE
     ): bool {
         try {
-            $params = [
-                'chat_id' => $userId,
-                'text' => $this->prepareText($text, $parseMode),
-                'reply_markup' => json_encode($keyboard->toArray()),
-            ];
-
-            if ($parseMode) {
-                $params['parse_mode'] = $parseMode;
-            }
-
-            $response = $this->http->post('/sendMessage', $params);
-
-            Log::channel('telegram')->info('Telegram message with keyboard sent', [
+            $bot = $this->botManager->getBot('main');
+            return $bot->sendMessageWithInlineKeyboard($userId, $text, $keyboard, $parseMode);
+        } catch (\Exception $e) {
+            Log::channel('telegram')->error('Failed to send Telegram message with inline keyboard', [
                 'user_id' => $userId,
-                'text' => $text,
-                'keyboard' => $keyboard->toArray(),
-                'parse_mode' => $parseMode,
-            ]);
-
-            return true;
-        } catch (RequestException $e) {
-            Log::channel('telegram')->error('Failed to send Telegram message with keyboard', [
-                'user_id' => $userId,
-                'text' => $text,
-                'keyboard' => $keyboard->toArray(),
-                'parse_mode' => $parseMode,
                 'error' => $e->getMessage(),
             ]);
-
             return false;
         }
     }
 
     /**
-     * Отправить сообщение с обычной клавиатурой через основного бота
+     * Ответить на callback_query через основного бота
      */
-    public function sendMessageWithKeyboard(
-        string|int $userId,
-        string $text,
-        array $buttons,
-        ?string $parseMode = self::FORMAT_NONE,
-        bool $oneTime = false,
-        bool $resize = true
+    public function answerCallbackQuery(
+        string $callbackQueryId,
+        ?string $text = null,
+        bool $showAlert = false,
+        ?string $url = null,
+        int $cacheTime = 0,
+        string $botId = 'main'
     ): bool {
-        $keyboard = new TelegramKeyboardDto($buttons, inline: false, oneTime: $oneTime, resize: $resize);
-        
         try {
-            $params = [
-                'chat_id' => $userId,
-                'text' => $this->prepareText($text, $parseMode),
-                'reply_markup' => json_encode($keyboard->toArray()),
-            ];
-
-            if ($parseMode) {
-                $params['parse_mode'] = $parseMode;
-            }
-
-            $response = $this->http->post('/sendMessage', $params);
-
-            Log::channel('telegram')->info('Telegram message with reply keyboard sent', [
-                'user_id' => $userId,
-                'text' => $text,
-                'keyboard' => $keyboard->toArray(),
-                'parse_mode' => $parseMode,
-            ]);
-
-            return true;
-        } catch (RequestException $e) {
-            Log::channel('telegram')->error('Failed to send Telegram message with reply keyboard', [
-                'user_id' => $userId,
-                'text' => $text,
-                'keyboard' => $keyboard->toArray(),
-                'parse_mode' => $parseMode,
+            $bot = $this->botManager->getBot($botId);
+            return $bot->answerCallbackQuery($callbackQueryId, $text, $showAlert, $url, $cacheTime);
+        } catch (\Exception $e) {
+            Log::channel('telegram')->error('Failed to answer callback query', [
+                'callback_query_id' => $callbackQueryId,
+                'bot_id' => $botId,
                 'error' => $e->getMessage(),
             ]);
-
             return false;
         }
     }
 
-    public function sendMessageToBot(string $text, ?string $parseMode = self::FORMAT_NONE): bool
-    {
-        $botName = config('telegram.bot.name');
-        return $this->sendMessageToUser($botName, $text, $parseMode);
-    }
-
+    /**
+     * Обработать входящее сообщение от Telegram
+     */
     public function handleIncomingMessage(array $rawMessage, string $botId): void
     {
         try {
             $messageType = $this->determineMessageType($rawMessage);
-            $userId = null;
             $text = '';
+            $userId = null;
 
             if ($messageType === TelegramMessageType::CALLBACK_QUERY) {
                 $text = $rawMessage['callback_query']['data'] ?? '';
@@ -247,21 +181,16 @@ class TelegramService
             ]);
         } catch (\Exception $e) {
             Log::channel('telegram')->error('Failed to handle incoming Telegram message', [
-                'raw_message' => $rawMessage,
                 'bot_id' => $botId,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
-
-            // Отправляем уведомление об ошибке админу
-            $this->sendAdminMessage(
-                "❌ Ошибка обработки входящего сообщения:\n" .
-                "Ошибка: {$e->getMessage()}\n" .
-                "Сообщение: " . json_encode($rawMessage, JSON_UNESCAPED_UNICODE),
-                self::FORMAT_HTML
-            );
         }
     }
 
+    /**
+     * Определить тип сообщения
+     */
     private function determineMessageType(array $rawMessage): TelegramMessageType
     {
         if (isset($rawMessage['callback_query'])) {
@@ -277,7 +206,7 @@ class TelegramService
         }
 
         $text = $rawMessage['message']['text'] ?? '';
-        
+
         if (str_starts_with($text, '/')) {
             return TelegramMessageType::COMMAND;
         }
@@ -286,14 +215,14 @@ class TelegramService
     }
 
     /**
-     * Подготовить текст для отправки с учетом формата
+     * Подготовить текст для отправки (экранирование)
      */
     private function prepareText(string $text, ?string $parseMode): string
     {
         if ($parseMode === self::FORMAT_MARKDOWN) {
-            // Экранируем специальные символы Markdown
-            $specialChars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
-            return str_replace($specialChars, array_map(fn($char) => "\\$char", $specialChars), $text);
+            // Экранируем специальные символы для MarkdownV2
+            $escaped = preg_replace('/([_*\[\]()~`>#+\-=|{}.!])/', '\\\\$1', $text);
+            return $escaped ?: $text;
         }
 
         if ($parseMode === self::FORMAT_HTML) {
@@ -302,67 +231,5 @@ class TelegramService
         }
 
         return $text;
-    }
-
-    /**
-     * Ответить на callback_query (убрать "часики" с кнопки)
-     */
-    public function answerCallbackQuery(
-        string $callbackQueryId,
-        ?string $text = null,
-        bool $showAlert = false,
-        ?string $url = null,
-        int $cacheTime = 0,
-        string $botId = 'bot'
-    ): bool {
-        try {
-            $http = $botId === 'admin_bot' ? $this->adminHttp : $this->http;
-            
-            $params = [
-                'callback_query_id' => $callbackQueryId,
-            ];
-
-            if ($text !== null) {
-                $params['text'] = $text;
-            }
-
-            if ($showAlert) {
-                $params['show_alert'] = $showAlert;
-            }
-
-            if ($url !== null) {
-                $params['url'] = $url;
-            }
-
-            if ($cacheTime > 0) {
-                $params['cache_time'] = $cacheTime;
-            }
-
-            $response = $http->post('/answerCallbackQuery', $params);
-
-            if ($response->successful()) {
-                Log::channel('telegram')->info('Callback query answered', [
-                    'callback_query_id' => $callbackQueryId,
-                    'bot_id' => $botId,
-                ]);
-                return true;
-            }
-
-            Log::channel('telegram')->error('Failed to answer callback query', [
-                'callback_query_id' => $callbackQueryId,
-                'response' => $response->body(),
-                'bot_id' => $botId,
-            ]);
-
-            return false;
-        } catch (RequestException $e) {
-            Log::channel('telegram')->error('Failed to answer callback query', [
-                'callback_query_id' => $callbackQueryId,
-                'error' => $e->getMessage(),
-                'bot_id' => $botId,
-            ]);
-
-            return false;
-        }
     }
 }
