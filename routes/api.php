@@ -27,9 +27,10 @@ Route::prefix('auto-auth')->middleware(['throttle:'.config('features.auto_auth.r
 
 Route::prefix('telegram')->group(function () {
     Route::post('{botId}/webhook', [TelegramWebhookController::class, 'handleWebhook'])
-        ->where('botId', 'bot|admin_bot'); // Ограничиваем возможные значения botId
-    Route::post('process-updates', [TelegramWebhookController::class, 'processUpdatesManually'])
-        ->middleware('auth:sanctum'); // Защищаем ручной метод авторизацией
+        ->where('botId', implode('|', array_keys(config('telegram.bots', [])))); // Динамически из конфига
+    Route::post('process-updates/{botId?}', [TelegramWebhookController::class, 'processUpdatesManually'])
+        ->middleware('auth:sanctum') // Защищаем ручной метод авторизацией
+        ->where('botId', implode('|', array_keys(config('telegram.bots', [])))); // Те же боты
 });
 
 // Attachment routes

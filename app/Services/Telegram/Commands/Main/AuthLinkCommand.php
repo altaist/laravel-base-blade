@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Telegram\Commands;
+namespace App\Services\Telegram\Commands\Main;
 
 use App\DTOs\TelegramMessageDto;
 use App\Models\User;

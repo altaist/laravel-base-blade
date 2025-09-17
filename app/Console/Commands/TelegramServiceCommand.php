@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class TelegramServiceCommand extends Command
 {
     protected $signature = 'telegram:run 
-        {--bot=bot : Тип бота (bot или admin_bot)}
+        {--bot=main : Тип бота (main, admin, manager)}
         {--interval=5 : Интервал между запросами в секундах}';
 
     protected $description = 'Сервис для периодического получения сообщений от Telegram';

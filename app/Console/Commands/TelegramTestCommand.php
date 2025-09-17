@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 class TelegramTestCommand extends Command
 {
     protected $signature = 'telegram:test 
-        {--bot=bot : Тип бота для тестирования (bot или admin_bot)}
+        {--bot=main : Тип бота для тестирования (main, admin, manager)}
         {--chat-id= : ID чата для отправки тестового сообщения}';
     protected $description = 'Тестирование подключения к Telegram API';
 
@@ -18,9 +18,9 @@ class TelegramTestCommand extends Command
         $this->info('Проверка конфигурации...');
         
         $botType = $this->option('bot');
-        $token = config("telegram.{$botType}.token");
-        $name = config("telegram.{$botType}.name");
-        $defaultChatId = $botType === 'admin_bot' ? config('telegram.admin_bot.chat_id') : null;
+        $token = config("telegram.bots.{$botType}.token");
+        $name = config("telegram.bots.{$botType}.name");
+        $defaultChatId = $botType === 'admin' ? config('telegram.bots.admin.chat_id') : null;
         $chatId = $this->option('chat-id') ?: $defaultChatId;
 
         $this->table(
@@ -57,7 +57,7 @@ class TelegramTestCommand extends Command
 
         if (empty($chatId)) {
             $this->error('❌ Не указан chat_id для тестирования:');
-            if ($botType === 'admin_bot') {
+            if ($botType === 'admin') {
                 $this->error('- Проверьте TELEGRAM_ADMIN_CHAT_ID в .env');
             } else {
                 $this->error('- Добавьте параметр --chat-id=YOUR_CHAT_ID');
@@ -79,7 +79,7 @@ class TelegramTestCommand extends Command
 
         $this->info("\nОтправка тестового сообщения...");
         try {
-            $result = $botType === 'admin_bot'
+            $result = $botType === 'admin'
                 ? $telegram->sendAdminMessage(
                     sprintf($message, 'Админский бот'),
                     TelegramService::FORMAT_HTML,

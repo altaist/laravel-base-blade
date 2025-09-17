@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Telegram\Commands;
+namespace App\Services\Telegram\Commands\Main;
 
 use App\DTOs\TelegramMessageDto;
 use App\Models\User;
@@ -23,8 +23,11 @@ class ProfileCommand extends BaseTelegramCommand
     {
         $authLinkService = app(\App\Services\AuthLinkService::class);
         
-        // Ищем пользователя по telegram_id
-        $user = User::where('telegram_id', $message->userId)->first();
+        // Ищем пользователя по telegram_id для этого бота
+        $user = User::whereHas('telegramBots', function($query) use ($message) {
+            $query->where('telegram_id', $message->userId)
+                  ->where('bot_name', $message->botId);
+        })->first();
 
         if ($user) {
             // Пользователь найден - показываем профиль
@@ -33,7 +36,7 @@ class ProfileCommand extends BaseTelegramCommand
                 "<b>Email:</b> " . ($user->email ?? 'Не указан') . "\n" .
                 "<b>Роль:</b> " . ucfirst($user->role?->value ?? 'user') . "\n" .
                 "<b>Дата регистрации:</b> " . $user->created_at->format('d.m.Y H:i') . "\n" .
-                "<b>Telegram ID:</b> " . $user->telegram_id;
+                "<b>Telegram ID:</b> " . $user->getTelegramIdForBot($message->botId);
         } else {
             // Пользователь не найден - предлагаем регистрацию
             try {

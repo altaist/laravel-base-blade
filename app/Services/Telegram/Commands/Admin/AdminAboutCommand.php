@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Telegram\Commands;
+namespace App\Services\Telegram\Commands\Admin;
 
 use App\DTOs\TelegramMessageDto;
 use App\Services\Telegram\Base\BaseTelegramCommand;
@@ -31,7 +31,7 @@ class AdminAboutCommand extends BaseTelegramCommand
 
     public function process(TelegramMessageDto $message): void
     {
-        $chatId = config('telegram.admin_bot.chat_id');
+        $chatId = config('telegram.bots.admin.chat_id');
         
         $text = "🔧 <b>Админский бот</b>\n\n" .
             "Я помогаю администраторам управлять системой.\n\n" .

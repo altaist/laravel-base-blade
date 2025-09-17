@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Telegram\Commands;
+namespace App\Services\Telegram\Commands\Main;
 
 use App\DTOs\TelegramMessageDto;
 use App\Models\AuthLink;
@@ -26,8 +26,11 @@ class StartCommand extends BaseTelegramCommand
 
     public function process(TelegramMessageDto $message): void
     {
-        // Проверяем, есть ли пользователь с таким telegram_id
-        $user = User::where('telegram_id', $message->userId)->first();
+        // Проверяем, есть ли пользователь с таким telegram_id для этого бота
+        $user = User::whereHas('telegramBots', function($query) use ($message) {
+            $query->where('telegram_id', $message->userId)
+                  ->where('bot_name', $message->botId);
+        })->first();
 
         if ($user) {
             // Пользователь существует - показываем приветствие с клавиатурой
@@ -114,8 +117,11 @@ class StartCommand extends BaseTelegramCommand
         $authLinkService = app(AuthLinkService::class);
         
         try {
-            // Ищем пользователя по telegram_id
-            $user = User::where('telegram_id', $message->userId)->first();
+            // Ищем пользователя по telegram_id для этого бота
+            $user = User::whereHas('telegramBots', function($query) use ($message) {
+                $query->where('telegram_id', $message->userId)
+                      ->where('bot_name', $message->botId);
+            })->first();
 
             if (!$user) {
                 // Создаем ссылку для регистрации
