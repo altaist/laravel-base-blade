@@ -36,9 +36,23 @@ class TelegramServiceCommand extends Command
         // Сохраняем текущий вебхук
         $currentWebhook = $this->getCurrentWebhook($baseUrl);
         
+        // Проверяем, есть ли активный webhook
+        if ($currentWebhook) {
+            $this->warn("Обнаружен активный webhook: {$currentWebhook['url']}");
+            $this->warn("Для использования getUpdates webhook будет временно удален и восстановлен после завершения команды.");
+        }
+        
         // Удаляем вебхук для возможности использования getUpdates
         $this->info("Удаление текущего вебхука...");
         $this->deleteWebhook($baseUrl);
+        
+        // Проверяем, что webhook действительно удален
+        $webhookAfterDelete = $this->getCurrentWebhook($baseUrl);
+        if ($webhookAfterDelete) {
+            $this->error("Не удалось удалить webhook. Остановка выполнения.");
+            $this->error("Попробуйте удалить webhook вручную: php artisan telegram:setup --remove");
+            return Command::FAILURE;
+        }
 
         $this->info("Запуск сервиса для бота типа: {$botType}");
         $this->info("Интервал запросов: {$interval} секунд");
@@ -96,6 +110,15 @@ class TelegramServiceCommand extends Command
             ]);
 
             if (!$response->successful()) {
+                $errorBody = $response->json();
+                
+                // Проверяем на ошибку 409 - конфликт с webhook
+                if (isset($errorBody['error_code']) && $errorBody['error_code'] === 409) {
+                    $this->error("Ошибка: Webhook активен, нельзя использовать getUpdates. Остановка выполнения.");
+                    $this->error("Для использования getUpdates сначала удалите webhook командой: php artisan telegram:setup --remove");
+                    exit(1);
+                }
+                
                 throw new \Exception('Failed to get updates from Telegram: ' . $response->body());
             }
 
