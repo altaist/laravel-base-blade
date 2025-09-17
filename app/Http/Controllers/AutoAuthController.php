@@ -33,7 +33,10 @@ class AutoAuthController extends Controller
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent()
             ]);
-            return response()->json(['error' => 'Токен не предоставлен'], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'Токен не предоставлен'
+            ]);
         }
 
         // Валидация формата токена
@@ -42,7 +45,10 @@ class AutoAuthController extends Controller
                 'ip' => $request->ip(),
                 'token_preview' => substr($token, 0, 8) . '...'
             ]);
-            return response()->json(['error' => 'Неверный формат токена'], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'Неверный формат токена'
+            ]);
         }
 
         Log::channel('security')->info('Попытка проверки токена автологина', [
@@ -74,7 +80,7 @@ class AutoAuthController extends Controller
         return response()->json([
             'success' => false,
             'message' => 'Токен недействителен или истек'
-        ], 400);
+        ]);
     }
 
     /**
@@ -118,8 +124,7 @@ class AutoAuthController extends Controller
             'token_preview' => substr($token, 0, 8) . '...'
         ]);
         
-        // Удаляем использованный токен
-        $this->authLinkService->deleteAfterUse($token);
+        // НЕ удаляем токен - он нужен для будущих автологинов!
 
         return response()->json([
             'success' => true,

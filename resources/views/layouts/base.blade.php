@@ -61,21 +61,25 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{ asset('js/image-preview.js') }}"></script>
     
-    {{-- Подключаем автологин только для неавторизованных пользователей и если фича включена --}}
+    {{-- Подключаем автологин только для неавторизованных пользователей --}}
     @if(!auth()->check() && config('features.auto_auth.enabled'))
         <link href="{{ asset('css/auto-auth.css') }}" rel="stylesheet">
         <script src="{{ asset('js/composables.js') }}"></script>
         <x-auto-auth-popup />
+        
+        <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const auth = window.useAuth();
+            
+            // Инициализируем синхронизацию между вкладками
+            auth.initStorageSync();
+            
+            // Инициализируем автологин
+            await auth.initAutoAuth();
+        });
+        </script>
     @endif
     
-    {{-- Токен автологина передается в JavaScript через data-атрибут --}}
-    @if(session('auto_auth_token'))
-        <div id="auto-auth-token-data" 
-             data-token="{{ session('auto_auth_token') }}" 
-             style="display: none;">
-        </div>
-        @php session()->forget('auto_auth_token') @endphp
-    @endif
     
     <script>
     // Автоматическое закрытие уведомлений через 5 секунд
@@ -87,7 +91,10 @@
             
             // Автоматически закрываем через 5 секунд
             setTimeout(function() {
-                bsAlert.close();
+                // Проверяем, что элемент все еще существует в DOM
+                if (alert.parentNode) {
+                    bsAlert.close();
+                }
             }, 5000);
         });
     });

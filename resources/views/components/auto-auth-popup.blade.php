@@ -17,7 +17,7 @@
                     <p id="user-email">Загрузка...</p>
                 </div>
             </div>
-            <p class="confirm-text">Это ты?</p>
+            <p class="confirm-text">Это вы?</p>
         </div>
         <div class="auto-auth-footer">
             <button class="btn btn-primary confirm-btn" id="confirm-auto-auth">
