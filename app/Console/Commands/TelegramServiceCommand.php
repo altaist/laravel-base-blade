@@ -24,14 +24,16 @@ class TelegramServiceCommand extends Command
         $botType = $this->option('bot');
         $interval = (int) $this->option('interval');
         
-        $token = config("telegram.{$botType}.token");
+        $token = config("telegram.bots.{$botType}.token");
+        $apiUrl = config('telegram.api_url', 'https://api.telegram.org');
         
         if (empty($token)) {
             $this->error("Ошибка: Не указан токен для бота типа '{$botType}' в конфигурации");
+            $this->error("Проверьте настройки в config/telegram.php");
             return Command::FAILURE;
         }
 
-        $baseUrl = "https://api.telegram.org/bot{$token}";
+        $baseUrl = "{$apiUrl}/bot{$token}";
 
         // Сохраняем текущий вебхук
         $currentWebhook = $this->getCurrentWebhook($baseUrl);
@@ -175,13 +177,22 @@ class TelegramServiceCommand extends Command
         // Определяем тип бота по токену в URL
         $token = basename($baseUrl);
         
+        // Проверяем новую структуру конфигурации
+        $bots = config('telegram.bots', []);
+        foreach ($bots as $botName => $config) {
+            if (isset($config['token']) && $config['token'] === $token) {
+                return $botName;
+            }
+        }
+        
+        // Fallback для старой структуры
         foreach (config('telegram') as $type => $config) {
             if (isset($config['token']) && $config['token'] === $token) {
                 return $type;
             }
         }
         
-        return 'bot'; // fallback
+        return 'main'; // fallback
     }
 
 

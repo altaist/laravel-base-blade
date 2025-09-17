@@ -11,16 +11,17 @@ use Illuminate\Support\Facades\Log;
 class TelegramBot
 {
     private PendingRequest $http;
-    private string $baseUrl;
+    private string $apiUrl;
 
     public function __construct(
         private readonly string $name,
         private readonly string $token,
         private readonly ?string $chatId = null,
-        private readonly string $baseUrl = 'https://api.telegram.org'
+        private readonly ?string $baseApiUrl = null
     ) {
-        $this->baseUrl = "{$baseUrl}/bot{$token}";
-        $this->http = Http::baseUrl($this->baseUrl)->throw();
+        $apiUrl = $baseApiUrl ?? config('telegram.api_url', 'https://api.telegram.org');
+        $this->apiUrl = "{$apiUrl}/bot{$token}";
+        $this->http = Http::baseUrl($this->apiUrl)->throw();
     }
 
     public function getName(): string

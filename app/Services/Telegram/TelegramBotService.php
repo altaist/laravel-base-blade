@@ -30,7 +30,12 @@ class TelegramBotService
      */
     private function registerCommands(): void
     {
-        $commands = config("telegram.{$this->botType}.commands", []);
+        $commands = config("telegram.bots.{$this->botType}.commands", []);
+        
+        Log::channel('telegram')->info("Registering commands for bot type: {$this->botType}", [
+            'commands_count' => count($commands),
+            'commands' => array_keys($commands),
+        ]);
 
         foreach ($commands as $name => $commandClass) {
             try {
@@ -95,6 +100,20 @@ class TelegramBotService
     public function registerCommand(TelegramBotCommandInterface $command): void
     {
         $this->commands[$command->getName()] = $command;
+        
+        Log::channel('telegram')->info("Command registered successfully", [
+            'command_name' => $command->getName(),
+            'bot_type' => $this->botType,
+            'total_commands' => count($this->commands),
+        ]);
+    }
+
+    /**
+     * Получить тип бота
+     */
+    public function getBotType(): string
+    {
+        return $this->botType;
     }
 
     /**

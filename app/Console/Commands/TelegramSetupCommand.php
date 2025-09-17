@@ -49,12 +49,13 @@ class TelegramSetupCommand extends Command
         $this->info("Настройка вебхуков для всех ботов...");
         $this->info("Базовый URL: {$baseUrl}");
 
-        $bots = config('telegram');
+        $bots = config('telegram.bots', []);
+        $apiUrl = config('telegram.api_url', 'https://api.telegram.org');
         $successCount = 0;
         $totalBots = 0;
 
         foreach ($bots as $botType => $config) {
-            // Пропускаем секции без токена (например, commands)
+            // Пропускаем секции без токена
             if (!isset($config['token'])) {
                 continue;
             }
@@ -66,7 +67,7 @@ class TelegramSetupCommand extends Command
                 $webhookUrl = "{$baseUrl}/api/telegram/{$botType}/webhook";
                 $this->info("URL вебхука: {$webhookUrl}");
 
-                $response = Http::get("https://api.telegram.org/bot{$config['token']}/setWebhook", [
+                $response = Http::get("{$apiUrl}/bot{$config['token']}/setWebhook", [
                     'url' => $webhookUrl,
                     'allowed_updates' => ['message', 'callback_query'],
                 ]);
@@ -102,7 +103,8 @@ class TelegramSetupCommand extends Command
     {
         $this->info("Удаление всех вебхуков...");
 
-        $bots = config('telegram');
+        $bots = config('telegram.bots', []);
+        $apiUrl = config('telegram.api_url', 'https://api.telegram.org');
         $successCount = 0;
         $totalBots = 0;
 
@@ -115,7 +117,7 @@ class TelegramSetupCommand extends Command
             $this->info("\nУдаление вебхука для бота типа: {$botType}");
 
             try {
-                $response = Http::get("https://api.telegram.org/bot{$config['token']}/deleteWebhook");
+                $response = Http::get("{$apiUrl}/bot{$config['token']}/deleteWebhook");
                 $result = $response->json();
 
                 if ($response->successful() && ($result['ok'] ?? false)) {
@@ -146,7 +148,8 @@ class TelegramSetupCommand extends Command
     {
         $this->info("Информация о текущих вебхуках:");
 
-        $bots = config('telegram');
+        $bots = config('telegram.bots', []);
+        $apiUrl = config('telegram.api_url', 'https://api.telegram.org');
         $hasWebhooks = false;
 
         foreach ($bots as $botType => $config) {
@@ -158,7 +161,7 @@ class TelegramSetupCommand extends Command
             $this->info("Имя: " . ($config['name'] ?? 'Не указан'));
 
             try {
-                $response = Http::get("https://api.telegram.org/bot{$config['token']}/getWebhookInfo");
+                $response = Http::get("{$apiUrl}/bot{$config['token']}/getWebhookInfo");
                 $result = $response->json();
 
                 if ($response->successful() && ($result['ok'] ?? false)) {

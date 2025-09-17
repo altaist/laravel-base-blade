@@ -118,10 +118,10 @@ class StartCommand extends BaseTelegramCommand
         
         try {
             // Ищем пользователя по telegram_id для этого бота
-            $user = User::whereHas('telegramBots', function($query) use ($message) {
-                $query->where('telegram_id', $message->userId)
-                      ->where('bot_name', $message->botId);
-            })->first();
+        $user = User::whereHas('telegramBots', function($query) use ($message) {
+            $query->where('telegram_id', $message->userId)
+                  ->where('bot_name', $message->botId);
+        })->first();
 
             if (!$user) {
                 // Создаем ссылку для регистрации

@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Регистрируем TelegramBotService для каждого бота из конфига
-        $this->app->singleton('telegram.bot', function ($app) {
+        $this->app->singleton('telegram.main', function ($app) {
             $telegramService = $app->make(TelegramService::class);
             return new TelegramBotService($telegramService, 'main');
         });
