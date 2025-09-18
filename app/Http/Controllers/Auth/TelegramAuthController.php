@@ -66,7 +66,7 @@ class TelegramAuthController extends Controller
             if ($referralProcessed) {
                 Log::info('Пользователь зарегистрирован через Telegram по реферальной ссылке', [
                     'user_id' => $user->id,
-                    'telegram_id' => $user->telegram_id,
+                    'telegram_id' => $user->getTelegramIdForBot('main'),
                 ]);
             }
         } else {
@@ -96,7 +96,7 @@ class TelegramAuthController extends Controller
         sort($data_check_arr);
         
         $data_check_string = implode("\n", $data_check_arr);
-        $secret_key = hash('sha256', config('telegram.bot.token'), true);
+        $secret_key = hash('sha256', config('telegram.bots.main.token'), true);
         $hash = hash_hmac('sha256', $data_check_string, $secret_key);
         
         return $hash === $check_hash;

@@ -40,8 +40,9 @@ class ManagerUserRegistrationNotification extends Notification
         $userInfo .= "Email: {$this->newUser->email}\n";
         $userInfo .= "Роль: {$this->newUser->role->value}\n";
         
-        if ($this->newUser->telegram_username) {
-            $userInfo .= "Telegram: @{$this->newUser->telegram_username}\n";
+        $telegramUsername = $this->newUser->getTelegramUsernameForBot('main');
+        if ($telegramUsername) {
+            $userInfo .= "Telegram: @{$telegramUsername}\n";
         }
         
         $userInfo .= "\nДата регистрации: " . $this->newUser->created_at->format('d.m.Y H:i');

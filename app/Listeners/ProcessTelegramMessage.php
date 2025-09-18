@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\TelegramMessageReceived;
 use App\Services\Telegram\TelegramBotService;
 use App\Services\Telegram\TelegramService;
+use Illuminate\Support\Facades\Log;
 
 class ProcessTelegramMessage
 {
@@ -21,7 +22,7 @@ class ProcessTelegramMessage
             $botService->process($event->message);
         } catch (\Exception $e) {
             // Логируем ошибку, если бот не найден
-            \Illuminate\Support\Facades\Log::channel('telegram')->error('Failed to process Telegram message', [
+            Log::channel('telegram')->error('Failed to process Telegram message', [
                 'bot_id' => $event->message->botId,
                 'user_id' => $event->message->userId,
                 'error' => $e->getMessage(),

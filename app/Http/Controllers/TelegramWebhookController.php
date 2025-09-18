@@ -31,6 +31,12 @@ class TelegramWebhookController extends Controller
     public function handleWebhook(Request $request, string $botId): JsonResponse
     {
         try {
+            // Валидация botId
+            if (!config("telegram.bots.{$botId}.token")) {
+                Log::channel('telegram')->error('Unknown bot ID', ['bot_id' => $botId]);
+                return response()->json(['status' => 'error', 'message' => 'Unknown bot'], 400);
+            }
+
             $update = $request->all();
             
             if (empty($update)) {
@@ -60,6 +66,14 @@ class TelegramWebhookController extends Controller
     {
         try {
             $token = config("telegram.bots.{$botId}.token");
+            
+            if (!$token) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Bot '{$botId}' not configured"
+                ], 400);
+            }
+
             $apiUrl = config('telegram.api_url', 'https://api.telegram.org');
             $response = \Illuminate\Support\Facades\Http::get(
                 "{$apiUrl}/bot{$token}/getUpdates"

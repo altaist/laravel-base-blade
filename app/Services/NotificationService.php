@@ -46,7 +46,8 @@ class NotificationService
     public function sendUserRegistrationNotification(User $user): void
     {
         try {
-            if (!$user->telegram_id) {
+            $telegramId = $user->getTelegramIdForBot('main');
+            if (!$telegramId) {
                 Log::info('User has no Telegram ID, skipping registration notification', [
                     'user_id' => $user->id,
                     'user_email' => $user->email,
@@ -59,7 +60,7 @@ class NotificationService
             Log::info('User registration notification sent', [
                 'user_id' => $user->id,
                 'user_email' => $user->email,
-                'telegram_id' => $user->telegram_id,
+                'telegram_id' => $telegramId,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send user registration notification', [
@@ -76,9 +77,7 @@ class NotificationService
     public function sendAdminRegistrationNotification(User $newUser): void
     {
         try {
-            $admins = User::where('role', UserRole::ADMIN)
-                ->whereNotNull('telegram_id')
-                ->get();
+            $admins = $this->getUsersByRole(UserRole::ADMIN);
 
             if ($admins->isEmpty()) {
                 Log::info('No admins with Telegram ID found for registration notification');
@@ -109,9 +108,7 @@ class NotificationService
     public function sendManagerRegistrationNotification(User $newUser): void
     {
         try {
-            $managers = User::where('role', UserRole::MANAGER)
-                ->whereNotNull('telegram_id')
-                ->get();
+            $managers = $this->getUsersByRole(UserRole::MANAGER);
 
             if ($managers->isEmpty()) {
                 Log::info('No managers with Telegram ID found for registration notification');
@@ -142,21 +139,25 @@ class NotificationService
     public function sendToAdmins(string $message): void
     {
         try {
-            $admins = User::where('role', UserRole::ADMIN)
-                ->whereNotNull('telegram_id')
-                ->get();
+            $admins = $this->getUsersByRole(UserRole::ADMIN);
 
+            $sentCount = 0;
             foreach ($admins as $admin) {
-                $this->telegramService->sendMessageToUser(
-                    $admin->telegram_id,
-                    $message,
-                    TelegramService::FORMAT_HTML
-                );
+                $telegramId = $admin->getTelegramIdForBot('main');
+                if ($telegramId) {
+                    $this->telegramService->sendMessageToUser(
+                        $telegramId,
+                        $message,
+                        TelegramService::FORMAT_HTML
+                    );
+                    $sentCount++;
+                }
             }
 
             Log::info('Message sent to admins', [
                 'message' => $message,
-                'admins_count' => $admins->count(),
+                'total_admins' => $admins->count(),
+                'sent_count' => $sentCount,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send message to admins', [
@@ -172,21 +173,25 @@ class NotificationService
     public function sendToManagers(string $message): void
     {
         try {
-            $managers = User::where('role', UserRole::MANAGER)
-                ->whereNotNull('telegram_id')
-                ->get();
+            $managers = $this->getUsersByRole(UserRole::MANAGER);
 
+            $sentCount = 0;
             foreach ($managers as $manager) {
-                $this->telegramService->sendMessageToUser(
-                    $manager->telegram_id,
-                    $message,
-                    TelegramService::FORMAT_HTML
-                );
+                $telegramId = $manager->getTelegramIdForBot('main');
+                if ($telegramId) {
+                    $this->telegramService->sendMessageToUser(
+                        $telegramId,
+                        $message,
+                        TelegramService::FORMAT_HTML
+                    );
+                    $sentCount++;
+                }
             }
 
             Log::info('Message sent to managers', [
                 'message' => $message,
-                'managers_count' => $managers->count(),
+                'total_managers' => $managers->count(),
+                'sent_count' => $sentCount,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send message to managers', [
@@ -197,12 +202,25 @@ class NotificationService
     }
 
     /**
+     * Получить пользователей по роли с Telegram ID
+     */
+    private function getUsersByRole(UserRole $role): \Illuminate\Database\Eloquent\Collection
+    {
+        return User::where('role', $role)
+            ->whereHas('telegramBots', function($query) {
+                $query->where('bot_name', 'main');
+            })
+            ->get();
+    }
+
+    /**
      * Отправить сообщение пользователю
      */
     public function sendToUser(User $user, string $message): void
     {
         try {
-            if (!$user->telegram_id) {
+            $telegramId = $user->getTelegramIdForBot('main');
+            if (!$telegramId) {
                 Log::info('User has no Telegram ID, cannot send message', [
                     'user_id' => $user->id,
                     'user_email' => $user->email,
@@ -211,7 +229,7 @@ class NotificationService
             }
 
             $this->telegramService->sendMessageToUser(
-                $user->telegram_id,
+                $telegramId,
                 $message,
                 TelegramService::FORMAT_HTML
             );

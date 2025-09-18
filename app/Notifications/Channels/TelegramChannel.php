@@ -82,15 +82,10 @@ class TelegramChannel
             return $notifiable->routeNotificationForTelegram();
         }
 
-        // Сначала пробуем получить ID для основного бота
         if (method_exists($notifiable, 'getTelegramIdForBot')) {
-            $telegramId = $notifiable->getTelegramIdForBot('main');
-            if ($telegramId) {
-                return $telegramId;
-            }
+            return $notifiable->getTelegramIdForBot('main');
         }
 
-        // Fallback на старую систему
-        return $notifiable->telegram_id ?? null;
+        return null;
     }
 }

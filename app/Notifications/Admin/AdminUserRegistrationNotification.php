@@ -41,12 +41,14 @@ class AdminUserRegistrationNotification extends Notification
         $userInfo .= "Email: {$this->newUser->email}\n";
         $userInfo .= "Роль: {$this->newUser->role->value}\n";
         
-        if ($this->newUser->telegram_id) {
-            $userInfo .= "Telegram ID: {$this->newUser->telegram_id}\n";
+        $telegramId = $this->newUser->getTelegramIdForBot('main');
+        if ($telegramId) {
+            $userInfo .= "Telegram ID: {$telegramId}\n";
         }
-        
-        if ($this->newUser->telegram_username) {
-            $userInfo .= "Telegram: @{$this->newUser->telegram_username}\n";
+
+        $telegramUsername = $this->newUser->getTelegramUsernameForBot('main');
+        if ($telegramUsername) {
+            $userInfo .= "Telegram: @{$telegramUsername}\n";
         }
         
         $userInfo .= "\nДата регистрации: " . $this->newUser->created_at->format('d.m.Y H:i');
