@@ -27,10 +27,7 @@ class StartCommand extends BaseTelegramCommand
     public function process(TelegramMessageDto $message): void
     {
         // Проверяем, есть ли пользователь с таким telegram_id для этого бота
-        $user = User::whereHas('telegramBots', function($query) use ($message) {
-            $query->where('telegram_id', $message->userId)
-                  ->where('bot_name', $message->botId);
-        })->first();
+        $user = $this->findUser($message);
 
         if ($user) {
             // Пользователь существует - показываем приветствие с клавиатурой
@@ -66,7 +63,16 @@ class StartCommand extends BaseTelegramCommand
                 "Для начала работы с личным кабинетом необходимо зарегистрироваться.\n\n";
 
             // Добавляем ссылку для авторизации если пользователь не найден
-            $this->addAuthLinkIfNeeded($message, $text);
+            try {
+                $authLink = $this->createRegistrationLink($message);
+                $loginUrl = route('auth-link.authenticate', $authLink['token']);
+                
+                $text .= "\n\n🔐 Для доступа к системе используйте ссылку для авторизации:\n" .
+                    "{$loginUrl}\n\n" .
+                    "Ссылка действительна 1 час.";
+            } catch (\Exception $e) {
+                // Если не удалось создать ссылку, продолжаем без неё
+            }
             
             // Создаем клавиатуру для неавторизованных пользователей
             $keyboard = [
@@ -82,69 +88,4 @@ class StartCommand extends BaseTelegramCommand
     }
 
 
-    /**
-     * Обработать привязку аккаунта по start_param
-     */
-    private function handleAccountBinding(TelegramMessageDto $message): void
-    {
-        $authLinkService = app(AuthLinkService::class);
-        
-        // Получаем start_param из arguments команды
-        $startParam = $message->arguments[0] ?? null;
-        if (empty($startParam)) {
-            $this->reply($message, "❌ Неверный параметр для привязки.", TelegramService::FORMAT_HTML);
-            return;
-        }
-
-        // Делегируем привязку в сервис
-        $result = $authLinkService->bindTelegramAccount($startParam, $message->userId);
-
-        if ($result['success']) {
-            $text = "✅ Аккаунт успешно привязан!\n\n" .
-                "Теперь вы можете получать уведомления и управлять аккаунтом через бота.";
-        } else {
-            $text = "❌ " . $result['message'];
-        }
-
-        $this->reply($message, $text, TelegramService::FORMAT_HTML);
-    }
-
-    /**
-     * Добавить ссылку для авторизации если пользователь не найден
-     */
-    private function addAuthLinkIfNeeded(TelegramMessageDto $message, string &$text): void
-    {
-        $authLinkService = app(AuthLinkService::class);
-        
-        try {
-            // Ищем пользователя по telegram_id для этого бота
-        $user = User::whereHas('telegramBots', function($query) use ($message) {
-            $query->where('telegram_id', $message->userId)
-                  ->where('bot_name', $message->botId);
-        })->first();
-
-            if (!$user) {
-                // Создаем ссылку для регистрации
-                $authLink = $authLinkService->generateRegistrationLink([
-                    'telegram_id' => $message->userId,
-                ], [
-                    'expires_in_minutes' => 60,
-                    'ip_address' => null,
-                    'user_agent' => 'Telegram Bot',
-                    'author_id' => null,
-                ]);
-
-                $loginUrl = route('auth-link.authenticate', $authLink->token);
-                
-                $text .= "\n\n🔐 Для доступа к системе используйте ссылку для авторизации:\n" .
-                    "{$loginUrl}\n\n" .
-                    "Ссылка действительна 1 час.";
-            }
-        } catch (\Exception $e) {
-            Log::channel('telegram')->error("Ошибка создания ссылки в StartCommand", [
-                'error' => $e->getMessage(),
-                'telegram_id' => $message->userId,
-            ]);
-        }
-    }
 }

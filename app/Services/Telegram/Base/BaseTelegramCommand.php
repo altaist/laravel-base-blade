@@ -6,6 +6,8 @@ use App\DTOs\TelegramKeyboardDto;
 use App\DTOs\TelegramMessageDto;
 use App\Contracts\TelegramBotCommandInterface;
 use App\Services\Telegram\TelegramService;
+use App\Services\AuthLinkService;
+use App\Models\User;
 
 abstract class BaseTelegramCommand implements TelegramBotCommandInterface
 {
@@ -98,6 +100,130 @@ abstract class BaseTelegramCommand implements TelegramBotCommandInterface
                 0,
                 $message->botId
             );
+        }
+    }
+
+    /**
+     * Найти пользователя по Telegram ID для конкретного бота
+     */
+    protected function findUser(TelegramMessageDto $message): ?User
+    {
+        return User::whereHas('telegramBots', function($query) use ($message) {
+            $query->where('telegram_id', $message->userId)
+                  ->where('bot_name', $message->botId);
+        })->first();
+    }
+
+    /**
+     * Найти пользователя и проверить авторизацию
+     * Если пользователь не найден, отправляет сообщение об авторизации
+     */
+    protected function requireUser(TelegramMessageDto $message): ?User
+    {
+        $user = $this->findUser($message);
+        
+        if (!$user) {
+            $this->sendUnauthorizedMessage($message);
+            return null;
+        }
+        
+        return $user;
+    }
+
+    /**
+     * Отправить сообщение неавторизованному пользователю с ссылкой для входа
+     */
+    protected function sendUnauthorizedMessage(TelegramMessageDto $message): void
+    {
+        $authLinkService = app(AuthLinkService::class);
+        
+        try {
+            $authLink = $authLinkService->generateRegistrationLink([
+                'telegram_id' => $message->userId,
+            ], [
+                'expires_in_minutes' => 60,
+                'ip_address' => null,
+                'user_agent' => 'Telegram Bot',
+            ]);
+            
+            $text = "🔐 <b>Требуется авторизация</b>\n\n" .
+                "Для использования этой команды необходимо войти в систему.\n\n" .
+                "Нажмите на ссылку ниже для авторизации:\n" .
+                "<a href=\"{$authLink['url']}\">Войти в систему</a>\n\n" .
+                "Ссылка действительна 60 минут.";
+                
+            $this->reply($message, $text, TelegramService::FORMAT_HTML);
+            
+        } catch (\Exception $e) {
+            $this->reply($message, "❌ Ошибка при создании ссылки для авторизации. Попробуйте позже.");
+        }
+    }
+
+    /**
+     * Создать ссылку для авторизации (для существующего пользователя)
+     */
+    protected function createAuthLink(User $user, TelegramMessageDto $message): array
+    {
+        $authLinkService = app(AuthLinkService::class);
+        
+        return $authLinkService->generateAuthLink($user, [
+            'expires_in_minutes' => 15,
+            'ip_address' => null,
+            'user_agent' => 'Telegram Bot',
+            'author_id' => $user->id,
+        ]);
+    }
+
+    /**
+     * Создать ссылку для регистрации (для нового пользователя)
+     */
+    protected function createRegistrationLink(TelegramMessageDto $message): array
+    {
+        $authLinkService = app(AuthLinkService::class);
+        
+        return $authLinkService->generateRegistrationLink([
+            'telegram_id' => $message->userId,
+        ], [
+            'expires_in_minutes' => 60,
+            'ip_address' => null,
+            'user_agent' => 'Telegram Bot',
+        ]);
+    }
+
+    /**
+     * Обработать привязку аккаунта по токену из start_param
+     */
+    protected function handleAccountBinding(TelegramMessageDto $message): void
+    {
+        if (empty($message->arguments)) {
+            return;
+        }
+
+        $startParam = $message->arguments[0] ?? null;
+        
+        if (empty($startParam)) {
+            return;
+        }
+
+        $authLinkService = app(AuthLinkService::class);
+        
+        try {
+            $result = $authLinkService->bindTelegramAccount($startParam, $message->userId, $message->botId);
+            
+            if ($result['success']) {
+                $text = "✅ <b>Аккаунт успешно привязан!</b>\n\n" .
+                    "Теперь вы можете использовать все функции бота.";
+                $this->reply($message, $text, TelegramService::FORMAT_HTML);
+            } else {
+                $text = "❌ <b>Ошибка привязки аккаунта</b>\n\n" .
+                    $result['message'] . "\n\n" .
+                    "Попробуйте получить новую ссылку для авторизации.";
+                $this->reply($message, $text, TelegramService::FORMAT_HTML);
+            }
+        } catch (\Exception $e) {
+            $text = "❌ <b>Ошибка при привязке аккаунта</b>\n\n" .
+                "Произошла техническая ошибка. Попробуйте позже.";
+            $this->reply($message, $text, TelegramService::FORMAT_HTML);
         }
     }
 }

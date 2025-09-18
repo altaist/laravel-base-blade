@@ -25,36 +25,20 @@ class AuthLinkCommand extends BaseTelegramCommand
 
     public function process(TelegramMessageDto $message): void
     {
-        $authLinkService = app(AuthLinkService::class);
-        
         try {
-            // Ищем пользователя по telegram_id
-            $user = User::where('telegram_id', $message->userId)->first();
+            // Ищем пользователя по telegram_id для этого бота
+            $user = $this->findUser($message);
 
             if ($user) {
                 // Создаем ссылку для авторизации существующего пользователя
-                $authLink = $authLinkService->generateAuthLink($user, [
-                    'expires_in_minutes' => 15,
-                    'ip_address' => null,
-                    'user_agent' => 'Telegram Bot',
-                    'author_id' => $user->id,
-                ]);
-
+                $authLink = $this->createAuthLink($user, $message);
             } else {
                 // Создаем ссылку для регистрации нового пользователя
-                $authLink = $authLinkService->generateRegistrationLink([
-                    'telegram_id' => $message->userId,
-                    'telegram_username' => null, // Можно добавить если есть
-                ], [
-                    'expires_in_minutes' => 60, // Регистрационные ссылки живут дольше
-                    'ip_address' => null,
-                    'user_agent' => 'Telegram Bot',
-                    'author_id' => null,
-                ]);
+                $authLink = $this->createRegistrationLink($message);
             }
 
             // Формируем ссылку
-            $loginUrl = route('auth-link.authenticate', $authLink->token);
+            $loginUrl = route('auth-link.authenticate', $authLink['token']);
 
             // Формируем текст сообщения
             if ($user) {

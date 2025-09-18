@@ -234,6 +234,9 @@ public function bindTelegramAccount(string $token, string $telegramId, string $b
 12. ✅ Update listeners and events
 13. ✅ Test all functionality
 14. ✅ Update documentation
+15. ✅ Refactor commands - extract common methods to BaseTelegramCommand
+16. ✅ Simplify command implementations
+17. ✅ Update documentation with new architecture
 
 ## Completed Implementation
 
@@ -255,6 +258,18 @@ public function bindTelegramAccount(string $token, string $telegramId, string $b
 - Configurable API URLs
 - Improved error handling
 - Automatic callback query responses
+- Common methods in BaseTelegramCommand
+- Simplified command implementations
+- DRY principle implementation
+
+### ✅ Command Refactoring (v2.1)
+- **BaseTelegramCommand** - Added common methods for user handling
+- **findUser()** - Unified user lookup across all commands
+- **requireUser()** - User lookup with authorization check
+- **sendUnauthorizedMessage()** - Consistent unauthorized user handling
+- **createAuthLink()** - Unified auth link creation
+- **createRegistrationLink()** - Unified registration link creation
+- **handleAccountBinding()** - Common account binding logic
 
 ## Benefits
 - One user can be linked to multiple bots

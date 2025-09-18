@@ -56,6 +56,45 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
+## Telegram Bot System
+
+This project includes a comprehensive Telegram bot system with support for multiple bots and advanced command architecture.
+
+### Documentation
+
+- **[Telegram Commands](docs/telegram-commands.md)** - Complete guide to Telegram commands and configuration
+- **[Command Development](docs/telegram-command-development.md)** - Guide for developing custom Telegram commands
+- **[Migration Guide](docs/telegram-migration-guide.md)** - Step-by-step migration instructions
+- **[Architecture Refactoring](docs/telegram-architecture-refactoring.md)** - Technical details of the refactoring
+
+### Quick Start
+
+```bash
+# Install dependencies
+composer install
+
+# Run migrations
+php artisan migrate
+
+# Migrate existing Telegram data
+php artisan telegram:migrate-data
+
+# Test bot connection
+php artisan telegram:test --bot=main --chat-id=YOUR_CHAT_ID
+
+# Run bot service
+php artisan telegram:run --bot=main
+```
+
+### Features
+
+- 🚀 **Multiple Bots** - Support for main, admin, and custom bots
+- 🔧 **Dynamic Configuration** - Bot settings via config files
+- 👥 **Multi-User Support** - Users can be linked to multiple bots
+- 🧹 **Clean Architecture** - DRY principles and reusable components
+- 📊 **Comprehensive Logging** - Detailed logs for debugging
+- 🔄 **Backward Compatibility** - Gradual migration path
+
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
