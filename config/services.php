@@ -18,5 +18,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+        'url' => env('OPENAI_API_URL', 'https://api.openai.com/v1'),
+        'proxy_url' => env('GPT_PROXY_URL'),
+        'default_model' => env('OPENAI_DEFAULT_MODEL', 'gpt-4-turbo-preview'),
+        'default_temperature' => env('OPENAI_DEFAULT_TEMPERATURE', 0.7),
+        'default_max_tokens' => env('OPENAI_DEFAULT_MAX_TOKENS', 2000),
+    ],
 ];
