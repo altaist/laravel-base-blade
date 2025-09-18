@@ -47,42 +47,18 @@ class TelegramBot
         string $text,
         ?string $parseMode = null
     ): bool {
-        try {
-            $params = [
-                'chat_id' => $userId,
-                'text' => $text,
-            ];
+        $params = [
+            'chat_id' => $userId,
+            'text' => $text,
+        ];
 
-            if ($parseMode) {
-                $params['parse_mode'] = $parseMode;
-            }
-
-            $response = $this->http->post('/sendMessage', $params);
-
-            if ($response->successful()) {
-                Log::channel('telegram')->info('Telegram message sent', [
-                    'bot_name' => $this->name,
-                    'user_id' => $userId,
-                ]);
-                return true;
-            }
-
-            Log::channel('telegram')->error('Failed to send Telegram message', [
-                'bot_name' => $this->name,
-                'user_id' => $userId,
-                'response' => $response->body(),
-            ]);
-
-            return false;
-        } catch (RequestException $e) {
-            Log::channel('telegram')->error('Failed to send Telegram message', [
-                'bot_name' => $this->name,
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
+        if ($parseMode) {
+            $params['parse_mode'] = $parseMode;
         }
+
+        return $this->executeApiCall('/sendMessage', $params, 'Telegram message sent', [
+            'user_id' => $userId,
+        ]);
     }
 
     /**
@@ -96,45 +72,21 @@ class TelegramBot
         bool $oneTime = false,
         bool $resize = true
     ): bool {
-        try {
-            $keyboard = new TelegramKeyboardDto($buttons, inline: false, oneTime: $oneTime, resize: $resize);
+        $keyboard = new TelegramKeyboardDto($buttons, inline: false, oneTime: $oneTime, resize: $resize);
 
-            $params = [
-                'chat_id' => $userId,
-                'text' => $text,
-                'reply_markup' => json_encode($keyboard->toArray()),
-            ];
+        $params = [
+            'chat_id' => $userId,
+            'text' => $text,
+            'reply_markup' => json_encode($keyboard->toArray()),
+        ];
 
-            if ($parseMode) {
-                $params['parse_mode'] = $parseMode;
-            }
-
-            $response = $this->http->post('/sendMessage', $params);
-
-            if ($response->successful()) {
-                Log::channel('telegram')->info('Telegram message with keyboard sent', [
-                    'bot_name' => $this->name,
-                    'user_id' => $userId,
-                ]);
-                return true;
-            }
-
-            Log::channel('telegram')->error('Failed to send Telegram message with keyboard', [
-                'bot_name' => $this->name,
-                'user_id' => $userId,
-                'response' => $response->body(),
-            ]);
-
-            return false;
-        } catch (RequestException $e) {
-            Log::channel('telegram')->error('Failed to send Telegram message with keyboard', [
-                'bot_name' => $this->name,
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
+        if ($parseMode) {
+            $params['parse_mode'] = $parseMode;
         }
+
+        return $this->executeApiCall('/sendMessage', $params, 'Telegram message with keyboard sent', [
+            'user_id' => $userId,
+        ]);
     }
 
     /**
@@ -146,43 +98,19 @@ class TelegramBot
         TelegramKeyboardDto $keyboard,
         ?string $parseMode = null
     ): bool {
-        try {
-            $params = [
-                'chat_id' => $userId,
-                'text' => $text,
-                'reply_markup' => json_encode($keyboard->toArray()),
-            ];
+        $params = [
+            'chat_id' => $userId,
+            'text' => $text,
+            'reply_markup' => json_encode($keyboard->toArray()),
+        ];
 
-            if ($parseMode) {
-                $params['parse_mode'] = $parseMode;
-            }
-
-            $response = $this->http->post('/sendMessage', $params);
-
-            if ($response->successful()) {
-                Log::channel('telegram')->info('Telegram message with inline keyboard sent', [
-                    'bot_name' => $this->name,
-                    'user_id' => $userId,
-                ]);
-                return true;
-            }
-
-            Log::channel('telegram')->error('Failed to send Telegram message with inline keyboard', [
-                'bot_name' => $this->name,
-                'user_id' => $userId,
-                'response' => $response->body(),
-            ]);
-
-            return false;
-        } catch (RequestException $e) {
-            Log::channel('telegram')->error('Failed to send Telegram message with inline keyboard', [
-                'bot_name' => $this->name,
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
+        if ($parseMode) {
+            $params['parse_mode'] = $parseMode;
         }
+
+        return $this->executeApiCall('/sendMessage', $params, 'Telegram message with inline keyboard sent', [
+            'user_id' => $userId,
+        ]);
     }
 
     /**
@@ -195,50 +123,57 @@ class TelegramBot
         ?string $url = null,
         int $cacheTime = 0
     ): bool {
+        $params = [
+            'callback_query_id' => $callbackQueryId,
+        ];
+
+        if ($text !== null) {
+            $params['text'] = $text;
+        }
+
+        if ($showAlert) {
+            $params['show_alert'] = $showAlert;
+        }
+
+        if ($url !== null) {
+            $params['url'] = $url;
+        }
+
+        if ($cacheTime > 0) {
+            $params['cache_time'] = $cacheTime;
+        }
+
+        return $this->executeApiCall('/answerCallbackQuery', $params, 'Callback query answered', [
+            'callback_query_id' => $callbackQueryId,
+        ]);
+    }
+
+    /**
+     * Общий метод для выполнения API вызовов с обработкой ошибок
+     */
+    private function executeApiCall(string $endpoint, array $params, string $successMessage, array $logContext = []): bool
+    {
         try {
-            $params = [
-                'callback_query_id' => $callbackQueryId,
-            ];
-
-            if ($text !== null) {
-                $params['text'] = $text;
-            }
-
-            if ($showAlert) {
-                $params['show_alert'] = $showAlert;
-            }
-
-            if ($url !== null) {
-                $params['url'] = $url;
-            }
-
-            if ($cacheTime > 0) {
-                $params['cache_time'] = $cacheTime;
-            }
-
-            $response = $this->http->post('/answerCallbackQuery', $params);
+            $response = $this->http->post($endpoint, $params);
 
             if ($response->successful()) {
-                Log::channel('telegram')->info('Callback query answered', [
+                Log::channel('telegram')->info($successMessage, array_merge([
                     'bot_name' => $this->name,
-                    'callback_query_id' => $callbackQueryId,
-                ]);
+                ], $logContext));
                 return true;
             }
 
-            Log::channel('telegram')->error('Failed to answer callback query', [
+            Log::channel('telegram')->error("Failed to execute API call: {$endpoint}", array_merge([
                 'bot_name' => $this->name,
-                'callback_query_id' => $callbackQueryId,
                 'response' => $response->body(),
-            ]);
+            ], $logContext));
 
             return false;
         } catch (RequestException $e) {
-            Log::channel('telegram')->error('Failed to answer callback query', [
+            Log::channel('telegram')->error("Failed to execute API call: {$endpoint}", array_merge([
                 'bot_name' => $this->name,
-                'callback_query_id' => $callbackQueryId,
                 'error' => $e->getMessage(),
-            ]);
+            ], $logContext));
 
             return false;
         }

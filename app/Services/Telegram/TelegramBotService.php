@@ -101,11 +101,14 @@ class TelegramBotService
     {
         $this->commands[$command->getName()] = $command;
         
-        Log::channel('telegram')->info("Command registered successfully", [
-            'command_name' => $command->getName(),
-            'bot_type' => $this->botType,
-            'total_commands' => count($this->commands),
-        ]);
+        // Логируем только в debug режиме
+        if (config('app.debug')) {
+            Log::channel('telegram')->debug("Command registered successfully", [
+                'command_name' => $command->getName(),
+                'bot_type' => $this->botType,
+                'total_commands' => count($this->commands),
+            ]);
+        }
     }
 
     /**
@@ -130,10 +133,13 @@ class TelegramBotService
                 $defaultCommand = $this->commands['default'] ?? null;
                 if ($defaultCommand && $defaultCommand->canProcess($message)) {
                     $defaultCommand->process($message);
-                    Log::channel('telegram')->info('Telegram default command processed', [
-                        'user_id' => $message->userId,
-                        'message_type' => $message->messageType->value,
-                    ]);
+                    // Логируем только в debug режиме
+                    if (config('app.debug')) {
+                        Log::channel('telegram')->debug('Telegram default command processed', [
+                            'user_id' => $message->userId,
+                            'message_type' => $message->messageType->value,
+                        ]);
+                    }
                     return;
                 }
 
@@ -155,11 +161,14 @@ class TelegramBotService
 
             $command->process($message);
 
-            Log::channel('telegram')->info('Telegram command processed successfully', [
-                'command' => $message->command,
-                'user_id' => $message->userId,
-                'bot_type' => $this->botType,
-            ]);
+            // Логируем только в debug режиме
+            if (config('app.debug')) {
+                Log::channel('telegram')->debug('Telegram command processed successfully', [
+                    'command' => $message->command,
+                    'user_id' => $message->userId,
+                    'bot_type' => $this->botType,
+                ]);
+            }
         } catch (\Throwable $e) {
             Log::channel('telegram')->error('Failed to process Telegram command', [
                 'command' => $message->command,

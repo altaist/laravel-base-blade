@@ -8,6 +8,8 @@ use App\Contracts\TelegramBotCommandInterface;
 use App\Services\Telegram\TelegramService;
 use App\Services\AuthLinkService;
 use App\Models\User;
+use App\Models\AuthLink;
+use App\Enums\TelegramMessageType;
 
 abstract class BaseTelegramCommand implements TelegramBotCommandInterface
 {
@@ -84,7 +86,7 @@ abstract class BaseTelegramCommand implements TelegramBotCommandInterface
         ?string $text = null,
         bool $showAlert = false
     ): void {
-        if ($message->messageType->value !== 'callback_query') {
+        if ($message->messageType !== TelegramMessageType::CALLBACK_QUERY) {
             return;
         }
 
@@ -146,10 +148,13 @@ abstract class BaseTelegramCommand implements TelegramBotCommandInterface
                 'user_agent' => 'Telegram Bot',
             ]);
             
+            $loginUrl = route('auth-link.authenticate', $authLink->token);
+            
+            
             $text = "🔐 <b>Требуется авторизация</b>\n\n" .
                 "Для использования этой команды необходимо войти в систему.\n\n" .
                 "Нажмите на ссылку ниже для авторизации:\n" .
-                "<a href=\"{$authLink['url']}\">Войти в систему</a>\n\n" .
+                "<a href=\"{$loginUrl}\">Войти в систему</a>\n\n" .
                 "Ссылка действительна 60 минут.";
                 
             $this->reply($message, $text, TelegramService::FORMAT_HTML);
@@ -162,7 +167,7 @@ abstract class BaseTelegramCommand implements TelegramBotCommandInterface
     /**
      * Создать ссылку для авторизации (для существующего пользователя)
      */
-    protected function createAuthLink(User $user, TelegramMessageDto $message): array
+    protected function createAuthLink(User $user, TelegramMessageDto $message): AuthLink
     {
         $authLinkService = app(AuthLinkService::class);
         
@@ -177,7 +182,7 @@ abstract class BaseTelegramCommand implements TelegramBotCommandInterface
     /**
      * Создать ссылку для регистрации (для нового пользователя)
      */
-    protected function createRegistrationLink(TelegramMessageDto $message): array
+    protected function createRegistrationLink(TelegramMessageDto $message): AuthLink
     {
         $authLinkService = app(AuthLinkService::class);
         

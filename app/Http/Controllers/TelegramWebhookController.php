@@ -56,12 +56,13 @@ class TelegramWebhookController extends Controller
      * Ручная обработка обновлений от Telegram
      * Полезно, когда вебхук не настроен или для тестирования
      */
-    public function processUpdatesManually(string $botId = 'bot'): JsonResponse
+    public function processUpdatesManually(string $botId = 'main'): JsonResponse
     {
         try {
-            $token = config("telegram.{$botId}.token");
+            $token = config("telegram.bots.{$botId}.token");
+            $apiUrl = config('telegram.api_url', 'https://api.telegram.org');
             $response = \Illuminate\Support\Facades\Http::get(
-                "https://api.telegram.org/bot{$token}/getUpdates"
+                "{$apiUrl}/bot{$token}/getUpdates"
             );
 
             if (!$response->successful()) {

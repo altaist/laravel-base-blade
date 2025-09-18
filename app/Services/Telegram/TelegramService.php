@@ -28,14 +28,16 @@ class TelegramService
     public function sendMessageToUser(
         string|int $userId,
         string $text,
-        ?string $parseMode = self::FORMAT_NONE
+        ?string $parseMode = self::FORMAT_NONE,
+        string $botName = 'main'
     ): bool {
         try {
-            $bot = $this->botManager->getBot('main');
+            $bot = $this->botManager->getBot($botName);
             return $bot->sendMessage($userId, $text, $parseMode);
         } catch (\Exception $e) {
             Log::channel('telegram')->error('Failed to send Telegram message', [
                 'user_id' => $userId,
+                'bot_name' => $botName,
                 'error' => $e->getMessage(),
             ]);
             return false;
@@ -84,18 +86,14 @@ class TelegramService
         array $buttons,
         ?string $parseMode = self::FORMAT_NONE,
         bool $oneTime = false,
-        bool $resize = true
+        bool $resize = true,
+        string $botName = 'main'
     ): bool {
-        try {
-            $bot = $this->botManager->getBot('main');
-            return $bot->sendMessageWithKeyboard($userId, $text, $buttons, $parseMode, $oneTime, $resize);
-        } catch (\Exception $e) {
-            Log::channel('telegram')->error('Failed to send Telegram message with keyboard', [
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-            ]);
-            return false;
-        }
+        return $this->executeWithErrorHandling(
+            fn() => $this->botManager->getBot($botName)->sendMessageWithKeyboard($userId, $text, $buttons, $parseMode, $oneTime, $resize),
+            'Failed to send Telegram message with keyboard',
+            ['user_id' => $userId, 'bot_name' => $botName]
+        );
     }
 
     /**
@@ -105,18 +103,14 @@ class TelegramService
         string|int $userId,
         string $text,
         TelegramKeyboardDto $keyboard,
-        ?string $parseMode = self::FORMAT_NONE
+        ?string $parseMode = self::FORMAT_NONE,
+        string $botName = 'main'
     ): bool {
-        try {
-            $bot = $this->botManager->getBot('main');
-            return $bot->sendMessageWithInlineKeyboard($userId, $text, $keyboard, $parseMode);
-        } catch (\Exception $e) {
-            Log::channel('telegram')->error('Failed to send Telegram message with inline keyboard', [
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-            ]);
-            return false;
-        }
+        return $this->executeWithErrorHandling(
+            fn() => $this->botManager->getBot($botName)->sendMessageWithInlineKeyboard($userId, $text, $keyboard, $parseMode),
+            'Failed to send Telegram message with inline keyboard',
+            ['user_id' => $userId, 'bot_name' => $botName]
+        );
     }
 
     /**
@@ -130,17 +124,11 @@ class TelegramService
         int $cacheTime = 0,
         string $botId = 'main'
     ): bool {
-        try {
-            $bot = $this->botManager->getBot($botId);
-            return $bot->answerCallbackQuery($callbackQueryId, $text, $showAlert, $url, $cacheTime);
-        } catch (\Exception $e) {
-            Log::channel('telegram')->error('Failed to answer callback query', [
-                'callback_query_id' => $callbackQueryId,
-                'bot_id' => $botId,
-                'error' => $e->getMessage(),
-            ]);
-            return false;
-        }
+        return $this->executeWithErrorHandling(
+            fn() => $this->botManager->getBot($botId)->answerCallbackQuery($callbackQueryId, $text, $showAlert, $url, $cacheTime),
+            'Failed to answer callback query',
+            ['callback_query_id' => $callbackQueryId, 'bot_id' => $botId]
+        );
     }
 
     /**
@@ -215,21 +203,18 @@ class TelegramService
     }
 
     /**
-     * Подготовить текст для отправки (экранирование)
+     * Общий метод для выполнения операций с обработкой ошибок
      */
-    private function prepareText(string $text, ?string $parseMode): string
+    private function executeWithErrorHandling(callable $operation, string $errorMessage, array $context = []): bool
     {
-        if ($parseMode === self::FORMAT_MARKDOWN) {
-            // Экранируем специальные символы для MarkdownV2
-            $escaped = preg_replace('/([_*\[\]()~`>#+\-=|{}.!])/', '\\\\$1', $text);
-            return $escaped ?: $text;
+        try {
+            return $operation();
+        } catch (\Exception $e) {
+            Log::channel('telegram')->error($errorMessage, array_merge($context, [
+                'error' => $e->getMessage(),
+            ]));
+            return false;
         }
-
-        if ($parseMode === self::FORMAT_HTML) {
-            // Для HTML не нужно экранировать теги, так как они используются для форматирования
-            return $text;
-        }
-
-        return $text;
     }
+
 }

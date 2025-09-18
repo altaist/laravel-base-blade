@@ -4,7 +4,6 @@ namespace App\Services\Telegram\Commands\Main;
 
 use App\DTOs\TelegramMessageDto;
 use App\Models\User;
-use App\Services\AuthLinkService;
 use App\Services\Telegram\Base\BaseTelegramCommand;
 use App\Services\Telegram\TelegramService;
 use Illuminate\Support\Facades\Log;
@@ -38,7 +37,7 @@ class AuthLinkCommand extends BaseTelegramCommand
             }
 
             // Формируем ссылку
-            $loginUrl = route('auth-link.authenticate', $authLink['token']);
+            $loginUrl = route('auth-link.authenticate', $authLink->token);
 
             // Формируем текст сообщения
             if ($user) {
